@@ -36,7 +36,8 @@ function showHeader() {
 
         <p style="
             font-family: Arial, sans-serif; 
-            font-size: 12px; 
+            font-weight: semibold,
+            font-size: 15px; 
             color: yellow; 
             text-align: right; 
             margin: 2px 10px 0 0;
