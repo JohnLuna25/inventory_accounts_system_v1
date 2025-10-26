@@ -43,6 +43,7 @@ function showHeader() {
             margin: 2px 10px 0 0;
         ">
             '.date("M d Y").'
+            <br>
         </p>
         <a href="home.php" 
             style="
