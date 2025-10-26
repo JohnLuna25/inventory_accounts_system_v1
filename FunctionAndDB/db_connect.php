@@ -1,8 +1,8 @@
 <?php
 $servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "sorcom_db";
+$username = "root";       // your MySQL username
+$password = "";           // your MySQL password
+$dbname = "sorcom_db"; // your database name
 
 $conn = new mysqli($servername, $username, $password, $dbname);
 
