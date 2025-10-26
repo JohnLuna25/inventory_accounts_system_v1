@@ -101,7 +101,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <!-- Toggle Button -->
-    <button id="toggle-btn" style="position: fixed; top: 145px; left: -25px; transform: translateX(50%); radius: 10px; background: none; color: darkblue; font-size: 24px; cursor: pointer;">➡️</button>
+    <button id="toggle-btn" style="position: fixed; top: 145px; left: -25px; transform: translateX(50%); border: none; background: none; color: darkblue; font-size: 24px; cursor: pointer;">➡️</button>
 
     <div id="main-content" style="margin-left:0; padding: 20px;">
 
