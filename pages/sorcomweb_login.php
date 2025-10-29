@@ -45,8 +45,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <!-- Titles on the LEFT -->
     <div style="text-align:left; color:yellow; padding-left:50px; flex:1; display:flex; flex-direction:column; justify-content:center;">
-        <h1 style="font-size:50px; margin:0;">SORCOM READY-MIX CONCRETE</h1>
-        <h2 style="font-size:30px; margin-top:10px;">Inventory and Accounts Management System</h2>
+       <h1 style="font-size:50px; margin-top: 10px; color: yellow; white-space: nowrap;">SORCOM READY-MIX CONCRETE</h1>
+        <h2 style="font-size:30px; margin-top: 10px; color: yellow; text-align: left; white-space: nowrap;">Inventory and Accounts Management System</h2>
     </div>
 
     <!-- Login FORM on the RIGHT -->

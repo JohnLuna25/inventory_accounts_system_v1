@@ -12,7 +12,7 @@
 
     <?php showHeader(); ?>
 
-    <h2 style="margin-top: 80px;">Reports Management Page</h2>
+    <h2 style="margin-top: 80px;">Reports Management</h2>
     
 </body>
 </html>

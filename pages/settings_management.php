@@ -11,7 +11,7 @@
 
     <?php showHeader(); ?>
 
-    <h2 style="margin-top: 80px;">Settings Management Page</h2>
+    <h2 style="margin-top: 80px;">Settings</h2>
 
 </body>
 </html>

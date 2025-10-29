@@ -52,7 +52,7 @@ function showHeader() {
             ' . date("M d, Y - H:i:s") . '
         </p>
 
-        <a href="home.php" style="
+        <a href="/Inventory-Accounts-System-v1/home_page/home.php" style="
             font-family: Arial, sans-serif;
             font-size: 15px;
             color: yellow;

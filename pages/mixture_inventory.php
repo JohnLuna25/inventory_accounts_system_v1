@@ -1,6 +1,5 @@
 <?php
-    include '../FunctionAndDB/Web_Functions.php';
-    measurement_suffixes(); 
+    include '../FunctionAndDB/Web_Functions.php'; 
 ?>
 
 <!DOCTYPE html>
