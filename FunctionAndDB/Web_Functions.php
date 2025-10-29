@@ -6,83 +6,61 @@
 /**
  * Display the fixed header
  */
-function showHeader() {
+function showHeader()
+{
     echo '
     <div style="
-        background-color: blue; 
-        padding: 5px 10px; 
-        width: 100%; 
-        margin: 0; 
-        text-align: center; 
-        position: fixed; 
-        top: 0; 
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: blue;
+        padding: 5px 15px; /* smaller padding */
+        width: 100%;
+        position: fixed;
+        top: 0;
         left: 0;
         z-index: 1000;
+        box-sizing: border-box;
     ">
-        <h1 style="
-            font-family: Arial, sans-serif; 
-            font-size: 20px; 
-            font-weight: bold; 
-            color: yellow; 
-            text-align: center; 
-            margin: 0;
-        ">
-            SORCOM READY-MIX CONCRETE
-        </h1>
+        <!-- Left Links -->
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <a href="javascript:history.back()">
+                <img src="/Inventory-Accounts-System-v1/assets/images/back_button.png" 
+                     alt="Back" style="height: 30px; cursor: pointer;"> <!-- smaller -->
+            </a>
+            <a href="/Inventory-Accounts-System-v1/home_page/home.php">
+                <img src="/Inventory-Accounts-System-v1/assets/images/home_button.png" 
+                     alt="Home" style="height: 30px; cursor: pointer;">
+            </a>
+        </div>
 
-        <p style="
-            font-family: Arial, sans-serif; 
-            font-size: 14px; 
-            font-weight: 600; 
-            color: yellow; 
-            text-align: center; 
-            margin: 0;
-        ">
-            Inventory and Accounts Management System.
-        </p>
+        <!-- Center Title -->
+        <div style="text-align: center;">
+            <h1 style="font-family: Arial, sans-serif; font-size: 18px; font-weight: bold; color: yellow; margin: 0;">
+                SORCOM READY-MIX CONCRETE
+            </h1>
+            <p style="font-family: Arial, sans-serif; font-size: 12px; font-weight: 600; color: yellow; margin: 0;">
+                Inventory and Accounts Management System.
+            </p>
+        </div>
 
-        <p style="
-            font-family: Arial, sans-serif; 
-            font-weight: 600; 
-            font-size: 15px; 
-            color: yellow; 
-            text-align: right; 
-            margin: 2px 10px 0 0;
-        ">
-            ' . date("M d, Y - H:i:s") . '
-        </p>
-
-        <a href="/Inventory-Accounts-System-v1/home_page/home.php" style="
-            font-family: Arial, sans-serif;
-            font-size: 15px;
-            color: yellow;
-            text-decoration: none;
-            position: fixed;
-            top: 10px; 
-            left: 20px;   
-        ">
-            ⬅️ Return Home
-        </a>
-
-        <a href="javascript:history.back()" style="
-            font-family: Arial, sans-serif;
-            font-size: 15px;
-            color: yellow;
-            text-decoration: none;
-            position: fixed;
-            top: 40px; 
-            left: 20px;   
-        ">
-            ⬅️ Go Back
-        </a>
+        <!-- Right Date -->
+        <div style="font-family: Arial, sans-serif; font-weight: 600; font-size: 14px; color: yellow;">
+            ' . date("M d, Y - H:i") . '
+        </div>
     </div>
     ';
 }
 
+
+
+
+
 /**
  * Fetch inventory rows from the database
  */
-function fetchInventoryRows() {
+function fetchInventoryRows()
+{
     require 'db_connect.php';
 
     $sql = "SELECT * FROM sorcom_readymix_inventory
@@ -108,12 +86,13 @@ function fetchInventoryRows() {
 /**
  * Display sidebar navigation
  */
-function showSidebar($username = "User") {
+function showSidebar($username = "User")
+{
     echo '
     <!-- Sidebar (Bootstrap Offcanvas) -->
     <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebar" aria-labelledby="sidebarLabel" style="width:250px;">
       <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="sidebarLabel">Welcome, '.htmlspecialchars($username).'!</h5>
+        <h5 class="offcanvas-title" id="sidebarLabel">Welcome, ' . htmlspecialchars($username) . '!</h5>
         <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
       <div class="offcanvas-body d-flex flex-column">
@@ -144,25 +123,62 @@ function showSidebar($username = "User") {
 
 <!-- Modal Script -->
 <script>
-function showConcreteDetails(id) {
-    fetch('view_design_ajax.php?id=' + id)
-        .then(response => response.text())
-        .then(data => {
-            const modal = document.getElementById('concreteModal');
-            const details = document.getElementById('concreteDetails');
-            if(modal && details) {
-                details.innerHTML = data;
-                modal.style.display = 'flex';
-            }
-        })
-        .catch(err => {
-            alert('Error fetching design details.');
-            console.error(err);
-        });
-}
+    function showConcreteDetails(id) {
+        fetch('view_design_ajax.php?id=' + id)
+            .then(response => response.text())
+            .then(data => {
+                const modal = document.getElementById('concreteModal');
+                const details = document.getElementById('concreteDetails');
+                if (modal && details) {
+                    details.innerHTML = data;
+                    modal.style.display = 'flex';
+                }
+            })
+            .catch(err => {
+                alert('Error fetching design details.');
+                console.error(err);
+            });
+    }
 
-function closeModal() {
-    const modal = document.getElementById('concreteModal');
-    if(modal) modal.style.display = 'none';
-}
+    function closeModal() {
+        const modal = document.getElementById('concreteModal');
+        if (modal) modal.style.display = 'none';
+    }
+
+
+
+
+    var iSorcom = 0;
+    var iIAMS = 0;
+
+    var txtSorcom = 'SORCOM READY-MIX CONCRETE';
+    var txtIAMS = 'Inventory and Accounts Management System';
+
+    var speedTitle = 80;
+    var speedSubtitle = 80;
+
+    function sorcomWriter() {
+        if (iSorcom < txtSorcom.length) {
+            window.onload = sorcomWriter;
+            document.getElementById("demo").innerHTML += txtSorcom.charAt(iSorcom);
+            iSorcom++;
+            setTimeout(sorcomWriter, speedTitle);
+        } else {
+            // Once the first text finishes, start the second
+            document.getElementById("demo").innerHTML += "<br>"; // optional line break
+            setTimeout(iamsWriter, 500); // delay before second line starts
+        }
+    }
+
+    function iamsWriter() {
+        if (iIAMS < txtIAMS.length) {
+            document.getElementById("demo").innerHTML += txtIAMS.charAt(iIAMS);
+            iIAMS++;
+            setTimeout(iamsWriter, speedSubtitle);
+        }
+    }
+
+    sorcomWriter();
+
+
 </script>
