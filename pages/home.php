@@ -3,6 +3,8 @@ session_start();
 require_once '../FunctionAndDB/Web_Functions.php';
 require_once 'announcement_list.php'; // handles add/delete logic
 
+
+
 // Initialize announcements
 if (!isset($_SESSION['announcements'])) {
     $_SESSION['announcements'] = [];
@@ -101,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <!-- Toggle Button -->
-    <button id="toggle-btn" style="position: fixed; top: 145px; left: -25px; transform: translateX(50%); border: none; background: none; color: darkblue; font-size: 24px; cursor: pointer;">➡️</button>
+    <button id="toggle-btn" style="position: fixed; top: 125px; left: -25px; transform: translateX(50%); border: none; background: none; color: darkblue; font-size: 24px; cursor: pointer;">➡️</button>
 
     <div id="main-content" style="margin-left:0; padding: 20px;">
 

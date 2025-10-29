@@ -1,228 +1,231 @@
 <?php
-// 1. Include the database connection file (Required for DB queries)
-require_once '../FunctionAndDB/db_connect.php';
+    require_once '../FunctionAndDB/db_connect.php';
+    require_once '../FunctionAndDB/Web_Functions.php';
 
-// 2. Include the file with your web functions (Required for showHeader())
-require_once '../FunctionAndDB/Web_Functions.php';
+    // --------------------------
+    // Helper function
+    // --------------------------
+    function nullIfEmpty($value) {
+        return ($value === '' || $value === '0') ? null : $value;
+    }
+
+    // --------------------------
+    // Handle form submissions
+    // --------------------------
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        $action = $_POST['action'] ?? '';
+
+        if ($action === 'add') {
+            $stocks_in = nullIfEmpty($_POST['stocks_in']);
+            $stocks_out = nullIfEmpty($_POST['stocks_out']);
+            $description = nullIfEmpty($_POST['description']);
+            $batch = nullIfEmpty($_POST['batch']);
+            $remarks = nullIfEmpty($_POST['remarks']);
+
+            $stmt = $conn->prepare("INSERT INTO sorcom_readymix_inventory 
+                (date_added, design_mix_id, description, batch, stocks_in, stocks_out, remarks) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param(
+                "ssssdds",
+                $_POST['date_added'],
+                $_POST['design_mix'],
+                $description,
+                $batch,
+                $stocks_in,
+                $stocks_out,
+                $remarks
+            );
+            $stmt->execute();
+            $stmt->close();
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit;
+        }
+
+        if ($action === 'edit') {
+            $stocks_in = nullIfEmpty($_POST['stocks_in']);
+            $stocks_out = nullIfEmpty($_POST['stocks_out']);
+            $description = nullIfEmpty($_POST['description']);
+            $batch = nullIfEmpty($_POST['batch']);
+            $remarks = nullIfEmpty($_POST['remarks']);
+
+            $stmt = $conn->prepare("UPDATE sorcom_readymix_inventory 
+                SET date_added=?, design_mix_id=?, description=?, batch=?, stocks_in=?, stocks_out=?, remarks=? 
+                WHERE id=?");
+            $stmt->bind_param(
+                "ssssddsi",
+                $_POST['date_added'],
+                $_POST['design_mix'],
+                $description,
+                $batch,
+                $stocks_in,
+                $stocks_out,
+                $remarks,
+                $_POST['id']
+            );
+            $stmt->execute();
+            $stmt->close();
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit;
+        }
+
+        if ($action === 'delete') {
+            $id = intval($_POST['id']);
+            $stmt = $conn->prepare("DELETE FROM sorcom_readymix_inventory WHERE id=?");
+            $stmt->bind_param("i", $id);
+            $stmt->execute();
+            $stmt->close();
+            header("Location: " . $_SERVER['PHP_SELF']);
+            exit;
+        }
+    }
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SORCOM Inventory Management</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
-</head>
-<body style="font-family: Arial; text-align: center;">
+    <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <title>SORCOM Inventory Management</title>
+            <link rel="stylesheet" href="../assets/css/style.css">
+            <?php showHeader(); ?>
+                <style>
+                    body { font-family: Arial, sans-serif; margin-top:120px; background:#f9f9f9; color:#333; text-align: center; }
+                    table { border-collapse: collapse; width: 90%; margin: 20px auto; }
+                    table th, table td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+                    table th { background:#0b63c4; color:#fff; }
+                    button { padding: 5px 10px; margin: 2px; cursor: pointer; border-radius: 5px; }
+                    .modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; }
+                    .modal-content { background:white; width:450px; margin:100px auto; padding:20px; border-radius:5px; }
+                    .modal-content h3 { margin-top:0; }
+                    .modal-content input, .modal-content textarea { width: 100%; margin: 5px 0 10px 0; padding:5px; box-sizing:border-box; }
+                    .modal-content button { margin-right:5px; }
+                </style>
+        </head>
+        <body>
 
-<?php
-// Call the header function defined in Web_Functions.php
-showHeader();
-?>
+            <h2 style="color: #000;">Ready-Mix Inventory</h2>
 
-<h2 style="text-align: left; margin-left: 5%; margin-top: 80px;">
-    Ready-Mix Inventory
-</h2>
-<br>
-
-<div style="text-align: right; margin-right: 5%; margin-bottom: 20px;">
-    <button 
-        onclick="openAddModal()"
-        style="padding: 10px 15px; font-size: 16px; cursor: pointer; margin-left: 10px; border: none; border-radius: 5px; background-color: #0b63c4; color: white; transition: background-color 0.3s;"
-        onmouseover="this.style.backgroundColor='#084f9b'"
-        onmouseout="this.style.backgroundColor='#0b63c4'"
-    >
-        Add Inventory
-    </button>
-</div>
-
-<?php
-// Fetch readymix inventory, hide rows without design_mix_id
-$result = $conn->query("SELECT * FROM sorcom_readymix_inventory 
-                         WHERE design_mix_id IS NOT NULL AND design_mix_id != ''
-                         ORDER BY date_added DESC");
-
-if (!$result) {
-    die("Query failed: " . $conn->error);
-}
-
-echo '<table border="1" cellpadding="8" style="margin:auto; border-collapse:collapse; width:90%">';
-echo '<thead style="background:#0b63c4; color:#fff;">
-        <tr>
-            <th style="padding: 8px;">Edit</th> <th style="padding: 8px;">ID</th>
-            <th style="padding: 8px;">Date</th>
-            <th style="padding: 8px;">Design Mix ID</th>
-            <th style="padding: 8px;">Description</th>
-            <th style="padding: 8px;">Batch</th>
-            <th style="padding: 8px;">Stocks In</th>
-            <th style="padding: 8px;">Stocks Out</th>
-            <th style="padding: 8px;">Remarks</th>
-            <th style="padding: 8px;">Delete</th> </tr>
-    </thead><tbody>';
-
-while ($row = $result->fetch_assoc()) {
-    $inventory_id = htmlspecialchars($row['id']);
-    // Encode the entire row data to easily pass it to the Edit function
-    $row_data = htmlspecialchars(json_encode($row), ENT_QUOTES, 'UTF-8'); 
-    
-    // Inline styles for table action buttons
-    $edit_btn_style = 'padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer; color: white; font-size: 14px; background-color: #ff9800;'; // Orange
-    $delete_btn_style = 'padding: 5px 10px; border: none; border-radius: 3px; cursor: pointer; color: white; font-size: 14px; background-color: #f44336;'; // Red
-
-    echo '<tr>';
-    // Edit Button (on the left side)
-    echo '<td style="text-align: center;">
-            <button 
-                onclick="openEditModal(\''.$row_data.'\')"
-                style="'.$edit_btn_style.'"
-                onmouseover="this.style.backgroundColor=\'#e68900\'"
-                onmouseout="this.style.backgroundColor=\'#ff9800\'"
-            >
-                Edit
-            </button>
-          </td>'; 
-    echo '<td style="text-align: center;">'.$inventory_id.'</td>';
-    echo '<td style="text-align: center;">'.htmlspecialchars($row['date_added']).'</td>';
-    echo '<td style="text-align: center;">'.htmlspecialchars($row['design_mix_id']).'</td>';
-    echo '<td style="text-align: center;">'.htmlspecialchars($row['description']).'</td>';
-    echo '<td style="text-align: center;">'.htmlspecialchars($row['batch']).'</td>';
-    // Hide zeros in stocks_in and stocks_out
-    echo '<td style="text-align: center;">'.(htmlspecialchars($row['stocks_in']) != 0 ? htmlspecialchars($row['stocks_in']) : '').'</td>';
-    echo '<td style="text-align: center;">'.(htmlspecialchars($row['stocks_out']) != 0 ? htmlspecialchars($row['stocks_out']) : '').'</td>';
-    echo '<td style="text-align: left;">'.htmlspecialchars($row['remarks']).'</td>'; 
-    // Delete Button (on the right side)
-    echo '<td style="text-align: center;">
-            <button 
-                onclick="handleDelete(\''.$inventory_id.'\')"
-                style="'.$delete_btn_style.'"
-                onmouseover="this.style.backgroundColor=\'#da190b\'"
-                onmouseout="this.style.backgroundColor=\'#f44336\'"
-            >
-                Delete
-            </button>
-          </td>';
-    echo '</tr>';
-}
-
-echo '</tbody></table>';
-
-$conn->close();
-?>
-
-<div id="addInventoryModal" 
-    style="display: none; position: fixed; z-index: 10; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);"
-    onclick="if (event.target === this) checkCancel('addInventoryModal', 'addInventoryForm')"
->
-    <div style="background-color: #fefefe; margin: 10% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 500px; border-radius: 8px; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19); text-align: left;">
-        <h3 style="text-align: center; margin-top: 0;">Add Inventory Details</h3>
-        <form id="addInventoryForm">
-            <label for="add_date" style="display: block; margin-bottom: 5px; font-weight: bold;">Date added:</label>
-            <input type="date" id="add_date" name="date_added" required 
-                   style="display: block; margin-bottom: 15px; width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-            
-            <label for="add_design_mix" style="display: block; margin-bottom: 5px; font-weight: bold;">Design Mix:</label>
-            <input type="text" id="add_design_mix" name="design_mix" required
-                   style="display: block; margin-bottom: 15px; width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-            
-            <label for="add_description" style="display: block; margin-bottom: 5px; font-weight: bold;">Description: (Placeholder saying: days and type)</label>
-            <input type="text" id="add_description" name="description" placeholder="days and type" required
-                   style="display: block; margin-bottom: 15px; width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-            
-            <label for="add_batch" style="display: block; margin-bottom: 5px; font-weight: bold;">Batch:</label>
-            <input type="text" id="add_batch" name="batch"
-                   style="display: block; margin-bottom: 15px; width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-            
-            <label for="add_stocks_in" style="display: block; margin-bottom: 5px; font-weight: bold;">Stocks in:</label>
-            <input type="number" id="add_stocks_in" name="stocks_in" min="0"
-                   style="display: block; margin-bottom: 15px; width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-            
-            <label for="add_stocks_out" style="display: block; margin-bottom: 5px; font-weight: bold;">Stocks out:</label>
-            <input type="number" id="add_stocks_out" name="stocks_out" min="0"
-                   style="display: block; margin-bottom: 15px; width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-            
-            <label for="add_remarks" style="display: block; margin-bottom: 5px; font-weight: bold;">Remarks:</label>
-            <textarea id="add_remarks" name="remarks"
-                      style="display: block; margin-bottom: 15px; width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;"></textarea>
-            
-            <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
-                <button type="button" onclick="handleAddSubmit()"
-                        style="padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; background-color: #4CAF50; color: white; margin-left: 10px;"
-                        onmouseover="this.style.backgroundColor='#45a049'"
-                        onmouseout="this.style.backgroundColor='#4CAF50'"
-                >
-                    Add
-                </button>
-                <button type="button" onclick="checkCancel('addInventoryModal', 'addInventoryForm')"
-                        style="padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; background-color: #ccc; color: #333; margin-left: 10px;"
-                        onmouseover="this.style.backgroundColor='#bbb'"
-                        onmouseout="this.style.backgroundColor='#ccc'"
-                >
-                    Cancel
-                </button>
+            <div style="text-align:left; margin-left: 5%;">
+                <button onclick="openModal('addInventoryModal')" style="background: #211de6ff; color: white;">Add Item</button>
+                <button onclick="location.href='mixture_inventory.php'" style="background: #211de6ff; color: white;">Open Mixture Inventory</button>
             </div>
-        </form>
-    </div>
-</div>
 
-<div id="editInventoryModal" 
-    style="display: none; position: fixed; z-index: 10; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.4);"
-    onclick="if (event.target === this) checkCancel('editInventoryModal', 'editInventoryForm', true)"
->
-    <div style="background-color: #fefefe; margin: 10% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 500px; border-radius: 8px; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19); text-align: left;">
-        <h3 style="text-align: center; margin-top: 0;">Edit Inventory Details</h3>
-        <form id="editInventoryForm">
-            <input type="hidden" id="edit_id" name="id">
-            <input type="hidden" id="original_data" name="original_data">
+            <?php
+            $sql = "SELECT * FROM sorcom_readymix_inventory
+                    WHERE 
+                        (description IS NOT NULL AND description <> '') OR
+                        (batch IS NOT NULL AND batch <> '') OR
+                        (remarks IS NOT NULL AND remarks <> '') OR
+                        (stocks_in IS NOT NULL AND stocks_in <> 0) OR
+                        (stocks_out IS NOT NULL AND stocks_out <> 0) OR
+                        (date_added IS NOT NULL AND date_added <> '') OR
+                        (design_mix_id IS NOT NULL AND design_mix_id <> '')
+                    ORDER BY date_added DESC, id ASC";
 
-            <label for="edit_date" style="display: block; margin-bottom: 5px; font-weight: bold;">Date added:</label>
-            <input type="date" id="edit_date" name="date_added" required
-                   style="display: block; margin-bottom: 15px; width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-            
-            <label for="edit_design_mix" style="display: block; margin-bottom: 5px; font-weight: bold;">Design Mix:</label>
-            <input type="text" id="edit_design_mix" name="design_mix" required
-                   style="display: block; margin-bottom: 15px; width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-            
-            <label for="edit_description" style="display: block; margin-bottom: 5px; font-weight: bold;">Description: (days and type)</label>
-            <input type="text" id="edit_description" name="description" required
-                   style="display: block; margin-bottom: 15px; width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-            
-            <label for="edit_batch" style="display: block; margin-bottom: 5px; font-weight: bold;">Batch:</label>
-            <input type="text" id="edit_batch" name="batch"
-                   style="display: block; margin-bottom: 15px; width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-            
-            <label for="edit_stocks_in" style="display: block; margin-bottom: 5px; font-weight: bold;">Stocks in:</label>
-            <input type="number" id="edit_stocks_in" name="stocks_in" min="0"
-                   style="display: block; margin-bottom: 15px; width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-            
-            <label for="edit_stocks_out" style="display: block; margin-bottom: 5px; font-weight: bold;">Stocks out:</label>
-            <input type="number" id="edit_stocks_out" name="stocks_out" min="0"
-                   style="display: block; margin-bottom: 15px; width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;">
-            
-            <label for="edit_remarks" style="display: block; margin-bottom: 5px; font-weight: bold;">Remarks:</label>
-            <textarea id="edit_remarks" name="remarks"
-                      style="display: block; margin-bottom: 15px; width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;"></textarea>
-            
-            <div style="display: flex; justify-content: flex-end; margin-top: 20px;">
-                <button type="button" onclick="handleEditDone()"
-                        style="padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; background-color: #4CAF50; color: white; margin-left: 10px;"
-                        onmouseover="this.style.backgroundColor='#45a049'"
-                        onmouseout="this.style.backgroundColor='#4CAF50'"
-                >
-                    Done
-                </button>
-                <button type="button" onclick="checkCancel('editInventoryModal', 'editInventoryForm', true)"
-                        style="padding: 10px 15px; border: none; border-radius: 5px; cursor: pointer; background-color: #ccc; color: #333; margin-left: 10px;"
-                        onmouseover="this.style.backgroundColor='#bbb'"
-                        onmouseout="this.style.backgroundColor='#ccc'"
-                >
-                    Cancel
-                </button>
+            $result = $conn->query($sql);
+
+            echo '<table>
+            <thead>
+            <tr>
+            <th>ID</th><th>Date</th><th>Design Mix ID</th><th>Description</th><th>Batch</th>
+            <th>Stocks In</th><th>Stocks Out</th><th>Remarks</th><th>Edit</th><th>Delete</th>
+            </tr></thead><tbody>';
+
+            while ($row = $result->fetch_assoc()) {
+                $row_json = htmlspecialchars(json_encode($row), ENT_QUOTES);
+                echo '<tr>';
+                echo "<td>{$row['id']}</td>";
+                echo "<td>{$row['date_added']}</td>";
+                echo "<td>{$row['design_mix_id']}</td>";
+                echo "<td>{$row['description']}</td>";
+                echo "<td>{$row['batch']}</td>";
+                echo "<td>{$row['stocks_in']}</td>";
+                echo "<td>{$row['stocks_out']}</td>";
+                echo "<td>{$row['remarks']}</td>";
+                echo "<td><button onclick='openEditModal($row_json)'>Edit</button></td>";
+                echo "<td>
+                    <form method='POST' style='display:inline;' onsubmit='return confirm(\"Are you sure you want to delete this?\")'>
+                    <input type='hidden' name='id' value='{$row['id']}'>
+                    <input type='hidden' name='action' value='delete'>
+                    <button type='submit' style='background:#f44336;color:white;border:none;'>Delete</button>
+                    </form>
+                </td>";
+                echo '</tr>';
+            }
+            echo '</tbody></table>';
+            $conn->close();
+            ?>
+
+            <!-- ADD MODAL -->
+            <div id="addInventoryModal" class="modal">
+                <div class="modal-content">
+                    <h3>Add Inventory</h3>
+                    <form method="POST">
+                        <input type="hidden" name="action" value="add">
+                        <label>Date:</label>
+                        <input type="date" name="date_added" required value="<?=date('Y-m-d')?>">
+                        <label>Design Mix ID:</label>
+                        <input type="text" name="design_mix" required>
+                        <label>Description:</label>
+                        <input type="text" name="description">
+                        <label>Batch:</label>
+                        <input type="text" name="batch">
+                        <label>Stocks In:</label>
+                        <input type="number" name="stocks_in">
+                        <label>Stocks Out:</label>
+                        <input type="number" name="stocks_out">
+                        <label>Remarks:</label>
+                        <textarea name="remarks"></textarea>
+                        <button type="submit">Add</button>
+                        <button type="button" onclick="closeModal('addInventoryModal')">Cancel</button>
+                    </form>
+                </div>
             </div>
-        </form>
-    </div>
-</div>
+
+            <!-- EDIT MODAL -->
+            <div id="editInventoryModal" class="modal">
+                <div class="modal-content">
+                    <h3>Edit Inventory</h3>
+                    <form method="POST">
+                        <input type="hidden" name="action" value="edit">
+                        <input type="hidden" name="id" id="edit_id">
+                        <label>Date:</label>
+                        <input type="date" name="date_added" id="edit_date">
+                        <label>Design Mix ID:</label>
+                        <input type="text" name="design_mix" id="edit_design">
+                        <label>Description:</label>
+                        <input type="text" name="description" id="edit_description">
+                        <label>Batch:</label>
+                        <input type="text" name="batch" id="edit_batch">
+                        <label>Stocks In:</label>
+                        <input type="number" name="stocks_in" id="edit_stocks_in">
+                        <label>Stocks Out:</label>
+                        <input type="number" name="stocks_out" id="edit_stocks_out">
+                        <label>Remarks:</label>
+                        <textarea name="remarks" id="edit_remarks"></textarea>
+                        <button type="submit">Save</button>
+                        <button type="button" onclick="closeModal('editInventoryModal')">Cancel</button>
+                    </form>
+                </div>
+            </div>
+
+            <script>
+                function openModal(id){ document.getElementById(id).style.display='block'; }
+                function closeModal(id){ document.getElementById(id).style.display='none'; }
+
+                function openEditModal(row){
+                    document.getElementById('edit_id').value = row.id;
+                    document.getElementById('edit_date').value = row.date_added;
+                    document.getElementById('edit_design').value = row.design_mix_id;
+                    document.getElementById('edit_description').value = row.description;
+                    document.getElementById('edit_batch').value = row.batch;
+                    document.getElementById('edit_stocks_in').value = row.stocks_in ?? '';
+                    document.getElementById('edit_stocks_out').value = row.stocks_out ?? '';
+                    document.getElementById('edit_remarks').value = row.remarks;
+                    openModal('editInventoryModal');
+                }
 
 
-</body>
-</html>
+            </script>
+
+        </body>
+    </html>

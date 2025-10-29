@@ -30,7 +30,7 @@ if (!$result) {
         tr:hover { background:#f0f8ff; }
     </style>
 </head>
-<body>
+<body style="font-family: Arial; text-align: center; background-color: #BFC3AA;">
 
     <?php showHeader(); ?>
 
