@@ -12,7 +12,7 @@
     <link rel="stylesheet" href="../assets/css/style.css">
     <?php showHeader(); ?>
 </head>
-<body>
+<body style="font-family: Arial; text-align: center; background-color: #BFC3AA;">
 
     
     

@@ -89,7 +89,7 @@
             <?php showHeader(); ?>
                 <style>
                     body { font-family: Arial, sans-serif; margin-top:120px; background:#f9f9f9; color:#333; text-align: center; }
-                    table { border-collapse: collapse; width: 90%; margin: 20px auto; }
+                    table { border-collapse: collapse; width: 90%; margin: 20px auto; background: #ffffffff}
                     table th, table td { border: 1px solid #ccc; padding: 8px; text-align: left; }
                     table th { background:#0b63c4; color:#fff; }
                     button { padding: 5px 10px; margin: 2px; cursor: pointer; border-radius: 5px; }
@@ -100,7 +100,7 @@
                     .modal-content button { margin-right:5px; }
                 </style>
         </head>
-        <body>
+<body style="font-family: Arial; text-align: center; background-color: #BFC3AA;">
 
             <h2 style="color: #000;">Ready-Mix Inventory</h2>
 

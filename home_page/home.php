@@ -76,6 +76,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             text-align: justify;
         }
     </style>
+
+
+
 </head>
 <body style="margin:0; font-family: Arial, sans-serif;">
 
@@ -97,6 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <button class="sidebar-button" onclick="window.location.href='/Inventory-Accounts-System-v1/pages/accounts_management.php'">Accounts Management</button>
         <button class="sidebar-button" onclick="window.location.href='/Inventory-Accounts-System-v1/pages/reports_management.php'">Reports</button>
         <button class="sidebar-button" onclick="window.location.href='/Inventory-Accounts-System-v1/pages/settings_management.php'">Settings</button>
+        <button class="sidebar-button" onclick="window.location.href='/Inventory-Accounts-System-v1/index.html'">Test Area</button>
         <button class="sidebar-button" style="margin-top:90px; color:black; background-color:#FF3F1A;"
             onclick="if(confirm('Did you save all changes?')){if(confirm('Are you sure you want to log out?')){window.location.href='/Inventory-Accounts-System-v1/pages/sorcomweb_login.php';}}">
             Logout
