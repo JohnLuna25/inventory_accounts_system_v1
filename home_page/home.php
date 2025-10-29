@@ -1,7 +1,9 @@
 <?php
 session_start();
 require_once '../FunctionAndDB/Web_Functions.php';
-require_once 'announcement_list.php'; // handles add/delete logic
+require_once('announcement_list.php');
+
+
 
 
 
@@ -87,20 +89,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <!-- Sidebar -->
-    <div id="sidebar">
-        <ul>
-            <p style="font-size: 20px; font-weight: bold; color: darkblue; text-align: center; margin-top: -180px; margin-bottom: 50px;">Welcome, User!</p>
-            <button class="sidebar-button" onclick="window.location.href='concrete_design_list.php'">Concrete Design List</button>
-            <button class="sidebar-button" onclick="window.location.href='inventory_management.php'">Inventory Management</button>
-            <button class="sidebar-button" onclick="window.location.href='accounts_management.php'">Accounts Management</button>
-            <button class="sidebar-button" onclick="window.location.href='reports_management.php'">Reports</button>
-            <button class="sidebar-button" onclick="window.location.href='settings_management.php'">Settings</button>
-            <button class="sidebar-button" style="margin-top:90px; color:black; background-color:#FF3F1A;"
-                onclick="if(confirm('Did you save all changes?')){if(confirm('Are you sure you want to log out?')){window.location.href='sorcomweb_login.php';}}">
-                Logout
-            </button>
-        </ul>
-    </div>
+<div id="sidebar">
+    <ul>
+        <p style="font-size: 20px; font-weight: bold; color: darkblue; text-align: center; margin-top: -180px; margin-bottom: 50px;">Welcome, User!</p>
+        <button class="sidebar-button" onclick="window.location.href='/Inventory-Accounts-System-v1/concrete_design_page/concrete_design_list.php'">Concrete Design List</button>
+        <button class="sidebar-button" onclick="window.location.href='/Inventory-Accounts-System-v1/pages/inventory_management.php'">Inventory Management</button>
+        <button class="sidebar-button" onclick="window.location.href='/Inventory-Accounts-System-v1/pages/accounts_management.php'">Accounts Management</button>
+        <button class="sidebar-button" onclick="window.location.href='/Inventory-Accounts-System-v1/pages/reports_management.php'">Reports</button>
+        <button class="sidebar-button" onclick="window.location.href='/Inventory-Accounts-System-v1/pages/settings_management.php'">Settings</button>
+        <button class="sidebar-button" style="margin-top:90px; color:black; background-color:#FF3F1A;"
+            onclick="if(confirm('Did you save all changes?')){if(confirm('Are you sure you want to log out?')){window.location.href='/Inventory-Accounts-System-v1/pages/sorcomweb_login.php';}}">
+            Logout
+        </button>
+    </ul>
+</div>
+
 
     <!-- Toggle Button -->
     <button id="toggle-btn" style="position: fixed; top: 125px; left: -25px; transform: translateX(50%); border: none; background: none; color: darkblue; font-size: 24px; cursor: pointer;">➡️</button>

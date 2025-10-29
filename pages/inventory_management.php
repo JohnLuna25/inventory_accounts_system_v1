@@ -127,7 +127,8 @@
             <thead>
             <tr>
             <th>ID</th><th>Date</th><th>Design Mix ID</th><th>Description</th><th>Batch</th>
-            <th>Stocks In</th><th>Stocks Out</th><th>Remarks</th><th>Edit</th><th>Delete</th>
+            <th>Stocks In</th><th>Stocks Out</th><th>Remarks</th><th>Actions</th>
+
             </tr></thead><tbody>';
 
             while ($row = $result->fetch_assoc()) {
@@ -141,14 +142,21 @@
                 echo "<td>{$row['stocks_in']}</td>";
                 echo "<td>{$row['stocks_out']}</td>";
                 echo "<td>{$row['remarks']}</td>";
-                echo "<td><button onclick='openEditModal($row_json)'>Edit</button></td>";
-                echo "<td>
-                    <form method='POST' style='display:inline;' onsubmit='return confirm(\"Are you sure you want to delete this?\")'>
-                    <input type='hidden' name='id' value='{$row['id']}'>
-                    <input type='hidden' name='action' value='delete'>
-                    <button type='submit' style='background:#f44336;color:white;border:none;'>Delete</button>
-                    </form>
-                </td>";
+                echo "<td style='display: flex; gap: 5px; justify-content: center;'>
+                        <button onclick='openEditModal($row_json)' 
+                                style='background:#4CAF50; color:white; border:none; padding:5px 10px; border-radius:3px; cursor:pointer;'>
+                            Edit
+                        </button>
+                        <form method='POST' style='margin:0;' onsubmit='return confirm(\"Are you sure you want to delete this?\")'>
+                            <input type='hidden' name='id' value='{$row['id']}'>
+                            <input type='hidden' name='action' value='delete'>
+                            <button type='submit' 
+                                    style='background:#f44336; color:white; border:none; padding:5px 10px; border-radius:3px; cursor:pointer;'>
+                                Delete
+                            </button>
+                        </form>
+                    </td>";
+
                 echo '</tr>';
             }
             echo '</tbody></table>';
