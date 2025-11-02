@@ -1,18 +1,15 @@
-
-
 body {
   font-family: Arial, sans-serif;
-  background: linear-gradient(to right, #BFC3AA, #A5A391);
+  background: linear-gradient(to right, #bfc3aa, #a5a391);
   margin: 0;
   padding: 0;
   text-align: center;
 }
 
-
 .sidebar-button {
   font-family: Arial, sans-serif;
   font-size: 17px;
-  font-weight:bold;
+  font-weight: bold;
   color: blue;
   background: none;
   border: none;
@@ -24,4 +21,3 @@ body {
 .sidebar-button:hover {
   color: navy;
 }
-

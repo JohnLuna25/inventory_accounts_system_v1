@@ -3,11 +3,12 @@ session_start();
 require_once '../FunctionAndDB/db_connect.php';
 require_once '../FunctionAndDB/Web_Functions.php';
 
-$invalidError = "";
+$invalidError = ""; // default empty
 
-// Show error if redirected with ?error=1
-if (isset($_GET['error'])) {
-    $invalidError = "Invalid username or password.";
+// If there’s a login error in session, copy it and then clear it
+if (isset($_SESSION['login_error'])) {
+    $invalidError = $_SESSION['login_error'];
+    unset($_SESSION['login_error']);
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -21,17 +22,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $stmt->execute();
     $result = $stmt->get_result();
 
-    if ($result->num_rows === 1) {
-        $_SESSION['username'] = $username;
+    if ($result->num_rows > 0) {
+        // Login success
+        $user = $result->fetch_assoc();
+
+        // Store session info
+        $_SESSION['username'] = $user['employee_number'];
+        $_SESSION['employee_name'] = $user['employee_name']; // for sidebar "Welcome, John"
+
+        // Redirect to homepage
         header("Location: /Inventory-Accounts-System-v1/home_page/home.php");
         exit();
     } else {
-        // Redirect back with error to prevent persistent POST
-        header("Location: " . $_SERVER['PHP_SELF'] . "?error=1");
+        // Login failed
+        $_SESSION['login_error'] = "Invalid username or password.";
+        header("Location: " . $_SERVER['PHP_SELF']);
         exit();
     }
+
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
@@ -61,43 +72,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 style="font-size:30px; margin-top:10px; color:yellow; text-align:left; white-space:nowrap;"></h2>
         </div>
 
-
-
         <!-- Login FORM on the RIGHT -->
         <div style="flex:1; display:flex; justify-content:flex-end; align-items:center; padding-right:50px;">
             <form action="" method="post"
-                style="background-color:lightgray; padding:50px; border-radius:40px; width:340px; box-sizing:border-box; text-align:left;">
+                style="background-color:lightgray; padding:55px; border-radius:40px; width:340px; box-sizing:border-box; text-align:left;">
 
-                <!-- Error message box -->
-                <div id="errorMessage"
-                    style="height:20px; margin-bottom:10px; color:red; font-size:14px; text-align:center;">
-                    <?php echo $invalidError; ?>
-                </div>
+                <?php if (!empty($invalidError)): ?>
+                    <div id="errorMessage"
+                        style="height:20px; margin-bottom:10px; color:red; font-size:14px; text-align:center;">
+                        <?php echo htmlspecialchars($invalidError); ?>
+                    </div>
+                <?php endif; ?>
 
                 <label for="username">Username:</label><br><br>
-                <input type="text" id="username" name="username" required
+                <input type="text" id="username" name="username" required autocomplete="off"
                     style="width:100%; padding:10px; margin-bottom:20px; border-radius:5px; border:1px solid #ccc;"><br>
 
                 <label for="password">Password:</label><br><br>
-                <input type="password" id="password" name="password" required
+                <input type="password" id="password" name="password" required autocomplete="new-password"
                     style="width:100%; padding:10px; margin-bottom:20px; border-radius:5px; border:1px solid #ccc;"><br>
 
-                <input type="submit" value="Log In"
-                    style="width:100%; padding:10px; background-color:blue; color:yellow; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">
+                <div style="display: flex; gap: 10px;">
+                    <input type="submit" value="Log In" autocomplete="off"
+                        style="flex: 1; padding:10px; background-color:blue; color:yellow; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">
+
+                    <input type="button" value="Create Account" autocomplete="off"
+                        onclick="window.location.href='/Inventory-Accounts-System-v1/login_page/create_account.php';"
+                        style="flex: 1; padding:10px; background-color:blue; color:yellow; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">
+                </div>
+
+
             </form>
         </div>
 
     </fieldset>
 
     <script>
-        window.onload = function () {
+        document.addEventListener("DOMContentLoaded", function () {
             var errorDiv = document.getElementById('errorMessage');
-            if (errorDiv.textContent.trim() !== "") {
-                setTimeout(function () {
-                    errorDiv.style.display = "none";
-                }, 5000); // 5 seconds
+            if (errorDiv && errorDiv.innerText.trim() !== "") {
+                setTimeout(() => {
+                    errorDiv.style.transition = "opacity 0.5s ease";
+                    errorDiv.style.opacity = "0";
+                    setTimeout(() => errorDiv.style.display = "none", 500);
+                }, 5000);
             }
-        };
+        });
     </script>
 
 </body>

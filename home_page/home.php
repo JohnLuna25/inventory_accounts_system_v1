@@ -13,6 +13,11 @@ if (!isset($_SESSION['announcements'])) {
     $_SESSION['announcements'] = [];
 }
 
+//=====================================================================
+// Get employee name from session (default to "User" if not logged in)
+//=====================================================================
+$employee_name = isset($_SESSION['employee_name']) ? htmlspecialchars($_SESSION['employee_name']) : 'User';
+
 // ==========================
 // Handle Form Submissions
 // ==========================
@@ -71,9 +76,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         .sidebar-button {
             margin: 5px 0;
+            background-color: cornflowerblue;
+            border-radius: 40px;
             padding: 10px;
             font-size: 16px;
             cursor: pointer;
+        }
+
+        .sidebar-button:hover {
+            background-color: cadetblue;
+            color: white;
         }
 
         /* ==========================
@@ -98,6 +110,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             font-weight: bold;
             margin-bottom: 10px;
             text-align: justify;
+        }
+
+        #logout-button {
+            margin-top: 75px;
+            margin-bottom: 20px;
+            /* if needed */
+            color: black;
+            background-color: #dd2500ff;
+            border-radius: 20px;
+            border: none;
+            /* optional */
+            padding: 10px 20px;
+            /* optional */
+            cursor: pointer;
+        }
+
+        #logout-button:hover {
+            background-color: #FF3F1A;
+            color: white;
+        }
+
+        #welcome-user {
+            font-size: 17px;
+            font-weight: bold;
+            color: darkblue;
+            text-align: center;
+            margin-top: -180px;
+            margin-bottom: 30px;
+            border-radius: 20px;
+            padding: 10px;
+            background-color: cornflowerblue;
         }
     </style>
 </head>
@@ -134,26 +177,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     ========================== -->
     <div id="sidebar">
         <ul>
-            <p
-                style="font-size: 20px; font-weight: bold; color: darkblue; text-align: center; margin-top: -180px; margin-bottom: 50px;">
-                Welcome, User!</p>
+            <p id="welcome-user">
+                Welcome, <?php echo $employee_name; ?>!
+            </p>
+
             <button class="sidebar-button"
-                onclick="window.location.href='/Inventory-Accounts-System-v1/concrete_design_page/concrete_design_list.php'">Concrete
-                Design List</button>
+                onclick="window.location.href='/Inventory-Accounts-System-v1/concrete_design_page/concrete_design_list.php'">
+                Concrete Design List
+            </button>
+
             <button class="sidebar-button"
-                onclick="window.location.href='/Inventory-Accounts-System-v1/pages/inventory_management.php'">Inventory
-                Management</button>
+                onclick="window.location.href='/Inventory-Accounts-System-v1/pages/inventory_management.php'">
+                Inventory Management
+            </button>
+
             <button class="sidebar-button"
-                onclick="window.location.href='/Inventory-Accounts-System-v1/pages/accounts_management.php'">Accounts
-                Management</button>
+                onclick="window.location.href='/Inventory-Accounts-System-v1/pages/accounts_management.php'">
+                Accounts Management
+            </button>
+
             <button class="sidebar-button"
-                onclick="window.location.href='/Inventory-Accounts-System-v1/pages/reports_management.php'">Reports</button>
+                onclick="window.location.href='/Inventory-Accounts-System-v1/pages/reports_management.php'">
+                Reports
+            </button>
+
             <button class="sidebar-button"
-                onclick="window.location.href='/Inventory-Accounts-System-v1/pages/settings_management.php'">Settings</button>
-            <button class="sidebar-button"
-                onclick="window.location.href='/Inventory-Accounts-System-v1/index.html'">Test Area</button>
-            <button class="sidebar-button" style="margin-top:90px; color:black; background-color:#FF3F1A;"
-                onclick="if(confirm('Did you save all changes?')){if(confirm('Are you sure you want to log out?')){window.location.href='/Inventory-Accounts-System-v1/pages/sorcomweb_login.php';}}">
+                onclick="window.location.href='/Inventory-Accounts-System-v1/pages/settings_management.php'">
+                Settings
+            </button>
+
+            <button class="sidebar-button" onclick="window.location.href='/Inventory-Accounts-System-v1/index.html'">
+                Test Area
+            </button>
+
+            <button id="logout-button" class="sidebar-button" style="margin-top: 55px"
+                onclick="if(confirm('Did you save all changes?')){if(confirm('Are you sure you want to log out?')){window.location.href='/Inventory-Accounts-System-v1/login_page/web_login.php';}};">
                 Logout
             </button>
         </ul>

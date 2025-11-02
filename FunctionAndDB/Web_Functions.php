@@ -21,6 +21,7 @@ function showHeader()
         left: 0;
         z-index: 1000;
         box-sizing: border-box;
+        height: 60px;
     ">
         <!-- Left Links -->
         <div style="display: flex; align-items: center; gap: 8px;">
@@ -35,7 +36,12 @@ function showHeader()
         </div>
 
         <!-- Center Title -->
-        <div style="text-align: center;">
+        <div style="
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+        ">
             <h1 style="font-family: Arial, sans-serif; font-size: 18px; font-weight: bold; color: yellow; margin: 0;">
                 SORCOM READY-MIX CONCRETE
             </h1>
@@ -44,10 +50,15 @@ function showHeader()
             </p>
         </div>
 
+
+
         <!-- Right Date -->
         <div style="font-family: Arial, sans-serif; font-weight: 600; font-size: 14px; color: yellow;">
-            ' . date("M d, Y - H:i") . '
+            ' . date("M d, Y - h:i") . '
         </div>
+    
+    <style>background-color: #BFC3AA;</style>
+
     </div>
     ';
 }
