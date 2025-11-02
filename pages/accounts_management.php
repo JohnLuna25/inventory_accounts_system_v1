@@ -12,9 +12,10 @@
 
 <body style="font-family: Arial; text-align: center; background-color: #BFC3AA;">
 
-
-
     <h2 style="margin-top: 80px;">Statement of Accounts</h2>
+
+
+
 
 </body>
 

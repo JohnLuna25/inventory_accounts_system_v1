@@ -3,57 +3,131 @@
 include __DIR__ . '/../FunctionAndDB/db_connect.php';
 include __DIR__ . '/../FunctionAndDB/Web_Functions.php';
 
-// Ensure connection is valid
 if (!isset($conn)) {
     die("Database connection not established. Check db_connect.php.");
 }
 ?>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Concrete Design List</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <style>
-        body { font-family: Arial, sans-serif; padding: 20px; background-color: #BFC3AA; margin:0; }
-        table { width: 90%; margin: 20px auto; border-collapse: collapse; background: #fff; text-align: center; }
-        th, td { border: 1px solid #ccc; padding: 8px; font-size: 14px; }
-        th { background: #0b63c4; color: #fff; }
-        tr:hover { background: #f0f8ff; }
-        button { cursor: pointer; }
-        #concreteModal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.5); justify-content:center; align-items:center; }
-        #concreteModalContent { background:#fff; width:80%; max-width:800px; padding:20px; border-radius:8px; position:relative; }
-        #concreteModalContent span { position:absolute; top:10px; right:20px; cursor:pointer; font-size:20px; }
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #BFC3AA;
+            margin: 0;
+        }
+
+        table {
+            width: 95%;
+            max-width: 1200px;
+            margin: 30px auto;
+            border-collapse: collapse;
+            background: #fff;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        th {
+            background: #0b63c4;
+            color: #fff;
+        }
+
+        tr:hover {
+            background: #014185ff;
+            color: white;
+        }
+
+        a.button {
+            padding: 5px 10px;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+
+        a.view {
+            background: #4CAF50;
+            margin-right: 5px;
+        }
+
+        a.edit {
+            background: #2196F3;
+        }
+
+        /* Dropbar style */
+        .dropbar {
+            display: none;
+            background-color: #0b63c4;
+            color: yellow;
+            padding: 10px;
+            text-align: left;
+            border-radius: 0 0 8px 8px;
+        }
+
+        .dropbar table {
+            width: 100%;
+            background: #fff;
+            border-collapse: collapse;
+            color: black;
+        }
+
+        .dropbar td {
+            border: 1px solid #ccc;
+            padding: 8px;
+        }
+
+        .dropbar td:first-child {
+            font-weight: bold;
+            text-align: left;
+        }
+
+        .dropbar td:last-child {
+            text-align: center;
+        }
     </style>
 </head>
+
 <body>
 
-<?php showHeader(); ?>
+    <?php showHeader(); ?>
 
-<h2 style="font-size: 24px; text-align: center; margin-top: 65px;">Concrete Design List</h2>
+    <h2 style="font-size: 24px; text-align: center; margin-top: 65px;">Concrete Design List</h2>
 
-<table>
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>PSI</th>
-            <th>Curration Type</th>
-            <th>Type</th>
-            <th>Cubic Meter</th>
-            <th>Slump</th>
-            <th>W/C Ratio</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php
-        $sql = "SELECT * FROM concrete_designs ORDER BY date_created DESC";
-        $result = $conn->query($sql);
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>PSI</th>
+                <th>Curration Type</th>
+                <th>Type</th>
+                <th>Cubic Meter</th>
+                <th>Slump</th>
+                <th>W/C Ratio</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            $sql = "SELECT * FROM concrete_designs ORDER BY date_created DESC";
+            $result = $conn->query($sql);
 
-        if ($result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                echo "<tr>
-                        <td>{$row['id']}</td>
+            if ($result->num_rows > 0) {
+                while ($row = $result->fetch_assoc()) {
+                    $id = $row['id'];
+                    echo "
+                    <tr>
+                        <td>{$id}</td>
                         <td>{$row['concrete_psi']}</td>
                         <td>{$row['curration_type']}</td>
                         <td>{$row['concrete_type']}</td>
@@ -61,54 +135,84 @@ if (!isset($conn)) {
                         <td>{$row['concrete_slump']}</td>
                         <td>{$row['wc_ratio']}</td>
                         <td>
-                            <button type='button' onclick='showConcreteDetails({$row['id']})' 
-                                style='padding:5px 10px; background:#4CAF50; color:white; border:none; border-radius:4px; margin-right:5px;'>
-                                View
-                            </button>
-                            <a href='edit_design.php?id={$row['id']}' 
-                                style='padding:5px 10px; background:#2196F3; color:white; text-decoration:none; border-radius:4px;'>
-                                Edit
-                            </a>
+                            <a href='javascript:void(0)' class='button view' onclick='toggleDropbar($id)'>View</a>
+                            <a class='button edit' href='edit_design.php?id={$id}'>Edit</a>
                         </td>
-                      </tr>";
+                    </tr>
+
+                    <tr id='dropbar-{$id}' class='dropbar'>
+                        <td colspan='8'>
+                            <table>
+                                <tr><td>PSI</td><td>{$row['concrete_psi']}</td></tr>
+                                <tr><td>Curration Type</td><td>{$row['curration_type']}</td></tr>
+                                <tr><td>Concrete Type</td><td>{$row['concrete_type']}</td></tr>
+                                <tr><td>Cubic Meter</td><td>{$row['cubic_meter']}</td></tr>
+                                <tr><td>Slump</td><td>{$row['concrete_slump']}</td></tr>
+                                <tr><td>W/C Ratio</td><td>{$row['wc_ratio']}</td></tr>
+
+                                <tr>
+                                    <td colspan='2'>
+                                        <strong>Volume Batch:</strong>
+                                        <table style='width:100%; margin-top:5px; border-collapse: collapse;'>
+                                            <tr style='background:#f2f2f2;'>
+                                                <th>Cement</th>
+                                                <th>Fly ash</th>
+                                                <th>Water</th>
+                                                <th>Admix</th>
+                                                <th>Air</th>
+                                                <th>G-1</th>
+                                                <th>3/4\"</th>
+                                                <th>3/8\"</th>
+                                                <th>Sand</th>
+                                            </tr>
+                                            <tr>
+                                                <td>13.00 kgs</td>
+                                                <td>—</td>
+                                                <td>8.90 ltr</td>
+                                                <td>0.13 ltr</td>
+                                                <td>—</td>
+                                                <td>—</td>
+                                                <td>47.75 kgs</td>
+                                                <td>—</td>
+                                                <td>46.40 kgs</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    ";
+                }
+            } else {
+                echo "<tr><td colspan='8'>No concrete designs found.</td></tr>";
             }
-        } else {
-            echo "<tr><td colspan='8'>No concrete designs found.</td></tr>";
+
+            $conn->close();
+            ?>
+        </tbody>
+    </table>
+
+    <script>
+        function toggleDropbar(id) {
+            // Close all open dropbars first
+            document.querySelectorAll('.dropbar').forEach(bar => {
+                if (bar.id !== 'dropbar-' + id) bar.style.display = 'none';
+            });
+
+            // Toggle the selected one
+            const dropbar = document.getElementById('dropbar-' + id);
+            dropbar.style.display = (dropbar.style.display === 'table-row') ? 'none' : 'table-row';
         }
 
-        $conn->close();
-        ?>
-    </tbody>
-</table>
-
-<!-- Modal for viewing details -->
-<div id="concreteModal">
-    <div id="concreteModalContent">
-        <span onclick="closeModal()">✖</span>
-        <div id="concreteDetails"></div>
-    </div>
-</div>
-
-<script>
-// Show modal and fetch details
-function showConcreteDetails(id) {
-    fetch('view_design_ajax.php?id=' + id)
-        .then(response => response.text())
-        .then(data => {
-            document.getElementById('concreteDetails').innerHTML = data;
-            document.getElementById('concreteModal').style.display = 'flex';
-        })
-        .catch(err => {
-            alert('Error fetching design details.');
-            console.error(err);
+        // Close dropbars when clicking outside
+        window.addEventListener('click', function (e) {
+            if (!e.target.classList.contains('view')) {
+                document.querySelectorAll('.dropbar').forEach(bar => bar.style.display = 'none');
+            }
         });
-}
-
-// Close modal
-function closeModal() {
-    document.getElementById('concreteModal').style.display = 'none';
-}
-</script>
+    </script>
 
 </body>
+
 </html>
