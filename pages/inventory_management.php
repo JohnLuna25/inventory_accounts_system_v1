@@ -92,9 +92,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin-top: 120px;
-            background: #f9f9f9;
-            color: #333;
+            padding: 20px;
+            background: #BFC3AA;
+            color: #000;
             text-align: center;
         }
 
@@ -161,13 +161,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </style>
 </head>
 
-<body style="font-family: Arial; text-align: center; background-color: #BFC3AA;">
+<body style="font-family: Arial; background-color: #BFC3AA;">
 
-    <h2 style="color: #000;">Ready-Mix Inventory</h2>
+    <h2 style="font-size: 24px; text-align: center; margin-top: 65px; color: black;">Ready-Mix Inventory</h2>
 
     <div style="text-align:left; margin-left: 5%;">
-        <button onclick="openModal('addInventoryModal')" style="background: #211de6ff; color: white;">Add Item</button>
-        <button onclick="location.href='mixture_inventory.php'" style="background: #211de6ff; color: white;">Open
+        <button onclick="openModal('addInventoryModal')"
+            style="text-align: left; border: 1px solid black; border-radius: 20px; background-color: #4441e7ff; color: white; padding: 10px">Add
+            Item</button>
+        <button onclick="location.href='mixture_inventory.php'"
+            style="text-align: left; border: 1px solid black; border-radius: 20px; background-color: #4441e7ff; color: white; padding: 10px">Open
             Mixture Inventory</button>
     </div>
 

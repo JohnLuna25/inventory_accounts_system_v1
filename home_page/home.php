@@ -192,7 +192,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </button>
 
             <button class="sidebar-button"
-                onclick="window.location.href='/Inventory-Accounts-System-v1/pages/accounts_management.php'">
+                onclick="window.location.href='/Inventory-Accounts-System-v1/statement_account_page/accounts_management.php'">
                 Accounts Management
             </button>
 

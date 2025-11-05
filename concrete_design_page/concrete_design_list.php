@@ -14,13 +14,16 @@ if (!isset($conn)) {
     <meta charset="UTF-8">
     <title>Concrete Design List</title>
     <link rel="stylesheet" href="../assets/css/style.css">
+    <?php showHeader(); ?>
     <style>
         body {
             font-family: Arial, sans-serif;
             padding: 20px;
-            background-color: #BFC3AA;
-            margin: 0;
+            background: #BFC3AA;
+            color: #000;
+            text-align: center;
         }
+
 
         table {
             width: 95%;
@@ -99,8 +102,6 @@ if (!isset($conn)) {
 </head>
 
 <body>
-
-    <?php showHeader(); ?>
 
     <h2 style="font-size: 24px; text-align: center; margin-top: 65px;">Concrete Design List</h2>
 

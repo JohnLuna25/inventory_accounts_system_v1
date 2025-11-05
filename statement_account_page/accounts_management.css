@@ -1,0 +1,144 @@
+/* General Body Styling */
+body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background-color: #bfc3aa;
+  color: #000;
+  text-align: center;
+  margin: 0;
+}
+
+/* Page Heading */
+h2 {
+  margin-top: 65px;
+  margin-bottom: 20px;
+  font-size: 24px;
+}
+
+/* Table Styling */
+table {
+  border-collapse: collapse;
+  width: 90%;
+  margin: 20px auto; /* Center table */
+  background-color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  font-size: 13px;
+}
+
+/* Table Header */
+table thead {
+  background-color: #0b63c4;
+  color: #fff;
+}
+
+table th,
+table td {
+  border: 1px solid #000;
+  padding: 10px 15px;
+  text-align: center;
+  font-size: 13px;
+}
+
+table th.actions,
+table td.actions {
+  min-width: 160px;
+}
+
+/* Zebra Stripes */
+table tbody tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+/* Hover Effect */
+table tbody tr:hover {
+  background-color: #e0e0e0;
+}
+
+/* "No pending orders" row */
+.no-orders {
+  text-align: center;
+  font-style: italic;
+  color: #555;
+  padding: 20px 0;
+}
+
+/* Responsive Table */
+@media screen and (max-width: 768px) {
+  table {
+    width: 100%;
+  }
+
+  table th,
+  table td {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+}
+
+/* Buttons Styling */
+.done_btn,
+.edit-btn,
+.delete-btn {
+  padding: 4px 8px;
+  margin: 0 2px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 13px;
+  border: none;
+  transition: 0.3s ease;
+}
+
+/* Individual Button Colors */
+.done_btn {
+  background-color: #4caf50;
+  color: #fff;
+}
+
+.done_btn:hover {
+  background-color: #45a049;
+}
+
+.edit-btn {
+  background-color: #ff9800;
+  color: #fff;
+}
+
+.edit-btn:hover {
+  background-color: #e68a00;
+}
+
+.delete-btn {
+  background-color: #f44336;
+  color: #fff;
+}
+
+.delete-btn:hover {
+  background-color: #da190b;
+}
+
+/* Success & Error Messages */
+.success-msg,
+.error-msg {
+  width: 90%;
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-size: 14px;
+  opacity: 1;
+  transition: opacity 1s ease-out;
+  text-align: left;
+}
+
+.success-msg {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.error-msg {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
