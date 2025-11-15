@@ -26,7 +26,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $user = $result->fetch_assoc();
         $_SESSION['username'] = $user['employee_number'];
         $_SESSION['employee_name'] = $user['employee_name'];
-        header("Location: /Inventory-Accounts-System-v1/home_page/home.php");
+        header("Location: /Inventory-Accounts-System-v1/pages/home_page/home.php");
         exit();
     } else {
         // Login failed

@@ -1,21 +1,27 @@
 <?php
-// Enable error reporting
+// Enable error reporting for debugging
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-include __DIR__ . '/../FunctionAndDB/db_connect.php';
-include __DIR__ . '/../FunctionAndDB/Web_Functions.php';
+// Include required files
+include __DIR__ . '/../../FunctionAndDB/db_connect.php';
+include __DIR__ . '/../../FunctionAndDB/Web_Functions.php';
 
-if (!isset($conn))
+// Check DB connection
+if (!isset($conn)) {
     die("Database connection not established.");
-if (!isset($_GET['id']))
+}
+
+// Check for design ID
+if (!isset($_GET['id'])) {
     die("No concrete design selected.");
+}
 
 $design_id = intval($_GET['id']); // sanitize input
 
 // Handle form submission
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Main design fields
     $psi = $_POST['concrete_psi'];
     $curration = $_POST['curration_type'];
@@ -24,7 +30,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $slump = $_POST['concrete_slump'];
     $wc = $_POST['wc_ratio'];
 
-    // Volume batch fields, cast to float and default to 0
+    // Volume batch fields, cast to float
     $cement = floatval($_POST['cement'] ?? 0);
     $fly_ash = floatval($_POST['fly_ash'] ?? 0);
     $sand = floatval($_POST['sand'] ?? 0);
@@ -36,34 +42,32 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $air = floatval($_POST['air'] ?? 0);
     $others = floatval($_POST['others'] ?? 0);
 
-    // Auto-calculate total safely
     $total = $cement + $fly_ash + $sand + $three_eighth + $three_quarter + $g1 + $admix + $water + $air + $others;
-
 
     // Update main design
     $update_design_sql = "UPDATE concrete_designs SET
-        concrete_psi='$psi',
-        curration_type='$curration',
-        concrete_type='$type',
-        cubic_meter='$cubic',
-        concrete_slump='$slump',
-        wc_ratio='$wc'
-        WHERE id=$design_id";
+        concrete_psi = '$psi',
+        curration_type = '$curration',
+        concrete_type = '$type',
+        cubic_meter = '$cubic',
+        concrete_slump = '$slump',
+        wc_ratio = '$wc'
+        WHERE id = $design_id";
 
     // Update volume batch
     $update_batch_sql = "UPDATE concrete_volume_batch SET
-        cement='$cement',
-        fly_ash='$fly_ash',
-        sand='$sand',
-        three_eighth='$three_eighth',
-        three_quarter='$three_quarter',
-        g1='$g1',
-        admix='$admix',
-        water='$water',
-        air='$air',
-        others='$others',
-        total='$total'
-        WHERE design_id=$design_id";
+        cement = '$cement',
+        fly_ash = '$fly_ash',
+        sand = '$sand',
+        three_eighth = '$three_eighth',
+        three_quarter = '$three_quarter',
+        g1 = '$g1',
+        admix = '$admix',
+        water = '$water',
+        air = '$air',
+        others = '$others',
+        total = '$total'
+        WHERE design_id = $design_id";
 
     if ($conn->query($update_design_sql) && $conn->query($update_batch_sql)) {
         echo "<script>alert('Design updated successfully!');window.location.href='concrete_design_list.php';</script>";
@@ -74,14 +78,15 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 }
 
 // Fetch main design
-$design_result = $conn->query("SELECT * FROM concrete_designs WHERE id=$design_id");
-if (!$design_result || $design_result->num_rows == 0)
+$design_result = $conn->query("SELECT * FROM concrete_designs WHERE id = $design_id");
+if (!$design_result || $design_result->num_rows == 0) {
     die("Concrete design not found.");
+}
 $design = $design_result->fetch_assoc();
 
 // Fetch volume batch
-$batch_result = $conn->query("SELECT * FROM concrete_volume_batch WHERE design_id=$design_id");
-$batch = $batch_result->fetch_assoc() ?? []; // fallback empty array if no batch yet
+$batch_result = $conn->query("SELECT * FROM concrete_volume_batch WHERE design_id = $design_id");
+$batch = $batch_result->fetch_assoc() ?? [];
 
 $conn->close();
 ?>
@@ -105,7 +110,7 @@ $conn->close();
         }
 
         form {
-            max-width: 600px;
+            max-width: 700px;
             margin: 20px auto;
             background: #f5f5f5;
             padding: 20px;
@@ -127,6 +132,7 @@ $conn->close();
             width: 100%;
             margin: 0 auto;
             text-align: center;
+            border-collapse: collapse;
         }
 
         td {
@@ -143,7 +149,7 @@ $conn->close();
 
         .buttons {
             text-align: center;
-            margin-top: 10px;
+            margin-top: 15px;
         }
 
         .buttons button,
@@ -154,6 +160,7 @@ $conn->close();
             color: white;
             border: none;
             cursor: pointer;
+            margin: 0 5px;
         }
 
         .save {
@@ -162,7 +169,6 @@ $conn->close();
 
         .back {
             background: #2196F3;
-            margin-left: 10px;
         }
     </style>
 </head>
@@ -170,7 +176,7 @@ $conn->close();
 <body>
     <?php showHeader(); ?>
 
-    <h2>Concrete Design</h2>
+    <h2>Edit Concrete Design</h2>
 
     <form method="POST">
         <!-- Main Design Section -->
@@ -179,33 +185,33 @@ $conn->close();
             <table>
                 <tr>
                     <td>PSI</td>
-                    <td><input type="text" name="concrete_psi" value="<?php echo $design['concrete_psi'] ?? ''; ?>"
+                    <td><input type="text" name="concrete_psi" value="<?= htmlspecialchars($design['concrete_psi']) ?>"
                             required></td>
                 </tr>
                 <tr>
                     <td>Curration Type</td>
-                    <td><input type="text" name="curration_type" value="<?php echo $design['curration_type'] ?? ''; ?>"
-                            required></td>
+                    <td><input type="text" name="curration_type"
+                            value="<?= htmlspecialchars($design['curration_type']) ?>" required></td>
                 </tr>
                 <tr>
                     <td>Concrete Type</td>
-                    <td><input type="text" name="concrete_type" value="<?php echo $design['concrete_type'] ?? ''; ?>"
-                            required></td>
+                    <td><input type="text" name="concrete_type"
+                            value="<?= htmlspecialchars($design['concrete_type']) ?>" required></td>
                 </tr>
                 <tr>
                     <td>Cubic Meter</td>
-                    <td><input type="text" name="cubic_meter" value="<?php echo $design['cubic_meter'] ?? ''; ?>"
+                    <td><input type="text" name="cubic_meter" value="<?= htmlspecialchars($design['cubic_meter']) ?>"
                             required></td>
                 </tr>
                 <tr>
                     <td>Slump</td>
-                    <td><input type="text" name="concrete_slump" value="<?php echo $design['concrete_slump'] ?? ''; ?>"
-                            required></td>
+                    <td><input type="text" name="concrete_slump"
+                            value="<?= htmlspecialchars($design['concrete_slump']) ?>" required></td>
                 </tr>
                 <tr>
                     <td>W/C Ratio</td>
-                    <td><input type="text" name="wc_ratio" value="<?php echo $design['wc_ratio'] ?? ''; ?>" required>
-                    </td>
+                    <td><input type="text" name="wc_ratio" value="<?= htmlspecialchars($design['wc_ratio']) ?>"
+                            required></td>
                 </tr>
             </table>
         </fieldset>
@@ -216,48 +222,50 @@ $conn->close();
             <table>
                 <tr>
                     <td>Cement</td>
-                    <td><input type="text" name="cement" value="<?php echo $batch['cement'] ?? ''; ?>"></td>
+                    <td><input type="text" name="cement" value="<?= htmlspecialchars($batch['cement'] ?? '') ?>"></td>
                 </tr>
                 <tr>
                     <td>Fly Ash</td>
-                    <td><input type="text" name="fly_ash" value="<?php echo $batch['fly_ash'] ?? ''; ?>"></td>
+                    <td><input type="text" name="fly_ash" value="<?= htmlspecialchars($batch['fly_ash'] ?? '') ?>"></td>
                 </tr>
                 <tr>
                     <td>Sand</td>
-                    <td><input type="text" name="sand" value="<?php echo $batch['sand'] ?? ''; ?>"></td>
+                    <td><input type="text" name="sand" value="<?= htmlspecialchars($batch['sand'] ?? '') ?>"></td>
                 </tr>
                 <tr>
                     <td>3/8"</td>
-                    <td><input type="text" name="three_eighth" value="<?php echo $batch['three_eighth'] ?? ''; ?>"></td>
+                    <td><input type="text" name="three_eighth"
+                            value="<?= htmlspecialchars($batch['three_eighth'] ?? '') ?>"></td>
                 </tr>
                 <tr>
                     <td>3/4"</td>
-                    <td><input type="text" name="three_quarter" value="<?php echo $batch['three_quarter'] ?? ''; ?>">
-                    </td>
+                    <td><input type="text" name="three_quarter"
+                            value="<?= htmlspecialchars($batch['three_quarter'] ?? '') ?>"></td>
                 </tr>
                 <tr>
                     <td>G-1</td>
-                    <td><input type="text" name="g1" value="<?php echo $batch['g1'] ?? ''; ?>"></td>
+                    <td><input type="text" name="g1" value="<?= htmlspecialchars($batch['g1'] ?? '') ?>"></td>
                 </tr>
                 <tr>
                     <td>Admix</td>
-                    <td><input type="text" name="admix" value="<?php echo $batch['admix'] ?? ''; ?>"></td>
+                    <td><input type="text" name="admix" value="<?= htmlspecialchars($batch['admix'] ?? '') ?>"></td>
                 </tr>
                 <tr>
                     <td>Water</td>
-                    <td><input type="text" name="water" value="<?php echo $batch['water'] ?? ''; ?>"></td>
+                    <td><input type="text" name="water" value="<?= htmlspecialchars($batch['water'] ?? '') ?>"></td>
                 </tr>
                 <tr>
                     <td>Air</td>
-                    <td><input type="text" name="air" value="<?php echo $batch['air'] ?? ''; ?>"></td>
+                    <td><input type="text" name="air" value="<?= htmlspecialchars($batch['air'] ?? '') ?>"></td>
                 </tr>
                 <tr>
                     <td>Others</td>
-                    <td><input type="text" name="others" value="<?php echo $batch['others'] ?? ''; ?>"></td>
+                    <td><input type="text" name="others" value="<?= htmlspecialchars($batch['others'] ?? '') ?>"></td>
                 </tr>
                 <tr>
                     <td>Total</td>
-                    <td><input type="text" name="total" value="<?php echo $batch['total'] ?? ''; ?>" readonly></td>
+                    <td><input type="text" name="total" value="<?= htmlspecialchars($batch['total'] ?? '') ?>" readonly>
+                    </td>
                 </tr>
             </table>
         </fieldset>

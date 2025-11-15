@@ -1,79 +1,68 @@
 <?php
-// ==========================
-// PHP Setup & Includes
-// ==========================
+// Start a session to store user data and announcements
 session_start();
-require_once '../FunctionAndDB/Web_Functions.php';
-require_once('announcement_list.php');
 
-// ==========================
-// Initialize Announcements
-// ==========================
+// Include external PHP files with helper functions and the announcement list
+require_once __DIR__ . '/../../FunctionAndDB/Web_Functions.php';          // Web functions
+require_once __DIR__ . '/announcement_list.php';                           // Announcement list in the same folder as home.php
+
+// Initialize announcements array in session if it does not exist
 if (!isset($_SESSION['announcements'])) {
     $_SESSION['announcements'] = [];
 }
 
-//=====================================================================
-// Get employee name from session (default to "User" if not logged in)
-//=====================================================================
+// Get the logged-in employee's name from session; default to 'User' if not set
 $employee_name = isset($_SESSION['employee_name']) ? htmlspecialchars($_SESSION['employee_name']) : 'User';
 
-// ==========================
-// Handle Form Submissions
-// ==========================
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+// Handle form submissions
+if (!empty($_POST['announcement'])) {
+    array_unshift($_SESSION['announcements'], htmlspecialchars($_POST['announcement']));
+    // Redirect to refresh the announcement list
+    header("Location: /Inventory-Accounts-System-v1/pages/home_page/home.php");
+    exit();
+}
 
-    // ---- Add Announcement from main input ----
-    if (!empty($_POST['announcement'])) {
-        array_unshift($_SESSION['announcements'], htmlspecialchars($_POST['announcement']));
-        header("Location: home.php");
-        exit();
-    }
-
-    // ---- Cancel Buttons ----
-    if (isset($_POST['cancel_add']) || isset($_POST['cancel_delete'])) {
-        header("Location: home.php");
-        exit();
-    }
+// Cancel add/delete actions
+if (isset($_POST['cancel_add']) || isset($_POST['cancel_delete'])) {
+    header("Location: /Inventory-Accounts-System-v1/pages/home_page/home.php");
+    exit();
 }
 ?>
+
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <!-- ==========================
-         Head Section
-    ========================== -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SORCOM Inventory and Accounts Management System</title>
+
+    <!-- External stylesheet -->
     <link rel="stylesheet" href="../assets/css/style.css">
 
-
-
     <style>
-        /* ==========================
-           Sidebar Styles
-        ========================== */
+        /* Sidebar container styling */
         #sidebar {
             background-color: lightblue;
             padding: 0;
-            /* remove padding when collapsed */
             top: 131px;
             width: 0;
+            /* Sidebar initially hidden */
             min-height: 100vh;
             position: fixed;
             overflow: hidden;
-            /* hide anything outside */
             transition: width 0.2s, padding 0.2s;
         }
 
+        /* Sidebar list styling */
         #sidebar ul {
             display: flex;
             flex-direction: column;
             margin-top: 200px;
         }
 
+        /* Buttons inside sidebar */
         .sidebar-button {
             margin: 5px 0;
             background-color: cornflowerblue;
@@ -83,27 +72,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             cursor: pointer;
         }
 
+        /* Hover effect for sidebar buttons */
         .sidebar-button:hover {
             background-color: cadetblue;
             color: white;
         }
 
-        /* ==========================
-           Main Content Styles
-        ========================== */
+        /* Main content area transitions when sidebar opens/closes */
         #main-content {
             transition: margin-left 0.2s;
         }
 
-        /* ==========================
-           Announcement Styles
-        ========================== */
+        /* Announcement list styling */
         #announcement-bar ul {
             list-style-type: disc;
-            /* bold bullets */
             padding-left: 30px;
             margin-bottom: 30px;
-            /* space below list */
         }
 
         #announcement-bar li {
@@ -112,17 +96,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             text-align: justify;
         }
 
+        /* Logout button appearance */
         #logout-button {
             margin-top: 75px;
             margin-bottom: 20px;
-            /* if needed */
             color: black;
             background-color: #dd2500ff;
             border-radius: 20px;
             border: none;
-            /* optional */
             padding: 10px 20px;
-            /* optional */
             cursor: pointer;
         }
 
@@ -131,6 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             color: white;
         }
 
+        /* Welcome message styling in sidebar */
         #welcome-user {
             font-size: 17px;
             font-weight: bold;
@@ -146,53 +129,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 
 <body style="margin:0; font-family: Arial, sans-serif; 
-             background-image: url('../assets/images/SBP.png');
+             background-image: url('/Inventory-Accounts-System-v1/assets/images/SBP.png');
              background-size:cover; 
              background-position:center; 
              background-repeat:no-repeat; 
              height:100vh;">
 
-    <!-- ==========================
-         Header Section
-    ========================== -->
+    <!-- Header section with title, subtitle, logo, and clock -->
     <div style="background-color: blue; padding: 7px; width: 100%; position: fixed; text-align: center;">
         <h1 style="font-size: 30px; font-weight: bold; color: yellow;">SORCOM READY-MIX CONCRETE</h1>
         <p style="font-size: 20px; font-weight: 600; color: yellow;">Inventory and Accounts Management System.</p>
 
-        <!-- Logo -->
         <img src="/Inventory-Accounts-System-v1/assets/images/SRMCP.jpg" alt="SORCOM Logo"
             style="height:80px; width:auto; position:absolute; top:25px; left:45px;">
 
-        <!-- Clock -->
         <p id="clock"
             style="font-size: 18px; font-weight: 400; color: yellow; position: absolute; top: 60px; right: 30px; margin: 0;">
-            <!-- JS will fill this -->
+            <!-- JavaScript will update the clock here -->
         </p>
     </div>
 
-
-
-    <!-- ==========================
-         Sidebar Section
-    ========================== -->
+    <!-- Sidebar menu -->
     <div id="sidebar">
         <ul>
+            <!-- Display the logged-in user name -->
             <p id="welcome-user">
                 Welcome, <?php echo $employee_name; ?>!
             </p>
 
+            <!-- Navigation buttons -->
             <button class="sidebar-button"
-                onclick="window.location.href='/Inventory-Accounts-System-v1/concrete_design_page/concrete_design_list.php'">
+                onclick="window.location.href='/Inventory-Accounts-System-v1/pages/concrete_design_page/concrete_design_list.php'">
                 Concrete Design List
             </button>
 
             <button class="sidebar-button"
-                onclick="window.location.href='/Inventory-Accounts-System-v1/pages/inventory_management.php'">
+                onclick="window.location.href='/Inventory-Accounts-System-v1/pages/inventory_page/inventory_management.php'">
                 Inventory Management
             </button>
 
             <button class="sidebar-button"
-                onclick="window.location.href='/Inventory-Accounts-System-v1/statement_account_page/accounts_management.php'">
+                onclick="window.location.href='/Inventory-Accounts-System-v1/pages/statement_account_page/sap_accountsManagement.php'">
                 Accounts Management
             </button>
 
@@ -210,6 +187,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 Test Area
             </button>
 
+            <!-- Logout button with confirmation prompts -->
             <button id="logout-button" class="sidebar-button" style="margin-top: 55px"
                 onclick="if(confirm('Did you save all changes?')){if(confirm('Are you sure you want to log out?')){window.location.href='/Inventory-Accounts-System-v1/login_page/web_login.php';}};">
                 Logout
@@ -217,32 +195,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </ul>
     </div>
 
-    <!-- ==========================
-         Sidebar Toggle Button
-    ========================== -->
+    <!-- Button to toggle sidebar open/close -->
     <button id="toggle-btn"
         style="position: fixed; top: 112px; left: -25px; transform: translateX(50%); border: none; background: none; color: darkblue; font-size: 24px; cursor: pointer;">➡️</button>
 
-    <!-- ==========================
-         Main Content Section
-    ========================== -->
+    <!-- Main content area -->
     <div id="main-content" style="margin-left:0; padding: 20px;">
 
-        <!-- ==========================
-             Announcement Bar
-        ========================== -->
+        <!-- Announcement panel -->
         <div id="announcement-bar"
             style="width: 40%; margin: 50px auto; background-color: #fff; padding: 20px; border-radius: 15px; text-align: left; margin-top: 200px;">
             <h3 style="text-align:center; margin-bottom: 20px;">Announcements</h3>
 
-            <!-- Announcement List -->
+            <!-- Display the list of announcements -->
             <ul>
                 <?php foreach ($_SESSION['announcements'] as $index => $ann): ?>
                     <li><?php echo $ann; ?></li>
                 <?php endforeach; ?>
             </ul>
 
-            <!-- Add/Delete Buttons -->
+            <!-- Buttons to show add or delete announcement modals -->
             <div style="margin-top: 20px; text-align: center;">
                 <form method="post" style="display:inline-block; margin-right: 10px;">
                     <button type="submit" name="show_add_form"
@@ -255,9 +227,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         </div>
 
-        <!-- ==========================
-             Add Announcement Modal
-        ========================== -->
+        <!-- Modal for adding an announcement -->
         <?php if (isset($_POST['show_add_form'])): ?>
             <div style="position:fixed; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.5);">
                 <div style="width:50%; margin:100px auto; background-color:#fff; padding:20px; border-radius:15px;">
@@ -274,9 +244,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         <?php endif; ?>
 
-        <!-- ==========================
-             Delete Announcement Modal
-        ========================== -->
+        <!-- Modal for deleting announcements -->
         <?php if (isset($_POST['show_delete_form'])): ?>
             <div
                 style="position:fixed; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.5); overflow-x:auto;">
@@ -296,11 +264,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
         <?php endif; ?>
 
-    </div> <!-- End of Main Content -->
+    </div> <!-- End main content -->
 
-    <!-- ==========================
-         Sidebar Toggle JavaScript
-    ========================== -->
+    <!-- Sidebar toggle JavaScript -->
     <script>
         const sidebar = document.getElementById("sidebar");
         const mainContent = document.getElementById("main-content");
@@ -309,47 +275,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         toggleBtn.addEventListener("click", () => {
             if (isClose) {
-                // Open sidebar
                 sidebar.style.width = "18%";
-                sidebar.style.padding = "10px"; // restore padding when open
+                sidebar.style.padding = "10px";
                 mainContent.style.marginLeft = "18%";
-                toggleBtn.textContent = "⬅️"; // icon changes to left arrow when open
+                toggleBtn.textContent = "⬅️";
             } else {
-                // Close sidebar
                 sidebar.style.width = "0";
-                sidebar.style.padding = "0"; // remove padding when collapsed
+                sidebar.style.padding = "0";
                 mainContent.style.marginLeft = "0";
-                toggleBtn.textContent = "➡️"; // icon changes to right arrow when closed
+                toggleBtn.textContent = "➡️";
             }
             isClose = !isClose;
         });
 
-
+        // Real-time clock display
         function realClockTime() {
             const now = new Date();
-
-            // Format date as "MMM. dd, YYYY HH:mm:ss"
             const options = { month: 'short', day: '2-digit', year: 'numeric' };
             const dateStr = now.toLocaleDateString('en-US', options).replace(',', '.');
-
             let hours = now.getHours().toString().padStart(2, '0');
             let minutes = now.getMinutes().toString().padStart(2, '0');
             let seconds = now.getSeconds().toString().padStart(2, '0');
-
             document.getElementById('clock').textContent = `${dateStr} || ${hours}:${minutes}:${seconds}`;
         }
-
-        // Update every second
         setInterval(realClockTime, 1000);
-        realClockTime(); // initial call
-
-
+        realClockTime();
     </script>
 
 </body>
-<!-- ==========================
-     Footer
-========================== -->
+
 <footer style="
     background-color: blue;
     color: yellow;

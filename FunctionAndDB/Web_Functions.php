@@ -1,11 +1,4 @@
 <?php
-// ==========================================================
-// --- Web Functions ---
-// ==========================================================
-
-/**
- * Display the fixed header
- */
 function showHeader()
 {
     echo '
@@ -29,7 +22,7 @@ function showHeader()
                 <img src="/Inventory-Accounts-System-v1/assets/images/back_button.png" 
                      alt="Back" style="height: 30px; cursor: pointer;"> <!-- smaller -->
             </a>
-            <a href="/Inventory-Accounts-System-v1/home_page/home.php">
+            <a href="/Inventory-Accounts-System-v1/pages/home_page/home.php">
                 <img src="/Inventory-Accounts-System-v1/assets/images/home_button.png" 
                      alt="Home" style="height: 30px; cursor: pointer;">
             </a>
@@ -107,16 +100,19 @@ function showSidebar($username = "User")
         <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
       </div>
       <div class="offcanvas-body d-flex flex-column">
-        <button class="btn btn-primary mb-2" onclick="window.location.href=\'concrete_design_list.php\'">Concrete Design List</button>
-        <button class="btn btn-primary mb-2" onclick="window.location.href=\'inventory_management.php\'">Inventory Management</button>
-        <button class="btn btn-primary mb-2" onclick="window.location.href=\'accounts_management.php\'">Accounts Management</button>
-        <button class="btn btn-primary mb-2" onclick="window.location.href=\'reports_management.php\'">Reports</button>
-        <button class="btn btn-primary mb-2" onclick="window.location.href=\'settings_management.php\'">Settings</button>
+        <button class="btn btn-primary mb-2" onclick="window.location.href=\'../concrete_design_page/concrete_design_list.php\'">Concrete Design List</button>
+        <button class="btn btn-primary mb-2" onclick="window.location.href=\'../inventory_page/inventory_management.php\'">Inventory Management</button>
+        <button class="btn btn-primary mb-2" onclick="window.location.href=\'../statement_accounts_page/accounts_management.php\'">Accounts Management</button>
+        <button class="btn btn-primary mb-2" onclick="window.location.href=\'../reports_page/reports_management.php\'">Reports</button>
+        <button class="btn btn-primary mb-2" onclick="window.location.href=\'../settings_page/settings_management.php\'">Settings</button>
+
+
+
         <div class="mt-auto">
             <button class="btn btn-danger w-100" onclick="
                 if(confirm(\'Did you save all changes?\')) {
                     if(confirm(\'Are you sure you want to log out?\')) {
-                        window.location.href=\'sorcomweb_login.php\';
+                        window.location.href=\'web_login.php\';
                     }
                 }
             ">Logout</button>

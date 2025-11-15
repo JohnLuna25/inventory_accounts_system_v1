@@ -1,16 +1,18 @@
 <?php
-// Include required files
-include __DIR__ . '/../FunctionAndDB/db_connect.php';
-include __DIR__ . '/../FunctionAndDB/Web_Functions.php';
+// Include required files using correct paths
+include __DIR__ . '/../../FunctionAndDB/db_connect.php';
+include __DIR__ . '/../../FunctionAndDB/Web_Functions.php';
 
+// Check database connection
 if (!isset($conn)) {
     die("Database connection not established. Check db_connect.php.");
 }
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
-<?php include 'concrete_design.php' ?>
+<?php include 'cd_head.php' ?>
 
 <body>
 

@@ -1,5 +1,5 @@
 <?php
-include '../FunctionAndDB/Web_Functions.php';
+require_once __DIR__ . '/../../FunctionAndDB/Web_Functions.php';
 ?>
 
 <!DOCTYPE html>
@@ -12,6 +12,7 @@ include '../FunctionAndDB/Web_Functions.php';
     <link rel="stylesheet" href="../assets/css/style.css">
     <?php showHeader(); ?>
 </head>
+
 
 <body style="font-family: Arial; text-align: center; background-color: #BFC3AA;">
 

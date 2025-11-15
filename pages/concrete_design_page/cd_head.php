@@ -35,11 +35,6 @@
             color: #fff;
         }
 
-        tr:hover {
-            background: #014185ff;
-            color: white;
-        }
-
         a.button {
             padding: 5px 10px;
             color: white;

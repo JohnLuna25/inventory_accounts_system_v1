@@ -142,3 +142,71 @@ table tbody tr:hover {
   color: #721c24;
   border: 1px solid #f5c6cb;
 }
+
+.orders-table {
+  width: 100%; /* table now full width */
+  margin: 0 auto;
+  border-collapse: collapse;
+  font-family: Arial, sans-serif;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+/* Table header */
+.orders-table thead tr {
+  background-color: #132af3;
+  color: white;
+  text-align: center;
+  font-weight: bold;
+}
+
+/* Table body */
+.orders-table tbody tr {
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+  transition: background-color 0.3s ease;
+}
+
+.orders-table tbody tr:hover {
+  background-color: #f1f1f1;
+}
+
+.orders-table th,
+.orders-table td {
+  padding: 12px 15px;
+}
+
+/* Buttons */
+.add-order-btn,
+.show-finished-btn {
+  display: inline-block;
+  padding: 10px 15px;
+  font-weight: bold;
+  border-radius: 5px;
+  text-decoration: none;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.add-order-btn {
+  background-color: #0400ff;
+}
+
+.add-order-btn:hover {
+  background-color: #1976d2;
+}
+
+.show-finished-btn {
+  background-color: #0400ff;
+}
+
+.show-finished-btn:hover {
+  background-color: #1976d2;
+}
+
+/* Highlight finished orders */
+.finished-order {
+  background-color: #54b5ff; /* light blue */
+}

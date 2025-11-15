@@ -1,5 +1,6 @@
 <?php
-include '../FunctionAndDB/Web_Functions.php';
+require_once __DIR__ . '/../../FunctionAndDB/Web_Functions.php';
+
 showHeader();
 
 // Database connection
@@ -40,7 +41,7 @@ function getDoneOrders($conn)
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Finished Orders</title>
     <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="stylesheet" href="accounts_management.css">
+    <link rel="stylesheet" href="sap_accountsManagement.css">
 </head>
 
 <body>
@@ -50,7 +51,7 @@ function getDoneOrders($conn)
     <div style="text-align: left; margin-left: 5%; margin-bottom: 20px;">
         <button
             style="border: 1px solid black; border-radius: 20px; background-color: #4441e7ff; color: white; padding: 10px"
-            onclick="window.location.href='accounts_management.php'">
+            onclick="window.location.href='sap_accountsManagement.php'">
             Back to Orders
         </button>
     </div>
