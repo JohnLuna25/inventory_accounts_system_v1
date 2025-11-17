@@ -188,7 +188,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         });
     </script>
 
-    <!-- My JS functioons -->
+    <!-- JS functioons -->
     <script src="login_function.js"></script>
     <script>
         window.onload = function () {
