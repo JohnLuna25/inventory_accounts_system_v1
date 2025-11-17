@@ -1,148 +1,23 @@
-<table
-  border="1"
-  style="border-collapse: collapse; width: 100%; text-align: center"
->
-  <thead>
-    <tr>
-      <th>Materials</th>
-      <th>Cement</th>
-      <th>Fly Ash</th>
-      <th>Water</th>
-      <th>Admix</th>
-      <th>Air</th>
-      <th>G-1</th>
-      <th>3/4"</th>
-      <th>3/8"</th>
-      <th>F.A</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Source</td>
-      <td>Portland</td>
-      <td></td>
-      <td>Proem</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>S. Gravity</td>
-      <td>3.06</td>
-      <td></td>
-      <td>1</td>
-      <td>1.06</td>
-      <td></td>
-      <td>2.52</td>
-      <td></td>
-      <td>2.76</td>
-      <td></td>
-    </tr>
-    <tr>
-      <td>Absorption</td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td>3.54%</td>
-      <td></td>
-      <td>4.49%</td>
-    </tr>
-  </tbody>
-</table>
+/*
 
-<!-- Designed Mix Info -->
-<table
-  border="1"
-  style="
-    border-collapse: collapse;
-    width: 50%;
-    margin-top: 20px;
-    text-align: left;
-  "
->
-  <tbody>
-    <tr>
-      <td>Designed Mix</td>
-      <td>1500psi, 3/4", 7D (ORD)</td>
-    </tr>
-    <tr>
-      <td>Slump</td>
-      <td>4"-6"</td>
-    </tr>
-    <tr>
-      <td>W/C Ratio</td>
-      <td>0.68</td>
-    </tr>
-  </tbody>
-</table>
+session_start();
+require_once '../FunctionAndDB/db_connect.php';
+require_once '../FunctionAndDB/Web_Functions.php';
 
-<!-- Batch Quantities -->
-<table
-  border="1"
-  style="
-    border-collapse: collapse;
-    width: 100%;
-    margin-top: 20px;
-    text-align: center;
-  "
->
-  <thead>
-    <tr>
-      <th>Material</th>
-      <th>SSD Kgs./m³</th>
-      <th>Abs. Vol. m³</th>
-      <th>Adj. Vol. Kgs./m³</th>
-      <th>Vol. Batch Kgs/0.50m³</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <td>Cement</td>
-      <td>260</td>
-      <td>0.112</td>
-      <td></td>
-      <td>13.00 kgs</td>
-    </tr>
-    <tr>
-      <td>Sand</td>
-      <td>928</td>
-      <td>0.399</td>
-      <td></td>
-      <td>46.40 kgs</td>
-    </tr>
-    <tr>
-      <td>3/4"</td>
-      <td>955</td>
-      <td>0.411</td>
-      <td></td>
-      <td>47.75 kgs</td>
-    </tr>
-    <tr>
-      <td>Admix</td>
-      <td>2.6</td>
-      <td></td>
-      <td></td>
-      <td>0.13 ltr</td>
-    </tr>
-    <tr>
-      <td>Water</td>
-      <td>178</td>
-      <td>0.077</td>
-      <td></td>
-      <td>8.90 ltr</td>
-    </tr>
-    <tr>
-      <td>Total</td>
-      <td>2323.6</td>
-      <td>1 m³</td>
-      <td></td>
-      <td></td>
-    </tr>
-  </tbody>
-</table>
+// Initialize session variables if not set
+
+
+$invalidError = "";
+
+
+if (isset($_SESSION['login_error'])) {
+$invalidError = $_SESSION['login_error'];
+unset($_SESSION['login_error']);
+}
+
+
+
+
+*/
+
+?>

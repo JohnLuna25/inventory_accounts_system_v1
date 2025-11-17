@@ -4,6 +4,7 @@ require_once '../FunctionAndDB/db_connect.php';
 
 $createError = "";
 $createSuccess = false; // boolean to track success
+$confirm_password = $_POST['confirm_password'];
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -13,6 +14,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($employee_number) || empty($password) || empty($fullname)) {
         $createError = "All fields are required.";
+    } elseif ($password !== $confirm_password) {  // <-- check passwords match
+        $createError = "Passwords do not match.";
     } else {
         $hashed_password = hash('sha256', $password);
 
@@ -42,71 +45,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Create Account - Sorcom</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: blue;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
 
-        .form-container {
-            background-color: lightgray;
-            padding: 50px;
-            border-radius: 40px;
-            width: 340px;
-            box-sizing: border-box;
-            text-align: left;
-        }
+    <?php include 'ca_style.php'; ?>
 
-        input[type="text"],
-        input[type="password"] {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        input[type="submit"] {
-            width: 100%;
-            padding: 10px;
-            background-color: blue;
-            color: yellow;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .message {
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        .error {
-            color: red;
-        }
-
-        .success-box {
-            background-color: #BFC3AA;
-            width: 70%;
-            height: 30%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            border-radius: 40px;
-            font-size: 30px;
-            font-weight: bold;
-            color: blue;
-            text-align: center;
-        }
-    </style>
     <?php if ($createSuccess): ?>
         <script>
-            // Redirect after 3 seconds
+
+
             setTimeout(function () {
                 window.location.href = "http://localhost//Inventory-Accounts-System-v1/login_page/web_login.php";
             }, 3000);
@@ -136,6 +81,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <label for="password">Password:</label>
             <input type="password" id="password" name="password" required autocomplete="off">
+
+            <!-- Confirm Password Field -->
+            <label for="confirm_password">Confirm Password:</label>
+            <input type="password" id="confirm_password" name="confirm_password" required autocomplete="off">
 
             <input type="submit" value="Create Account">
         </form>
