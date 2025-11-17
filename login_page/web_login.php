@@ -1,14 +1,23 @@
 <?php
 session_start();
 
-// Grab session variables set by login_decision.php
-$invalidError = isset($_SESSION['login_error']) ? $_SESSION['login_error'] : '';
-$errorType = isset($_SESSION['error_type']) ? $_SESSION['error_type'] : '';
-$nextAttemptTime = isset($_SESSION['next_attempt_time']) ? $_SESSION['next_attempt_time'] : 0;
+// --- Grab session variables set by login_decision.php ---
+$invalidError = $_SESSION['login_error'] ?? '';
+$errorType = $_SESSION['error_type'] ?? '';
+$nextAttemptTime = $_SESSION['next_attempt_time'] ?? 0;
 
-// Clear only AFTER showing and JS fading out
+// --- Clear invalid login messages after displaying ---
+// Only clear if type is 'invalid'; wait/lock states need to persist
 if ($errorType === 'invalid') {
     unset($_SESSION['login_error'], $_SESSION['error_type']);
+}
+
+// --- Handle Master Override unlock ---
+// If a master override unlocked this user, clear previous failed attempts & locks
+if (isset($_SESSION['override_employee_id'])) {
+    $_SESSION['failed_attempts'] = 0;
+    $_SESSION['last_attempt_time'] = 0;
+    unset($_SESSION['locked_employee_id'], $_SESSION['error_type'], $_SESSION['login_error']);
 }
 ?>
 <!DOCTYPE html>
@@ -33,13 +42,13 @@ if ($errorType === 'invalid') {
         <div class="login-section">
             <form action="login_decision.php" method="post">
                 <?php if (!empty($invalidError)): ?>
-                        <div id="errorMessage"><?php echo htmlspecialchars($invalidError); ?></div>
+                    <div id="errorMessage"><?php echo htmlspecialchars($invalidError); ?></div>
                 <?php endif; ?>
 
-                <label for="username">Username:</label><br><br>
+                <label for="username">Username:</label><br>
                 <input type="text" id="username" name="username" required autocomplete="off"><br>
 
-                <label for="password">Password:</label><br><br>
+                <label for="password">Password:</label><br>
                 <input type="password" name="password" autocomplete="current-password" required><br>
 
                 <div class="form-buttons">
@@ -51,49 +60,50 @@ if ($errorType === 'invalid') {
         </div>
     </fieldset>
 
-    <!-- FINAL, WORKING JS BELOW -->
     <script>
-    window.addEventListener("DOMContentLoaded", () => {
-        const errorDiv = document.getElementById('errorMessage');
-        const loginButton = document.querySelector("input[type='submit']");
-        const errorType = "<?php echo $errorType; ?>";
-        const nextAttempt = Number("<?php echo $nextAttemptTime; ?>");
+        window.addEventListener("DOMContentLoaded", () => {
+            const errorDiv = document.getElementById('errorMessage');
+            const loginButton = document.querySelector("input[type='submit']");
+            const errorType = "<?php echo $errorType; ?>";
+            const nextAttempt = Number("<?php echo $nextAttemptTime; ?>");
 
-        if (!errorDiv) return;
+            if (!errorDiv) return;
 
-        // -------------------
-        // WAIT STATE COUNTDOWN
-        // -------------------
-        if (errorType === "wait" && nextAttempt > 0) {
+            // -------------------
+            // WAIT STATE COUNTDOWN
+            // -------------------
+            if ((errorType === "wait" || errorType === "lock") && nextAttempt > 0) {
 
-            if (loginButton) loginButton.disabled = true;
+                if (loginButton) loginButton.disabled = true;
 
-            const timer = setInterval(() => {
-                let remaining = nextAttempt - Math.floor(Date.now() / 1000);
+                const timer = setInterval(() => {
+                    let remaining = nextAttempt - Math.floor(Date.now() / 1000);
 
-                if (remaining <= 0) {
-                    clearInterval(timer);
-                    errorDiv.style.display = "none";
-                    if (loginButton) loginButton.disabled = false;
+                    if (remaining <= 0) {
+                        clearInterval(timer);
+                        errorDiv.style.display = "none";
+                        if (loginButton) loginButton.disabled = false;
+                    } else {
+                        if (errorType === "wait") {
+                            errorDiv.innerText = `Please wait ${remaining} seconds before next attempt.`;
+                        } else if (errorType === "lock") {
+                            errorDiv.innerText = "Account locked. Master Override required.";
+                        }
+                    }
+                }, 1000);
+            }
 
-                } else {
-                    errorDiv.innerText = `Please wait ${remaining} seconds before next attempt.`;
-                }
-
-            }, 1000);
-        }
-
-        // -------------------------
-        // INVALID LOGIN FADE AFTER 5 SEC
-        // -------------------------
-        if (errorType === "invalid") {
-            setTimeout(() => {
-                errorDiv.style.transition = "opacity 0.5s ease";
-                errorDiv.style.opacity = 0;
-                setTimeout(() => { errorDiv.style.display = "none"; }, 500);
-            }, 5000);
-        }
-    });
+            // -------------------------
+            // INVALID LOGIN FADE AFTER 5 SEC
+            // -------------------------
+            if (errorType === "invalid") {
+                setTimeout(() => {
+                    errorDiv.style.transition = "opacity 0.5s ease";
+                    errorDiv.style.opacity = 0;
+                    setTimeout(() => { errorDiv.style.display = "none"; }, 500);
+                }, 5000);
+            }
+        });
     </script>
 
     <script src="login_function.js"></script>

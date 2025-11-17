@@ -33,8 +33,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $master = $result2->fetch_assoc();
                 if ($master_password === $master['master_password']) {
                     // SUCCESS → unlock employee
+                    // SUCCESS → unlock employee
                     $_SESSION['override_employee_id'] = $employee['employee_number'];
                     $_SESSION['override_employee_name'] = $employee['employee_name'];
+
+                    // Reset failed login attempts
+                    $_SESSION['failed_attempts'] = 0;
+                    $_SESSION['last_attempt_time'] = 0;
+
+                    // **CLEAR LOCK FLAG**
+                    unset($_SESSION['locked_employee_id']);
+                    unset($_SESSION['error_type']);
+                    unset($_SESSION['login_error']);
+
                 } else {
                     $overrideError = "Invalid Master Password.";
                 }
@@ -84,51 +95,7 @@ $employee_name = $_SESSION['override_employee_name'] ?? '';
 <head>
     <meta charset="UTF-8">
     <title>Master Login Override</title>
-    <style>
-        body {
-            font-family: Arial;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background: #f0f0f0;
-        }
-
-        .form-container {
-            background: #fff;
-            padding: 30px;
-            border-radius: 20px;
-            width: 350px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-        }
-
-        input {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border-radius: 5px;
-            border: 1px solid #ccc;
-        }
-
-        input[type="submit"] {
-            background: blue;
-            color: white;
-            cursor: pointer;
-            border: none;
-            font-weight: bold;
-        }
-
-        .error {
-            color: red;
-            text-align: center;
-        }
-
-        .success {
-            color: green;
-            text-align: center;
-            font-weight: bold;
-        }
-    </style>
+    <?php include 'mlo_style.php'; ?>
 </head>
 
 <body>
@@ -153,12 +120,14 @@ $employee_name = $_SESSION['override_employee_name'] ?? '';
                 <input type="text" name="master_username" required autocomplete="off">
                 <label>Master Password</label>
                 <input type="password" name="master_password" required autocomplete="new-password">
-                <input type="submit" value="Unlock Account">
+                <button type="submit" class="unlock-btn">Unlock Account</button>
             </form>
 
         <?php else: ?>
-            <h2 style="text-align:center;">Password Change Required</h2>
-            <p style="text-align:center;">You must update your password to continue using the system.</p>
+            <h2 style="text-align:center;" class="pc_r">Password Change Required</h2>
+            <p class="password-alert">
+                <i><b>(You must update your password to continue using the system.)</b></i>
+            </p>
             <?php if ($overrideError)
                 echo "<div class='error'>{$overrideError}</div>"; ?>
             <form method="post" autocomplete="off">

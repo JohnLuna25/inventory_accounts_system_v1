@@ -64,9 +64,9 @@ echo '
 
         input[type="text"],
         input[type="password"] {
-            width: 100%;
+            width: 91%;
             padding: 10px;
-            margin-bottom: 20px;
+            margin-bottom: 40px;
             border-radius: 5px;
             border: 1px solid #ccc;
         }

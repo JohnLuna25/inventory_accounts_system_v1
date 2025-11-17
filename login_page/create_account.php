@@ -4,7 +4,7 @@ require_once '../FunctionAndDB/db_connect.php';
 
 $createError = "";
 $createSuccess = false; // boolean to track success
-$confirm_password = $_POST['confirm_password'];
+
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -31,6 +31,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $stmt->bind_param("sss", $employee_number, $fullname, $hashed_password);
             if ($stmt->execute()) {
                 $createSuccess = true; // mark success
+
+                // Reset session counts
+                $_SESSION['failed_attempts'] = 0;
+                $_SESSION['last_attempt_time'] = 0;
             } else {
                 $createError = "Failed to create account. Try again.";
             }
@@ -43,20 +47,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="en">
 
 <head>
+
     <meta charset="UTF-8">
     <title>Create Account - Sorcom</title>
 
-    <?php include 'ca_style.php'; ?>
+    <?php require_once 'ca_style.php'; ?>
 
     <?php if ($createSuccess): ?>
+
         <script>
-
-
             setTimeout(function () {
                 window.location.href = "http://localhost//Inventory-Accounts-System-v1/login_page/web_login.php";
             }, 3000);
         </script>
+
     <?php endif; ?>
+
 </head>
 
 <body>
