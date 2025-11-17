@@ -1,32 +1,12 @@
 <?php
-// Start a session to store user data and announcements
+// Start a session to store user data
 session_start();
 
-// Include external PHP files with helper functions and the announcement list
-require_once __DIR__ . '/../../FunctionAndDB/Web_Functions.php';          // Web functions
-require_once __DIR__ . '/announcement_list.php';                           // Announcement list in the same folder as home.php
-
-// Initialize announcements array in session if it does not exist
-if (!isset($_SESSION['announcements'])) {
-    $_SESSION['announcements'] = [];
-}
+// Include external PHP files with helper functions
+require_once __DIR__ . '/../../FunctionAndDB/Web_Functions.php'; // Web functions
 
 // Get the logged-in employee's name from session; default to 'User' if not set
 $employee_name = isset($_SESSION['employee_name']) ? htmlspecialchars($_SESSION['employee_name']) : 'User';
-
-// Handle form submissions
-if (!empty($_POST['announcement'])) {
-    array_unshift($_SESSION['announcements'], htmlspecialchars($_POST['announcement']));
-    // Redirect to refresh the announcement list
-    header("Location: /Inventory-Accounts-System-v1/pages/home_page/home.php");
-    exit();
-}
-
-// Cancel add/delete actions
-if (isset($_POST['cancel_add']) || isset($_POST['cancel_delete'])) {
-    header("Location: /Inventory-Accounts-System-v1/pages/home_page/home.php");
-    exit();
-}
 ?>
 
 
@@ -41,91 +21,8 @@ if (isset($_POST['cancel_add']) || isset($_POST['cancel_delete'])) {
     <!-- External stylesheet -->
     <link rel="stylesheet" href="../assets/css/style.css">
 
-    <style>
-        /* Sidebar container styling */
-        #sidebar {
-            background-color: lightblue;
-            padding: 0;
-            top: 131px;
-            width: 0;
-            /* Sidebar initially hidden */
-            min-height: 100vh;
-            position: fixed;
-            overflow: hidden;
-            transition: width 0.2s, padding 0.2s;
-        }
+    <?php include 'home_style.php'; ?>
 
-        /* Sidebar list styling */
-        #sidebar ul {
-            display: flex;
-            flex-direction: column;
-            margin-top: 200px;
-        }
-
-        /* Buttons inside sidebar */
-        .sidebar-button {
-            margin: 5px 0;
-            background-color: cornflowerblue;
-            border-radius: 40px;
-            padding: 10px;
-            font-size: 16px;
-            cursor: pointer;
-        }
-
-        /* Hover effect for sidebar buttons */
-        .sidebar-button:hover {
-            background-color: cadetblue;
-            color: white;
-        }
-
-        /* Main content area transitions when sidebar opens/closes */
-        #main-content {
-            transition: margin-left 0.2s;
-        }
-
-        /* Announcement list styling */
-        #announcement-bar ul {
-            list-style-type: disc;
-            padding-left: 30px;
-            margin-bottom: 30px;
-        }
-
-        #announcement-bar li {
-            font-weight: bold;
-            margin-bottom: 10px;
-            text-align: justify;
-        }
-
-        /* Logout button appearance */
-        #logout-button {
-            margin-top: 75px;
-            margin-bottom: 20px;
-            color: black;
-            background-color: #dd2500ff;
-            border-radius: 20px;
-            border: none;
-            padding: 10px 20px;
-            cursor: pointer;
-        }
-
-        #logout-button:hover {
-            background-color: #FF3F1A;
-            color: white;
-        }
-
-        /* Welcome message styling in sidebar */
-        #welcome-user {
-            font-size: 17px;
-            font-weight: bold;
-            color: darkblue;
-            text-align: center;
-            margin-top: -180px;
-            margin-bottom: 30px;
-            border-radius: 20px;
-            padding: 10px;
-            background-color: cornflowerblue;
-        }
-    </style>
 </head>
 
 <body style="margin:0; font-family: Arial, sans-serif; 
@@ -188,7 +85,7 @@ if (isset($_POST['cancel_add']) || isset($_POST['cancel_delete'])) {
             </button>
 
             <!-- Logout button with confirmation prompts -->
-            <button id="logout-button" class="sidebar-button" style="margin-top: 55px"
+            <button id="logout-button" class="sidebar-button" style="margin-top: 20%"
                 onclick="if(confirm('Did you save all changes?')){if(confirm('Are you sure you want to log out?')){window.location.href='/Inventory-Accounts-System-v1/login_page/web_login.php';}};">
                 Logout
             </button>
@@ -202,67 +99,9 @@ if (isset($_POST['cancel_add']) || isset($_POST['cancel_delete'])) {
     <!-- Main content area -->
     <div id="main-content" style="margin-left:0; padding: 20px;">
 
-        <!-- Announcement panel -->
-        <div id="announcement-bar"
-            style="width: 40%; margin: 50px auto; background-color: #fff; padding: 20px; border-radius: 15px; text-align: left; margin-top: 200px;">
-            <h3 style="text-align:center; margin-bottom: 20px;">Announcements</h3>
 
-            <!-- Display the list of announcements -->
-            <ul>
-                <?php foreach ($_SESSION['announcements'] as $index => $ann): ?>
-                    <li><?php echo $ann; ?></li>
-                <?php endforeach; ?>
-            </ul>
 
-            <!-- Buttons to show add or delete announcement modals -->
-            <div style="margin-top: 20px; text-align: center;">
-                <form method="post" style="display:inline-block; margin-right: 10px;">
-                    <button type="submit" name="show_add_form"
-                        style="padding:10px 20px; border-radius:5px;">Add</button>
-                </form>
-                <form method="post" style="display:inline-block; margin-left: 10px;">
-                    <button type="submit" name="show_delete_form"
-                        style="padding:10px 20px; border-radius:5px;">Delete</button>
-                </form>
-            </div>
-        </div>
 
-        <!-- Modal for adding an announcement -->
-        <?php if (isset($_POST['show_add_form'])): ?>
-            <div style="position:fixed; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.5);">
-                <div style="width:50%; margin:100px auto; background-color:#fff; padding:20px; border-radius:15px;">
-                    <h3 style="margin-bottom: 20px;">Add Announcement</h3>
-                    <form method="post">
-                        <textarea name="announcement" placeholder="Type an announcement here..."
-                            style=" width:90%; height:100px; padding:10px;"></textarea>
-                        <br><br>
-                        <button type="submit" name="add_announcement" style="padding:10px 20px; margin-right: 10px;">Add
-                            Announcement</button>
-                        <button type="submit" name="cancel_add" style="padding:10px 20px;">Cancel</button>
-                    </form>
-                </div>
-            </div>
-        <?php endif; ?>
-
-        <!-- Modal for deleting announcements -->
-        <?php if (isset($_POST['show_delete_form'])): ?>
-            <div
-                style="position:fixed; top:0; left:0; width:100%; height:100%; background-color: rgba(0,0,0,0.5); overflow-x:auto;">
-                <div style="width:60%; margin:50px auto; background-color:#fff; padding:20px; border-radius:15px;">
-                    <h3>Delete Announcements</h3>
-                    <?php foreach ($_SESSION['announcements'] as $index => $ann): ?>
-                        <form method="post"
-                            style="display:flex; justify-content: space-between; margin-bottom:10px; border-bottom:1px solid #ccc; padding:5px;">
-                            <span style="flex:1; text-align:justify;"><?php echo $ann; ?></span>
-                            <button type="submit" name="delete_announcement" value="<?php echo $index; ?>"
-                                style="margin-left:10px;">Delete</button>
-                        </form>
-                    <?php endforeach; ?>
-                    <form method="post"><button type="submit" name="cancel_delete" style="margin-top:10px;">Cancel</button>
-                    </form>
-                </div>
-            </div>
-        <?php endif; ?>
 
     </div> <!-- End main content -->
 
