@@ -1,7 +1,6 @@
 <?php
 // sap_config.php
 
-// Create a database connection
 $conn = new mysqli("localhost", "root", "", "sorcom_db");
 
 // Check connection

@@ -41,7 +41,8 @@ include 'ip_table.php';
     <?php include 'ip_editModal.php'; ?>
 
     <!--  -->
-    <?php include 'ip_functions.js'; ?>
+    <script src="ip_functions.js"></script>
+
 
 </body>
 

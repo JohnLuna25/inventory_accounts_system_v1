@@ -67,7 +67,7 @@ $employee_name = isset($_SESSION['employee_name']) ? htmlspecialchars($_SESSION[
 
             <button class="sidebar-button"
                 onclick="window.location.href='/Inventory-Accounts-System-v1/pages/statement_account_page/sap_accountsManagement.php'">
-                Accounts Management
+                User Accounts
             </button>
 
             <button class="sidebar-button"

@@ -10,6 +10,7 @@ $createSuccess = false; // boolean to track success
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $employee_number = trim($_POST['employee_number']);
     $password = $_POST['password'];
+    $confirm_password = $_POST['confirm_password'];
     $fullname = trim($_POST['fullname']);
 
     if (empty($employee_number) || empty($password) || empty($fullname)) {
@@ -17,7 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } elseif ($password !== $confirm_password) {  // <-- check passwords match
         $createError = "Passwords do not match.";
     } else {
-        $hashed_password = hash('sha256', $password);
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
 
         $stmt = $conn->prepare("SELECT * FROM sorcom_users WHERE employee_number = ?");
         $stmt->bind_param("s", $employee_number);
@@ -51,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="UTF-8">
     <title>Create Account - Sorcom</title>
 
-    <?php require_once 'ca_style.php'; ?>
+    <?php include 'ca_style.php'; ?>
 
     <?php if ($createSuccess): ?>
 
