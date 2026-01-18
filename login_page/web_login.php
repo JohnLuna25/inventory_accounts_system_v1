@@ -45,7 +45,7 @@ if (isset($_SESSION['override_employee_id'])) {
                     <div id="errorMessage"><?php echo htmlspecialchars($invalidError); ?></div>
                 <?php endif; ?>
 
-                <label for="username">Username:</label><br>
+                <label for="username">Employee ID Number:</label><br>
                 <input type="text" id="username" name="username" required autocomplete="off"><br>
 
                 <label for="password">Password:</label><br>

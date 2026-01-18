@@ -7,7 +7,7 @@ function showHeader()
         justify-content: space-between;
         align-items: center;
         background-color: blue;
-        padding: 5px 15px; /* smaller padding */
+        padding: 5px 15px;
         width: 100%;
         position: fixed;
         top: 0;
@@ -20,7 +20,7 @@ function showHeader()
         <div style="display: flex; align-items: center; gap: 8px;">
             <a href="javascript:history.back()">
                 <img src="/Inventory-Accounts-System-v1/assets/images/back_button.png" 
-                     alt="Back" style="height: 30px; cursor: pointer;"> <!-- smaller -->
+                     alt="Back" style="height: 30px; cursor: pointer;">
             </a>
             <a href="/Inventory-Accounts-System-v1/pages/home_page/home.php">
                 <img src="/Inventory-Accounts-System-v1/assets/images/home_button.png" 
@@ -43,18 +43,29 @@ function showHeader()
             </p>
         </div>
 
-
-
         <!-- Right Date -->
         <div style="font-family: Arial, sans-serif; font-weight: 600; font-size: 14px; color: yellow;">
-            ' . date("M d, Y - h:i") . '
+           <p id="clock"></p>
         </div>
-    
-    <style>background-color: #BFC3AA;</style>
-
     </div>
+
+    <script>
+        function realClockTime() {
+            const now = new Date();
+            const options = { month: "short", day: "2-digit", year: "numeric" };
+            const dateStr = now.toLocaleDateString("en-US", options).replace(",", ".");
+            let hours = now.getHours().toString().padStart(2, "0");
+            let minutes = now.getMinutes().toString().padStart(2, "0");
+            let seconds = now.getSeconds().toString().padStart(2, "0");
+            document.getElementById("clock").textContent = dateStr + " || " + hours + ":" + minutes + ":" + seconds;
+        }
+        setInterval(realClockTime, 1000);
+        realClockTime();
+    </script>
     ';
 }
+
+
 
 
 
