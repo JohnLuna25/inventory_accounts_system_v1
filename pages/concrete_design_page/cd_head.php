@@ -3,6 +3,7 @@
     <title>Concrete Design List</title>
     <link rel="stylesheet" href="../assets/css/style.css">
     <?php showHeader(); ?>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,34 +13,53 @@
             text-align: center;
         }
 
+        /* TABLE WRAPPER (Enables horizontal scroll) */
+        .table-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 30px;
+        }
 
+        /* MAIN TABLE */
         table {
-            width: 95%;
-            max-width: 1200px;
-            margin: 30px auto;
+            width: max-content;
+            /* allows table to grow naturally */
+            min-width: 100%;
+            /* at least full width */
             border-collapse: collapse;
             background: #fff;
-            text-align: center;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
 
+        /* HEADERS & CELLS */
         th,
         td {
             border: 1px solid #ccc;
-            padding: 8px;
-            font-size: 14px;
+            padding: 3px 10px;
+            /* small height */
+            font-size: 13px;
+            white-space: nowrap;
+            /* prevents wrapping */
         }
 
         th {
             background: #0b63c4;
             color: #fff;
+            position: sticky;
+            /* optional sticky header */
+            top: 0;
+            z-index: 2;
         }
 
+        /* BUTTONS */
         a.button {
-            padding: 5px 10px;
+            padding: 3px 8px;
+            /* smaller buttons */
+            font-size: 12px;
             color: white;
             text-decoration: none;
             border-radius: 4px;
+            display: inline-block;
         }
 
         a.view {
@@ -51,7 +71,7 @@
             background: #2196F3;
         }
 
-        /* Dropbar style */
+        /* DROPBAR STYLE */
         .dropbar {
             display: none;
             background-color: #0b63c4;
@@ -63,14 +83,13 @@
 
         .dropbar table {
             width: 100%;
-            background: #fff;
             border-collapse: collapse;
             color: black;
         }
 
         .dropbar td {
             border: 1px solid #ccc;
-            padding: 8px;
+            padding: 6px;
         }
 
         .dropbar td:first-child {

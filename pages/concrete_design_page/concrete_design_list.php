@@ -1,5 +1,5 @@
 <?php
-// Include required files using correct paths
+// Include required files
 include __DIR__ . '/../../FunctionAndDB/db_connect.php';
 include __DIR__ . '/../../FunctionAndDB/Web_Functions.php';
 
@@ -7,99 +7,86 @@ include __DIR__ . '/../../FunctionAndDB/Web_Functions.php';
 if (!isset($conn)) {
     die("Database connection not established. Check db_connect.php.");
 }
+
+// Table name based on your CSV import
+$table_name = 'sorcom_concrete_design_masterlist';
 ?>
 
 <!DOCTYPE html>
 <html lang="en">
 
-<?php include 'cd_head.php' ?>
+<?php include 'cd_head.php'; ?>
+
+<head>
+    <script>
+        // Two-step delete confirmation
+        function confirmDeletion(psi) {
+            if (!confirm(`You just selected ${psi} for deletion. Proceed?`)) {
+                return false; // First cancel
+            }
+            return confirm(`Are you sure you want to delete ${psi} data? This will not be recovered again.`);
+        }
+    </script>
+</head>
 
 <body>
-
-    <h2 style="font-size: 24px; text-align: center; margin-top: 65px;">Concrete Design List</h2>
+    <h2 style="font-size: 24px; text-align: center; margin-top: 65px;">
+        CSV Data Display: sorcom_concrete_design_masterlist
+    </h2>
 
     <table>
         <thead>
             <tr>
-                <th>ID</th>
-                <th>PSI</th>
-                <th>Curration Type</th>
-                <th>Type</th>
-                <th>Cubic Meter</th>
-                <th>Slump</th>
-                <th>W/C Ratio</th>
-                <th>Actions</th>
+                <?php
+                $sql_headers = "SHOW COLUMNS FROM $table_name";
+                $headers_result = $conn->query($sql_headers);
+                $columns = [];
+
+                // Custom header mapping
+                $header_map = [
+                    'three_fourth' => '3/4"',
+                    'three_eight' => '3/8"',
+                    'cement_mix' => 'Cement Mix (m³)',
+                    'sand' => 'Sand (m³)',
+                    'air' => 'Air (m³)',
+                    'total' => 'Total (m³)'
+                ];
+
+                if ($headers_result->num_rows > 0) {
+                    while ($header = $headers_result->fetch_assoc()) {
+                        $columns[] = $header['Field'];
+                        $pretty_header = $header_map[$header['Field']] ?? ucwords(str_replace('_', ' ', $header['Field']));
+                        echo "<th>" . htmlspecialchars($pretty_header) . "</th>";
+                    }
+                }
+                ?>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
             <?php
-            $sql = "SELECT * FROM concrete_designs ORDER BY date_created DESC";
+            $sql = "SELECT * FROM $table_name";
             $result = $conn->query($sql);
 
             if ($result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
-                    $id = $row['id'];
-                    echo "
-                    <tr>
-                        <td>{$id}</td>
-                        <td>{$row['concrete_psi']}</td>
-                        <td>{$row['curration_type']}</td>
-                        <td>{$row['concrete_type']}</td>
-                        <td>{$row['cubic_meter']}</td>
-                        <td>{$row['concrete_slump']}</td>
-                        <td>{$row['wc_ratio']}</td>
-                        <td>
-                            <a href='javascript:void(0)' class='button view' onclick='toggleDropbar($id)'>View</a>
-                            <a class='button edit' href='edit_design.php?id={$id}'>Edit</a>
-                        </td>
-                    </tr>
+                    echo "<tr>";
+                    foreach ($columns as $col) {
+                        echo "<td>" . htmlspecialchars($row[$col]) . "</td>";
+                    }
 
-                    <tr id='dropbar-{$id}' class='dropbar'>
-                        <td colspan='8'>
-                            <table>
-                                <tr><td>PSI</td><td>{$row['concrete_psi']}</td></tr>
-                                <tr><td>Curration Type</td><td>{$row['curration_type']}</td></tr>
-                                <tr><td>Concrete Type</td><td>{$row['concrete_type']}</td></tr>
-                                <tr><td>Cubic Meter</td><td>{$row['cubic_meter']}</td></tr>
-                                <tr><td>Slump</td><td>{$row['concrete_slump']}</td></tr>
-                                <tr><td>W/C Ratio</td><td>{$row['wc_ratio']}</td></tr>
+                    // Encode PSI for safe JS usage
+                    $psi_js = json_encode($row['concrete_psi']);
 
-                                <tr>
-                                    <td colspan='2'>
-                                        <strong>Volume Batch:</strong>
-                                        <table style='width:100%; margin-top:5px; border-collapse: collapse;'>
-                                            <tr style='background:#f2f2f2;'>
-                                                <th>Cement</th>
-                                                <th>Fly ash</th>
-                                                <th>Water</th>
-                                                <th>Admix</th>
-                                                <th>Air</th>
-                                                <th>G-1</th>
-                                                <th>3/4\"</th>
-                                                <th>3/8\"</th>
-                                                <th>Sand</th>
-                                            </tr>
-                                            <tr>
-                                                <td>13.00 kgs</td>
-                                                <td>—</td>
-                                                <td>8.90 ltr</td>
-                                                <td>0.13 ltr</td>
-                                                <td>—</td>
-                                                <td>—</td>
-                                                <td>47.75 kgs</td>
-                                                <td>—</td>
-                                                <td>46.40 kgs</td>
-                                            </tr>
-                                        </table>
-                                    </td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                    ";
+                    echo "<td class='action-buttons'>
+                            <a href='edit_design.php?id=" . $row['id'] . "' class='button edit'>✏ Edit</a>
+                            <a href='delete_design.php?id=" . $row['id'] . "' class='button delete'
+                               onclick='return confirmDeletion($psi_js);'>🗑 Delete</a>
+                          </td>";
+                    echo "</tr>";
                 }
             } else {
-                echo "<tr><td colspan='8'>No concrete designs found.</td></tr>";
+                echo "<tr><td colspan='" . (count($columns) + 1) . "'>No data found in CSV table.</td></tr>";
             }
 
             $conn->close();
@@ -107,26 +94,48 @@ if (!isset($conn)) {
         </tbody>
     </table>
 
-    <script>
-        function toggleDropbar(id) {
-            // Close all open dropbars first
-            document.querySelectorAll('.dropbar').forEach(bar => {
-                if (bar.id !== 'dropbar-' + id) bar.style.display = 'none';
-            });
-
-            // Toggle the selected one
-            const dropbar = document.getElementById('dropbar-' + id);
-            dropbar.style.display = (dropbar.style.display === 'table-row') ? 'none' : 'table-row';
+    <style>
+        .action-buttons {
+            text-align: center;
+            white-space: nowrap;
         }
 
-        // Close dropbars when clicking outside
-        window.addEventListener('click', function (e) {
-            if (!e.target.classList.contains('view')) {
-                document.querySelectorAll('.dropbar').forEach(bar => bar.style.display = 'none');
-            }
-        });
-    </script>
+        a.button {
+            padding: 3px 8px;
+            font-size: 12px;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 4px;
+            display: inline-block;
+            margin: 1px;
+        }
 
+        a.edit {
+            background: #2196F3;
+        }
+
+        a.delete {
+            background: #f44336;
+        }
+
+        table {
+            width: 95%;
+            margin: 30px auto;
+            border-collapse: collapse;
+            text-align: center;
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 5px 8px;
+        }
+
+        th {
+            background: #0b63c4;
+            color: #fff;
+        }
+    </style>
 </body>
 
 </html>

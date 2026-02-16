@@ -40,7 +40,7 @@ include 'ip_table.php';
     <!-- EDIT MODAL -->
     <?php include 'ip_editModal.php'; ?>
 
-    <!--  -->
+    <!-- FUNCTION SOURCE -->
     <script src="ip_functions.js"></script>
 
 
