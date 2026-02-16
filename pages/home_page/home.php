@@ -7,6 +7,9 @@ require_once __DIR__ . '/../../FunctionAndDB/Web_Functions.php'; // Web function
 
 // Get the logged-in employee's name from session; default to 'User' if not set
 $employee_name = isset($_SESSION['employee_name']) ? htmlspecialchars($_SESSION['employee_name']) : 'User';
+
+// --- NEW: Get the role from session, default to Employee if not set ---
+$role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Employee';
 ?>
 
 
@@ -19,7 +22,8 @@ $employee_name = isset($_SESSION['employee_name']) ? htmlspecialchars($_SESSION[
     <title>SORCOM Inventory and Accounts Management System</title>
 
     <!-- External stylesheet -->
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="/Inventory-Accounts-System-v1/assets/css/sidebar.css">
+
 
     <?php include 'home_style.php'; ?>
 
@@ -49,42 +53,62 @@ $employee_name = isset($_SESSION['employee_name']) ? htmlspecialchars($_SESSION[
     <!-- Sidebar menu -->
     <div id="sidebar">
         <ul>
-            <!-- Display the logged-in user name -->
             <p id="welcome-user">
-                Welcome, <?php echo $employee_name; ?>!
+                Welcome, <?php echo htmlspecialchars($employee_name); ?>!
             </p>
 
-            <!-- Navigation buttons -->
+            <!-- Concrete Design: Everyone can see -->
             <button class="sidebar-button"
                 onclick="window.location.href='/Inventory-Accounts-System-v1/pages/concrete_design_page/concrete_design_list.php'">
                 Concrete Design List
             </button>
 
-            <button class="sidebar-button"
-                onclick="window.location.href='/Inventory-Accounts-System-v1/pages/inventory_page/inventory_management.php'">
-                Inventory Management
-            </button>
+            <!-- Inventory Management: Manager only -->
+            <?php if ($role === 'Manager'): ?>
+                <button class="sidebar-button"
+                    onclick="window.location.href='/Inventory-Accounts-System-v1/pages/inventory_page/inventory_management.php'">
+                    Inventory Management
+                </button>
+            <?php endif; ?>
 
+            <!-- User Accounts: Everyone -->
             <button class="sidebar-button"
                 onclick="window.location.href='/Inventory-Accounts-System-v1/pages/statement_account_page/sap_accountsManagement.php'">
                 User Accounts
             </button>
 
-            <button class="sidebar-button"
-                onclick="window.location.href='/Inventory-Accounts-System-v1/pages/reports_management.php'">
-                Reports
-            </button>
+            <!-- Reports: Manager only -->
+            <?php if ($role === 'Manager'): ?>
+                <button class="sidebar-button"
+                    onclick="window.location.href='/Inventory-Accounts-System-v1/pages/reports_management.php'">
+                    Reports
+                </button>
+            <?php endif; ?>
 
+            <!-- Settings: Everyone -->
             <button class="sidebar-button"
                 onclick="window.location.href='/Inventory-Accounts-System-v1/pages/settings_management.php'">
                 Settings
             </button>
 
-            <button class="sidebar-button" onclick="window.location.href='/Inventory-Accounts-System-v1/index.html'">
-                Test Area
-            </button>
 
-            <!-- Logout button with confirmation prompts -->
+            <!-- Add Manager: Manager only -->
+            <?php if ($role === 'Manager'): ?>
+                <button class="sidebar-button"
+                    onclick="window.location.href='/Inventory-Accounts-System-v1/pages/add_manager_page/add_manager.php'">
+                    Add Manager
+                </button>
+            <?php endif; ?>
+
+            <!-- Manage Employee Accounts: Manager only -->
+            <?php if (isset($role) && strtolower(trim($role)) === 'manager'): ?>
+                <button class="sidebar-button"
+                    onclick="window.location.href='/Inventory-Accounts-System-v1/pages/manage_employee_accounts/mea.php'">
+                    Manage Employee Accounts
+                </button>
+            <?php endif; ?>
+
+            <!-- Logout: Everyone -->
             <button id="logout-button" class="sidebar-button" style="margin-top: 20%"
                 onclick="if(confirm('Did you save all changes?')){if(confirm('Are you sure you want to log out?')){window.location.href='/Inventory-Accounts-System-v1/login_page/web_login.php';}};">
                 Logout

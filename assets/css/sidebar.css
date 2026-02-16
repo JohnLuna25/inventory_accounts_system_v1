@@ -1,0 +1,59 @@
+#sidebar {
+  width: 180px; /* narrow sidebar */
+  background-color: #f8f9fa; /* light gray background */
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+#sidebar #welcome-user {
+  font-size: 18px; /* slightly smaller than before */
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+#sidebar button {
+  font-size: 14px; /* smaller text only */
+}
+
+.sidebar-button {
+  font-family: Arial, sans-serif;
+  font-size: 12px; /* smaller text for all buttons */
+  font-weight: bold;
+  color: #0056b3; /* blue text */
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px 8px; /* smaller padding */
+  text-align: center;
+  width: 100%;
+  margin-bottom: 3px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.sidebar-button:hover {
+  color: white;
+  background-color: #0056b3;
+  transform: translateX(3px);
+}
+
+/* Make logout button match smaller font and padding */
+.logout-button {
+  margin-top: 20px; /* keep some spacing from buttons above */
+  background-color: #dc3545;
+  color: white;
+  font-size: 12px; /* match other buttons */
+  font-weight: bold;
+  padding: 4px 8px; /* match other buttons */
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-button:hover {
+  background-color: #c82333;
+  transform: translateX(0);
+}

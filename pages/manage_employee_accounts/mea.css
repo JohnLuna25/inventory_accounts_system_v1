@@ -1,0 +1,61 @@
+.body {
+  background-color: blue;
+}
+
+/* Center container and wide table */
+.table-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 120px;
+}
+
+/* Table styling */
+.table-container table {
+  width: 90%; /* wide table */
+  max-width: 1200px; /* optional max width */
+  border-collapse: collapse;
+  text-align: center;
+  font-family: Arial, sans-serif;
+}
+
+/* Table headers and cells */
+.table-container th,
+.table-container td {
+  padding: 12px;
+  border: 1px solid #ccc;
+}
+
+/* Alternating row colors */
+.table-container tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+/* Hover effect */
+.table-container tr:hover {
+  background-color: #e0e0e0;
+}
+
+/* Status update message */
+.status-message {
+  text-align: bottom;
+  color: green;
+  font-weight: bold;
+  margin-top: 20px; /* small spacing above message */
+  transition: opacity 1s ease; /* smooth fade */
+}
+
+/* No employees message */
+.no-employees {
+  text-align: center;
+  font-style: italic;
+  margin-top: 20px;
+}
+
+/* Make dropdown and button fill cell nicely */
+.table-container select,
+.table-container input[type="submit"] {
+  width: 100%;
+  padding: 6px;
+  box-sizing: border-box;
+}

@@ -1,0 +1,120 @@
+/* add_manager.css */
+
+/* Body styling */
+body {
+  font-family: Arial, sans-serif;
+  background-color: blue;
+  margin: 0;
+  padding: 0;
+}
+
+/* Container centers the form on the page */
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+/* Form box */
+.add-manager-form {
+  background-color: #ffffff;
+  padding: 40px 30px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  width: 400px;
+}
+
+/* Form title */
+.add-manager-form h2 {
+  text-align: center;
+  margin-bottom: 25px;
+  color: #2c3e50;
+}
+
+/* Labels */
+.add-manager-form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #34495e;
+}
+
+/* Inputs */
+.add-manager-form input[type="text"],
+.add-manager-form input[type="password"] {
+  width: 100%;
+  padding: 10px 12px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 15px;
+  box-sizing: border-box;
+  transition: border-color 0.3s;
+}
+
+.add-manager-form input[type="text"]:focus,
+.add-manager-form input[type="password"]:focus {
+  border-color: #3498db;
+  outline: none;
+}
+
+/* Buttons container */
+.add-manager-form .form-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* Submit button */
+.add-manager-form input[type="submit"],
+.add-manager-form button {
+  flex: 1;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+/* Submit hover effect */
+.add-manager-form input[type="submit"] {
+  background-color: #3498db;
+  color: white;
+}
+
+.add-manager-form input[type="submit"]:hover {
+  background-color: #2980b9;
+}
+
+/* Go Back button */
+.add-manager-form button {
+  background-color: #bdc3c7;
+  color: #2c3e50;
+}
+
+.add-manager-form button:hover {
+  background-color: #95a5a6;
+}
+
+/* Error message */
+.message.error {
+  background-color: #e74c3c;
+  color: white;
+  padding: 10px;
+  border-radius: 5px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
+/* Success message */
+.success-box {
+  background-color: #2ecc71;
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: bold;
+}

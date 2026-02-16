@@ -47,6 +47,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['username'] = $user['employee_number'];
             $_SESSION['employee_name'] = $user['employee_name'];
 
+            // ---- NEW: STORE ROLE ----
+            $_SESSION['role'] = $user['role'];  // Assuming you have a 'role' column in sorcom_users: 'Manager' or 'Employee'
+
             // Reset counters
             $_SESSION['failed_attempts'] = 0;
             $_SESSION['last_attempt_time'] = 0;
@@ -55,6 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header("Location: /Inventory-Accounts-System-v1/pages/home_page/home.php");
             exit();
         }
+
     }
 
     // -------------------------

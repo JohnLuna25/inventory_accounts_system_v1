@@ -98,45 +98,8 @@ function fetchInventoryRows()
     return $rows;
 }
 
-/**
- * Display sidebar navigation
- */
-function showSidebar($username = "User")
-{
-    echo '
-    <!-- Sidebar (Bootstrap Offcanvas) -->
-    <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebar" aria-labelledby="sidebarLabel" style="width:250px;">
-      <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="sidebarLabel">Welcome, ' . htmlspecialchars($username) . '!</h5>
-        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-      </div>
-      <div class="offcanvas-body d-flex flex-column">
-        <button class="btn btn-primary mb-2" onclick="window.location.href=\'../concrete_design_page/concrete_design_list.php\'">Concrete Design List</button>
-        <button class="btn btn-primary mb-2" onclick="window.location.href=\'../inventory_page/inventory_management.php\'">Inventory Management</button>
-        <button class="btn btn-primary mb-2" onclick="window.location.href=\'../statement_accounts_page/accounts_management.php\'">Accounts Management</button>
-        <button class="btn btn-primary mb-2" onclick="window.location.href=\'../reports_page/reports_management.php\'">Reports</button>
-        <button class="btn btn-primary mb-2" onclick="window.location.href=\'../settings_page/settings_management.php\'">Settings</button>
 
 
-
-        <div class="mt-auto">
-            <button class="btn btn-danger w-100" onclick="
-                if(confirm(\'Did you save all changes?\')) {
-                    if(confirm(\'Are you sure you want to log out?\')) {
-                        window.location.href=\'web_login.php\';
-                    }
-                }
-            ">Logout</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Sidebar Toggle Button -->
-    <button class="btn btn-outline-primary position-fixed" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebar" aria-controls="sidebar" style="top: 145px; left: 10px; z-index:1050;">
-        ☰
-    </button>
-    ';
-}
 ?>
 
 <!-- Modal Script -->
