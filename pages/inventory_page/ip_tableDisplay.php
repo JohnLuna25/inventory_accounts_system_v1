@@ -27,6 +27,7 @@ if (!$result)
 
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="ip_table.css">
     <style>
         body {
             font-family: Arial;
@@ -105,8 +106,13 @@ if (!$result)
                     <td><?= $current ?></td>
                     <td class="remarks" title="<?= htmlspecialchars($row['remarks']) ?>">
                     <td>
-                        <a href="ip_editModal.php?id=<?= $row['id'] ?>" class="edit-modal-btn">Edit</a>
+                        <!-- EDIT BUTTON (POST, no ID in URL) -->
+                        <form method="POST" style="display:inline;">
+                            <input type="hidden" name="id" value="<?= $row['id'] ?>">
+                            <button type="submit" formaction="ip_editModal.php">Edit</button>
+                        </form>
 
+                        <!-- DELETE BUTTON (your existing one) -->
                         <form method="POST" style="display:inline;" onsubmit="return confirm('Are you sure?')">
                             <input type="hidden" name="id" value="<?= $row['id'] ?>">
                             <input type="hidden" name="action" value="delete">

@@ -102,29 +102,9 @@ function fetchInventoryRows()
 
 ?>
 
-<!-- Modal Script -->
-<script>
-    function showConcreteDetails(id) {
-        fetch('view_design_ajax.php?id=' + id)
-            .then(response => response.text())
-            .then(data => {
-                const modal = document.getElementById('concreteModal');
-                const details = document.getElementById('concreteDetails');
-                if (modal && details) {
-                    details.innerHTML = data;
-                    modal.style.display = 'flex';
-                }
-            })
-            .catch(err => {
-                alert('Error fetching design details.');
-                console.error(err);
-            });
-    }
 
-    function closeModal() {
-        const modal = document.getElementById('concreteModal');
-        if (modal) modal.style.display = 'none';
-    }
+<script>
+
 
 
 
