@@ -1,0 +1,27 @@
+/* Inventory Buttons */
+.add-inventory-btn,
+.open-mixture-btn {
+  display: inline-block;
+  padding: 5px 10px;
+  font-weight: bold;
+  border-radius: 5px;
+  text-decoration: none;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.add-inventory-btn {
+  background-color: #0400ff;
+}
+
+.add-inventory-btn:hover {
+  background-color: #1976d2;
+}
+
+.open-mixture-btn {
+  background-color: #0400ff;
+}
+
+.open-mixture-btn:hover {
+  background-color: #1976d2;
+}

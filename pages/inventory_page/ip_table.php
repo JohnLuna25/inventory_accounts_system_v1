@@ -16,8 +16,9 @@ echo
 
             table {
                 border-collapse: collapse;
-                width: 90%;
+                width: 97%;
                 margin: 20px auto;
+                margin-top: 25px;
                 background: #ffffffff
             }
 
@@ -25,7 +26,7 @@ echo
             table td {
                 border: 1px solid #ccc;
                 padding: 8px;
-                text-align: left;
+                text-align: center;
             }
 
             table th {

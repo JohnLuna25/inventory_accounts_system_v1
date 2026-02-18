@@ -4,19 +4,45 @@ require_once __DIR__ . '/../../FunctionAndDB/db_connect.php';
 
 showHeader();
 
+// --- Initialize variables ---
 $order_date = $delivery_date = $customer_name = $full_address = $concrete_type = $order_status = "";
 $cubic_meters = 0;
 $error_message = "";
 
-// --- Map database status values to human-readable labels ---
+// --- Status labels mapping ---
 $statusLabels = [
-    'pending' => 'Pending',
-    'in_progress' => 'In Progress',
-    'delivered' => 'Delivered',
-    'done' => 'Done'
+    'Pending' => 'Pending',
+    'In Progress' => 'In Progress',
+    'Delivered' => 'Delivered',
+    'Done' => 'Done'
 ];
 
-// Load existing data if editing
+// --- Fetch concrete PSI options from database ---
+$concreteOptions = [];
+$sql = "SELECT concrete_psi, curration_days FROM sorcom_concrete_design_masterlist";
+$concreteOptions = [];
+if ($result = $conn->query($sql)) {
+    while ($row = $result->fetch_assoc()) {
+        $concreteOptions[] = $row;
+    }
+    $result->free();
+} else {
+    $error_message = "Could not load concrete designs: " . $conn->error;
+}
+
+// --- Fetch unique description options from database ---
+$descriptionOptions = [];
+$sqlDesc = "SELECT DISTINCT concrete_type FROM sorcom_concrete_design_masterlist";
+if ($resultDesc = $conn->query($sqlDesc)) {
+    while ($row = $resultDesc->fetch_assoc()) {
+        $descriptionOptions[] = $row['concrete_type'];
+    }
+    $resultDesc->free();
+} else {
+    $error_message = "Could not load description options: " . $conn->error;
+}
+
+// --- Load existing data if editing ---
 if (isset($_GET['id'])) {
     $id = intval($_GET['id']);
     $stmt = $conn->prepare("SELECT order_date, delivery_date, customer_name, full_address, concrete_type, cubic_meters, order_status FROM statement_of_account WHERE id=?");
@@ -27,7 +53,7 @@ if (isset($_GET['id'])) {
     $stmt->close();
 }
 
-// Handle form submission
+// --- Handle form submission ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $order_date = $_POST['order_date'] ?? '';
     $delivery_date = $_POST['delivery_date'] ?? '';
@@ -77,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <?php endif; ?>
 
     <form method="POST"
-        style="background-color: #fff; padding: 25px 30px; border-radius: 8px; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15); display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; row-gap: 15px; width: 800px; max-width: 90%;">
+        style="background-color: #fff; padding: 25px 30px; border-radius: 8px; display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; row-gap: 15px; width: 800px; max-width: 90%;">
         <h2 style="grid-column: 1 / -1; text-align: center; margin-bottom: 20px;">Concrete Order Form</h2>
 
         <div>
@@ -106,13 +132,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <div>
-            <label for="concrete_type">Concrete Design:</label>
+            <label for="concrete_type">Concrete Design (PSI):</label>
             <select id="concrete_type" name="concrete_type" required style="width: 100%; padding: 8px;">
-                <option value="">--Select Type--</option>
-                <option value="standard" <?= $concrete_type === 'standard' ? 'selected' : '' ?>>Standard</option>
-                <option value="decorative" <?= $concrete_type === 'decorative' ? 'selected' : '' ?>>Decorative</option>
-                <option value="high_strength" <?= $concrete_type === 'high_strength' ? 'selected' : '' ?>>High Strength
-                </option>
+                <option value="">--Select Concrete PSI--</option>
+                <?php foreach ($concreteOptions as $opt):
+                    $display = $opt['concrete_psi'] . " -- " . $opt['curration_days'] . " days";
+                    ?>
+                    <option value="<?= htmlspecialchars($display) ?>" <?= $concrete_type === $display ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($display) ?>
+                    </option>
+                <?php endforeach; ?>
             </select>
         </div>
 
@@ -123,16 +152,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <div>
-            <label for="order_status">Order Status:</label>
-            <select id="order_status" name="order_status" required style="width: 100%; padding: 8px;">
-                <option value="">--Select Status--</option>
-                <option value="Pending" <?= $order_status === 'Pending' ? 'selected' : '' ?>>Pending</option>
-                <option value="In Progress" <?= $order_status === 'In Progress' ? 'selected' : '' ?>>In Progress</option>
-                <option value="Delivered" <?= $order_status === 'Delivered' ? 'selected' : '' ?>>Delivered</option>
-                <option value="Done" <?= $order_status === 'Done' ? 'selected' : '' ?>>Done</option>
+            <label for="description">Description:</label>
+            <select id="description" name="description" required style="width: 100%; padding: 8px;">
+                <option value="">--Select Description--</option>
+                <?php foreach ($descriptionOptions as $desc): ?>
+                    <option value="<?= htmlspecialchars($desc) ?>" <?= (isset($description) && $description === $desc) ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($desc) ?>
+                    </option>
+                <?php endforeach; ?>
             </select>
         </div>
 
+        <div>
+            <label for="order_status">Order Status:</label>
+            <select id="order_status" name="order_status" required style="width: 100%; padding: 8px;">
+                <option value="">--Select Status--</option>
+                <?php foreach ($statusLabels as $key => $label): ?>
+                    <option value="<?= $key ?>" <?= $order_status === $key ? 'selected' : '' ?>><?= $label ?></option>
+                <?php endforeach; ?>
+            </select>
+        </div>
 
         <?php if (!empty($_GET['id'])): ?>
             <input type="hidden" name="edit_id" value="<?= intval($_GET['id']) ?>">

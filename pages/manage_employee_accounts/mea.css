@@ -36,15 +36,6 @@
   background-color: #e0e0e0;
 }
 
-/* Status update message */
-.status-message {
-  text-align: bottom;
-  color: green;
-  font-weight: bold;
-  margin-top: 20px; /* small spacing above message */
-  transition: opacity 1s ease; /* smooth fade */
-}
-
 /* No employees message */
 .no-employees {
   text-align: center;

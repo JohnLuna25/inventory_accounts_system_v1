@@ -23,7 +23,7 @@ $result = $conn->query($sql);
     <h2 style="text-align:center; margin-top:60px;">Concrete Orders</h2>
 
     <div class="table-controls"
-        style="width:95%; margin:auto; display:flex; justify-content: space-between; margin-bottom:10px;">
+        style="width:100%; margin:auto; display:flex; justify-content: space-between; margin-bottom:2%;">
         <a href="sap_accountsForm.php" class="add-order-btn">+ Add Order</a>
         <a href="sap_finishedOrders.php" class="show-finished-btn">Show Finished Orders</a>
     </div>
