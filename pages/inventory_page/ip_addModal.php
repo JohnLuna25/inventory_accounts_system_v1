@@ -5,7 +5,6 @@ require_once __DIR__ . '/../../FunctionAndDB/db_connect.php';
 $date_added = $design_mix = $batch = $remarks = $concrete_type = "";
 $stocks_in = $stocks_out = 0;
 $error_message = "";
-$is_edit = false;
 
 // --- Fetch unique PSI + curing days combinations ---
 $concreteOptions = [];
@@ -37,22 +36,9 @@ if ($resultType = $conn->query($sqlType)) {
     $resultType->free();
 }
 
-// --- Load existing inventory if editing (GET request) ---
-if (isset($_GET['id'])) {
-    $is_edit = true;
-    $id = intval($_GET['id']);
-    $stmt = $conn->prepare("SELECT date_added, design_mix_id, batch, stocks_in, stocks_out, remarks, concrete_type 
-                            FROM sorcom_readymix_inventory WHERE id=?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $stmt->bind_result($date_added, $design_mix, $batch, $stocks_in, $stocks_out, $remarks, $concrete_type);
-    $stmt->fetch();
-    $stmt->close();
-}
-
-// --- Handle form submission (POST request) ---
+// --- Handle form submission (POST) ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $id = intval($_POST['edit_id'] ?? $_GET['id'] ?? 0);
+
     $date_added = $_POST['date_added'] ?? date('Y-m-d');
     $design_mix = $_POST['design_mix'] ?? '';
     $batch = $_POST['batch'] ?? '';
@@ -61,34 +47,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $remarks = $_POST['remarks'] ?? '';
     $concrete_type = $_POST['concrete_type'] ?? '';
 
-    if ($id > 0) {
-        // UPDATE existing record
-        $stmt = $conn->prepare("UPDATE sorcom_readymix_inventory 
-            SET date_added=?, design_mix_id=?, batch=?, stocks_in=?, stocks_out=?, remarks=?, concrete_type=? 
-            WHERE id=?");
-        $stmt->bind_param("sssiiisi", $date_added, $design_mix, $batch, $stocks_in, $stocks_out, $remarks, $concrete_type, $id);
-    } else {
-        // INSERT new record
-        $stmt = $conn->prepare("INSERT INTO sorcom_readymix_inventory 
-            (date_added, design_mix_id, batch, stocks_in, stocks_out, remarks, concrete_type) 
-            VALUES (?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssiiis", $date_added, $design_mix, $batch, $stocks_in, $stocks_out, $remarks, $concrete_type);
-    }
+    // Direct query instead of prepared statement
+    $sql = "INSERT INTO sorcom_readymix_inventory 
+        (date_added, design_mix_id, batch, stocks_in, stocks_out, remarks, concrete_type) 
+        VALUES ('$date_added', '$design_mix', '$batch', $stocks_in, $stocks_out, '$remarks', '$concrete_type')";
 
-    if ($stmt->execute()) {
-        $stmt->close();
+    if ($conn->query($sql)) {
         header("Location: inventory_management.php");
         exit;
     } else {
-        $error_message = "Error saving inventory: " . $stmt->error;
-    }
-
-    // Add debug here too
-    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        echo "<!-- DEBUG POST: remarks=[" . var_export($_POST['remarks'], true) . "] -->";
-        // ... rest of code
+        $error_message = "Error saving inventory: " . $conn->error;
     }
 }
+
+$conn->close();
 ?>
 
 <!DOCTYPE html>
@@ -110,7 +82,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <form method="POST"
         style="background-color: #fff; padding: 25px 30px; border-radius: 8px; display: grid; grid-template-columns: 1fr 1fr; column-gap: 20px; row-gap: 15px; width: 800px; max-width: 90%;">
         <h2 style="grid-column: 1 / -1; text-align: center; margin-bottom: 20px;">
-            <?= isset($_GET['id']) ? "Edit Inventory" : "Add Inventory" ?>
+            Add Inventory
         </h2>
 
         <!-- Date -->
@@ -132,7 +104,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <?= htmlspecialchars($display) ?>
                     </option>
                 <?php endforeach; ?>
-
             </select>
         </div>
 
@@ -177,16 +148,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 style="width: 100%; padding: 8px;"><?= htmlspecialchars($remarks) ?></textarea>
         </div>
 
-        <?php if (isset($_GET['id'])): ?>
-            <input type="hidden" name="edit_id" value="<?= intval($_GET['id']) ?>">
-        <?php endif; ?>
-
         <!-- Submit Buttons -->
         <div style="grid-column: 1 / -1; display: flex; justify-content: center; margin-top: 20px;">
             <input type="submit" value="Save Inventory"
                 style="background-color: #4caf50; color: white; border: none; padding: 10px 20px; border-radius: 5px; margin-right: 10px; cursor: pointer;">
-            <input type="button" value="Cancel" onclick="window.history.back();"
-                style="background-color: #f44336; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+            <a href="inventory_management.php"
+                style="background-color: #f44336; color: white; border: none; padding: 10px 20px; border-radius: 5px; text-decoration: none; display: inline-block; line-height: normal;">Cancel</a>
         </div>
     </form>
 
