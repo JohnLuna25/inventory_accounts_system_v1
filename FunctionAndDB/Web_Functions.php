@@ -2,67 +2,67 @@
 function showHeader()
 {
     echo '
-    <div style="
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        background-color: blue;
-        padding: 5px 15px;
-        width: 100%;
-        position: fixed;
-        top: 0;
-        left: 0;
-        z-index: 1000;
-        box-sizing: border-box;
-        height: 60px;
-    ">
-        <!-- Left Links -->
-        <div style="display: flex; align-items: center; gap: 8px;">
-            <a href="javascript:history.back()">
-                <img src="/Inventory-Accounts-System-v1/assets/images/back_button.png" 
-                     alt="Back" style="height: 30px; cursor: pointer;">
-            </a>
-            <a href="/Inventory-Accounts-System-v1/pages/home_page/home.php">
-                <img src="/Inventory-Accounts-System-v1/assets/images/home_button.png" 
-                     alt="Home" style="height: 30px; cursor: pointer;">
-            </a>
-        </div>
-
-        <!-- Center Title -->
         <div style="
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: blue;
+            padding: 5px 15px;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-sizing: border-box;
+            height: 60px;
         ">
-            <h1 style="font-family: Arial, sans-serif; font-size: 18px; font-weight: bold; color: yellow; margin: 0;">
-                SORCOM READY-MIX CONCRETE
-            </h1>
-            <p style="font-family: Arial, sans-serif; font-size: 12px; font-weight: 600; color: yellow; margin: 0;">
-                Inventory and Accounts Management System.
-            </p>
+            <!-- Left Links -->
+            <div style="display: flex; align-items: center; gap: 8px;">
+                <a href="javascript:history.back()">
+                    <img src="/Inventory-Accounts-System-v1/assets/images/back_button.png" 
+                        alt="Back" style="height: 30px; cursor: pointer;">
+                </a>
+                <a href="/Inventory-Accounts-System-v1/pages/home_page/home.php">
+                    <img src="/Inventory-Accounts-System-v1/assets/images/home_button.png" 
+                        alt="Home" style="height: 30px; cursor: pointer;">
+                </a>
+            </div>
+
+            <!-- Center Title -->
+            <div style="
+                position: absolute;
+                left: 50%;
+                transform: translateX(-50%);
+                text-align: center;
+            ">
+                <h1 style="font-family: Arial, sans-serif; font-size: 18px; font-weight: bold; color: yellow; margin: 0;">
+                    SORCOM READY-MIX CONCRETE
+                </h1>
+                <p style="font-family: Arial, sans-serif; font-size: 12px; font-weight: 600; color: yellow; margin: 0;">
+                    Inventory and Accounts Management System.
+                </p>
+            </div>
+
+            <!-- Right Date -->
+            <div style="font-family: Arial, sans-serif; font-weight: 600; font-size: 14px; color: yellow;">
+            <p id="clock"></p>
+            </div>
         </div>
 
-        <!-- Right Date -->
-        <div style="font-family: Arial, sans-serif; font-weight: 600; font-size: 14px; color: yellow;">
-           <p id="clock"></p>
-        </div>
-    </div>
-
-    <script>
-        function realClockTime() {
-            const now = new Date();
-            const options = { month: "short", day: "2-digit", year: "numeric" };
-            const dateStr = now.toLocaleDateString("en-US", options).replace(",", ".");
-            let hours = now.getHours().toString().padStart(2, "0");
-            let minutes = now.getMinutes().toString().padStart(2, "0");
-            let seconds = now.getSeconds().toString().padStart(2, "0");
-            document.getElementById("clock").textContent = dateStr + " || " + hours + ":" + minutes + ":" + seconds;
-        }
-        setInterval(realClockTime, 1000);
-        realClockTime();
-    </script>
-    ';
+        <script>
+            function realClockTime() {
+                const now = new Date();
+                const options = { month: "short", day: "2-digit", year: "numeric" };
+                const dateStr = now.toLocaleDateString("en-US", options).replace(",", ".");
+                let hours = now.getHours().toString().padStart(2, "0");
+                let minutes = now.getMinutes().toString().padStart(2, "0");
+                let seconds = now.getSeconds().toString().padStart(2, "0");
+                document.getElementById("clock").textContent = dateStr + " || " + hours + ":" + minutes + ":" + seconds;
+            }
+            setInterval(realClockTime, 1000);
+            realClockTime();
+        </script>
+        ';
 }
 
 
@@ -104,10 +104,6 @@ function fetchInventoryRows()
 
 
 <script>
-
-
-
-
 
     var iSorcom = 0;
     var iIAMS = 0;

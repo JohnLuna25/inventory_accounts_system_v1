@@ -1,0 +1,79 @@
+body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background: #bfc3aa;
+  color: #000;
+  text-align: center;
+}
+
+h2 {
+  color: #000;
+}
+
+.form-container {
+  background: white;
+  width: 500px;
+  margin: 50px auto;
+  padding: 25px;
+  border-radius: 5px;
+}
+
+.form-container h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.form-container .form-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.form-container .form-row label {
+  width: 100px;
+  text-align: left;
+  font-weight: bold;
+}
+
+.form-container .form-row input {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  box-sizing: border-box;
+}
+
+.form-container .form-row:last-child {
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.form-container .form-row button,
+.form-container .form-row a {
+  padding: 10px 30px;
+  margin: 0 5px;
+  border-radius: 4px;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+  display: inline-block;
+}
+
+.form-container .form-row button[type="submit"] {
+  background: #37dd37;
+  color: white;
+}
+
+.form-container .form-row button[type="submit"]:hover {
+  background: #2eb82e;
+}
+
+.form-container .form-row a {
+  background: #ccc;
+  color: #333;
+}
+
+.form-container .form-row a:hover {
+  background: #bbbbbb;
+}

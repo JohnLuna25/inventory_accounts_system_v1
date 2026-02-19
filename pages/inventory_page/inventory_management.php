@@ -84,7 +84,7 @@ $conn->close();
         .add-inventory-btn,
         .open-mixture-btn {
             padding: 10px 15px;
-            background-color: #4CAF50;
+            background-color: #0b63c4;
             color: white;
             text-decoration: none;
             border-radius: 4px;
@@ -92,7 +92,7 @@ $conn->close();
 
         .add-inventory-btn:hover,
         .open-mixture-btn:hover {
-            background-color: #45a049;
+            background-color: #0e4a8b;
         }
 
         .error {

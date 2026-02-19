@@ -1,0 +1,128 @@
+/* mixture_inventory.css - Styles for the mixture inventory table */
+
+body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background: #bfc3aa;
+  color: #000;
+}
+
+h2 {
+  text-align: center;
+  margin-top: 57px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 97%;
+  margin: 20px auto;
+  margin-top: 83px;
+  background: #fff;
+  width: 96.3%;
+}
+
+table th,
+table td {
+  border: 1px solid #ccc;
+  padding: 8px;
+  text-align: center;
+}
+
+table th {
+  background: #0b63c4;
+  color: #fff;
+}
+
+.btn-edit {
+  background: #0b63c4;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-edit:hover {
+  background: #0e4a8b;
+}
+
+.btn-delete {
+  background: #f44336;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn-delete:hover {
+  background: #d32f2f;
+}
+
+.form-container {
+  background: white;
+  width: 450px;
+  margin: 50px auto;
+  padding: 20px;
+  border-radius: 5px;
+}
+
+.form-container h2 {
+  margin-top: 0;
+}
+
+.form-container .form-row {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.form-container .form-row label {
+  width: 120px;
+  text-align: left;
+  font-weight: bold;
+}
+
+.form-container .form-row input {
+  flex: 1;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+.form-container .form-row button,
+.form-container .form-row a {
+  padding: 8px 20px;
+  margin-right: 10px;
+  border-radius: 4px;
+  text-decoration: none;
+  cursor: pointer;
+  border: none;
+}
+
+.form-container .form-row button[type="submit"] {
+  background: #37dd37;
+  color: white;
+}
+
+.form-container .form-row a {
+  background: #ccc;
+  color: #333;
+}
+
+.mixture-controls {
+  padding: 10px 15px;
+  background-color: #0b63c4;
+  color: white;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 4px;
+  display: inline-block;
+  float: left;
+  margin-left: 7px;
+}
+
+.mixture-controls:hover {
+  background-color: #0e4a8b;
+}

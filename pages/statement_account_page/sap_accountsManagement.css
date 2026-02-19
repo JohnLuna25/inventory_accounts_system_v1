@@ -178,6 +178,10 @@ table tbody tr:hover {
   padding: 12px 15px;
 }
 
+.orders-table:hover {
+  background-color: #1976d2;
+}
+
 /* Buttons */
 .add-order-btn,
 .show-finished-btn {

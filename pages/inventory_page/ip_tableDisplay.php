@@ -31,7 +31,7 @@ if (!$result)
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="ip_table.css">
-
+    <?php showHeader() ?>
 
     <style>
         body {
@@ -85,21 +85,7 @@ if (!$result)
 </head>
 
 <body>
-    <?php showHeader(); ?>
-    
-    <script>
-        function realClockTime() {
-            const now = new Date();
-            const options = { month: "short", day: "2-digit", year: "numeric" };
-            const dateStr = now.toLocaleDateString("en-US", options).replace(",", ".");
-            let hours = now.getHours().toString().padStart(2, "0");
-            let minutes = now.getMinutes().toString().padStart(2, "0");
-            let seconds = now.getSeconds().toString().padStart(2, "0");
-            document.getElementById("clock").textContent = dateStr + " || " + hours + ":" + minutes + ":" + seconds;
-        }
-        setInterval(realClockTime, 1000);
-        realClockTime();
-    </script>
+
     <table>
         <thead>
             <tr>
