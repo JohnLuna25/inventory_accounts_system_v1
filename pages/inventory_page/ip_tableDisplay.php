@@ -1,4 +1,7 @@
 <?php
+
+require_once __DIR__ . '/../../FunctionAndDB/Web_Functions.php';
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
@@ -28,6 +31,8 @@ if (!$result)
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="ip_table.css">
+
+
     <style>
         body {
             font-family: Arial;
@@ -36,7 +41,7 @@ if (!$result)
 
         table {
             border-collapse: collapse;
-            width: 100%;
+            width: 95%;
         }
 
         th,
@@ -51,7 +56,7 @@ if (!$result)
         }
 
         .edit-btn {
-            background: #4caf50;
+            background: #0b63c4;
             color: white;
             border: none;
             padding: 5px 10px;
@@ -61,7 +66,7 @@ if (!$result)
         }
 
         .edit-btn:hover {
-            background: #45a049;
+            background: #0e4a8b;
         }
 
         button.delete-btn {
@@ -80,7 +85,21 @@ if (!$result)
 </head>
 
 <body>
-
+    <?php showHeader(); ?>
+    
+    <script>
+        function realClockTime() {
+            const now = new Date();
+            const options = { month: "short", day: "2-digit", year: "numeric" };
+            const dateStr = now.toLocaleDateString("en-US", options).replace(",", ".");
+            let hours = now.getHours().toString().padStart(2, "0");
+            let minutes = now.getMinutes().toString().padStart(2, "0");
+            let seconds = now.getSeconds().toString().padStart(2, "0");
+            document.getElementById("clock").textContent = dateStr + " || " + hours + ":" + minutes + ":" + seconds;
+        }
+        setInterval(realClockTime, 1000);
+        realClockTime();
+    </script>
     <table>
         <thead>
             <tr>
@@ -111,7 +130,7 @@ if (!$result)
                     <td><?= htmlspecialchars($row['remarks']) ?></td>
                     <td>
                         <!-- EDIT BUTTON - Using link instead of form -->
-                        <a href="ip_editModal.php?id=<?= $row['id'] ?>" class="edit-btn">Edit</a>
+                        <a href="ip_editForm.php?id=<?= $row['id'] ?>" class="edit-btn">Edit</a>
 
                         <!-- DELETE BUTTON -->
                         <form method="POST" style="display:inline;" onsubmit="return confirm('Are you sure?')">

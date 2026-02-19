@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_id'])) {  // C
 // Close DB connection if not needed further
 $conn->close();
 ?>
-<?php showHeader(); ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -56,6 +56,7 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventory Management</title>
     <link rel="stylesheet" href="inventory_management.css">
+
     <style>
         /* Inline styles for simplicity; move to CSS file if preferred */
         body {
@@ -103,7 +104,7 @@ $conn->close();
 </head>
 
 <body>
-    <?php showHeader(); ?>
+
 
     <h2>Ready-Mix Inventory</h2>
 
