@@ -5,8 +5,8 @@ require_once __DIR__ . '/../../FunctionAndDB/db_connect.php';
 $date_added = $design_mix = $batch = $remarks = $concrete_type = "";
 $stocks_in = $stocks_out = 0;
 $error_message = "";
+$is_edit = false;
 
-// --- Fetch unique PSI + curing days combinations ---
 // --- Fetch unique PSI + curing days combinations ---
 $concreteOptions = [];
 $sql = "SELECT DISTINCT concrete_psi, curration_days FROM sorcom_concrete_design_masterlist";
@@ -16,7 +16,6 @@ if ($result = $conn->query($sql)) {
     }
     $result->free();
 
-    // --- Sort: first by concrete_psi ascending, then by curration_days in order 7, 14, 28 ---
     usort($concreteOptions, function ($a, $b) {
         if ($a['concrete_psi'] != $b['concrete_psi']) {
             return $a['concrete_psi'] <=> $b['concrete_psi'];
@@ -26,10 +25,7 @@ if ($result = $conn->query($sql)) {
         $posB = array_search((int) $b['curration_days'], $order);
         return $posA <=> $posB;
     });
-} else {
-    $error_message = "Could not load concrete designs: " . $conn->error;
 }
-
 
 // --- Fetch unique concrete_type options ---
 $concreteTypeOptions = [];
@@ -41,8 +37,9 @@ if ($resultType = $conn->query($sqlType)) {
     $resultType->free();
 }
 
-// --- Load existing inventory if editing ---
+// --- Load existing inventory if editing (GET request) ---
 if (isset($_GET['id'])) {
+    $is_edit = true;
     $id = intval($_GET['id']);
     $stmt = $conn->prepare("SELECT date_added, design_mix_id, batch, stocks_in, stocks_out, remarks, concrete_type 
                             FROM sorcom_readymix_inventory WHERE id=?");
@@ -53,9 +50,9 @@ if (isset($_GET['id'])) {
     $stmt->close();
 }
 
-// --- Handle form submission ---
-// --- Handle form submission ---
+// --- Handle form submission (POST request) ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $id = intval($_POST['edit_id'] ?? $_GET['id'] ?? 0);
     $date_added = $_POST['date_added'] ?? date('Y-m-d');
     $design_mix = $_POST['design_mix'] ?? '';
     $batch = $_POST['batch'] ?? '';
@@ -64,21 +61,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $remarks = $_POST['remarks'] ?? '';
     $concrete_type = $_POST['concrete_type'] ?? '';
 
-    $stmt = $conn->prepare("INSERT INTO sorcom_readymix_inventory 
-        (date_added, design_mix_id, batch, stocks_in, stocks_out, remarks, concrete_type) 
-        VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("sssiiis", $date_added, $design_mix, $batch, $stocks_in, $stocks_out, $remarks, $concrete_type);
+    if ($id > 0) {
+        // UPDATE existing record
+        $stmt = $conn->prepare("UPDATE sorcom_readymix_inventory 
+            SET date_added=?, design_mix_id=?, batch=?, stocks_in=?, stocks_out=?, remarks=?, concrete_type=? 
+            WHERE id=?");
+        $stmt->bind_param("sssiiisi", $date_added, $design_mix, $batch, $stocks_in, $stocks_out, $remarks, $concrete_type, $id);
+    } else {
+        // INSERT new record
+        $stmt = $conn->prepare("INSERT INTO sorcom_readymix_inventory 
+            (date_added, design_mix_id, batch, stocks_in, stocks_out, remarks, concrete_type) 
+            VALUES (?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssiiis", $date_added, $design_mix, $batch, $stocks_in, $stocks_out, $remarks, $concrete_type);
+    }
 
     if ($stmt->execute()) {
         $stmt->close();
-        // ✅ Redirect to inventory_management.php instead of ip_tableDisplay.php
         header("Location: inventory_management.php");
         exit;
     } else {
         $error_message = "Error saving inventory: " . $stmt->error;
     }
-}
 
+    // Add debug here too
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        echo "<!-- DEBUG POST: remarks=[" . var_export($_POST['remarks'], true) . "] -->";
+        // ... rest of code
+    }
+}
 ?>
 
 <!DOCTYPE html>

@@ -1,7 +1,6 @@
 <?php
-// ip_editModal.php - Modal content only (no full HTML page)
+// ip_editModal.php - Full page edit form
 
-// Include database connection (if needed for data fetching)
 require_once __DIR__ . '/../../FunctionAndDB/db_connect.php';
 
 if (!$conn || $conn->connect_errno) {
@@ -13,13 +12,13 @@ $error_message = "";
 $date_added = $design_mix = $batch = $remarks = $concrete_type = "";
 $stocks_in = $stocks_out = 0;
 
-// Redirect if no ID from POST (this must happen before any output)
-if (!isset($_POST['id'])) {
+// Check for ID using GET (not POST)
+if (!isset($_GET['id'])) {
     header("Location: inventory_management.php");
     exit;
 }
 
-$id = intval($_POST['id']);
+$id = intval($_GET['id']);
 
 // Fetch unique PSI + curing days options
 $concreteOptions = [];
@@ -55,82 +54,102 @@ if ($stmt) {
 
 // Close database connection
 $conn->close();
+
+// Handle form submission (POST)
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+    // Get ID from hidden field OR from GET
+    $id = intval($_POST['update_id'] ?? $_GET['id'] ?? 0);
+
+    $date_added = $_POST['date_added'] ?? date('Y-m-d');
+    $design_mix = $_POST['design_mix'] ?? '';
+    $batch = $_POST['batch'] ?? '';
+    $stocks_in = intval($_POST['stocks_in'] ?? 0);
+    $stocks_out = intval($_POST['stocks_out'] ?? 0);
+    $remarks = $_POST['remarks'] ?? '';
+    $concrete_type = $_POST['concrete_type'] ?? '';
+
+    $conn2 = new mysqli('localhost', 'root', '', 'sorcom_db');
+
+    // Direct query instead of prepared statement
+    $sql = "UPDATE sorcom_readymix_inventory 
+        SET date_added='$date_added', 
+            design_mix_id='$design_mix', 
+            batch='$batch', 
+            stocks_in=$stocks_in, 
+            stocks_out=$stocks_out, 
+            remarks='$remarks', 
+            concrete_type='$concrete_type' 
+        WHERE id=$id";
+
+    $conn2->query($sql);
+    $conn2->close();
+
+    header("Location: inventory_management.php");
+    exit;
+}
 ?>
 
-<!-- Modal Content Only (No full HTML structure) -->
-<div id="editModal"
-    style="display: block; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000;">
-    <div class="modal-content">
-        <?php if ($error_message): ?>
-            <p class="error"><?php echo htmlspecialchars($error_message); ?></p>
-        <?php endif; ?>
+<!DOCTYPE html>
+<html lang="en">
 
-        <form method="POST" action="inventory_management.php">
-            <h2>Edit Inventory</h2>
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Inventory</title>
+</head>
 
-            <div class="form-row">
-                <label for="date_added">Date <span style="color: red;">*</span>:</label>
-                <input type="date" id="date_added" name="date_added"
-                    value="<?php echo htmlspecialchars($date_added); ?>" required>
-            </div>
+<body style="background-color: #bfc3aa; font-family: Arial; padding: 20px;">
 
-            <div class="form-row">
-                <label for="design_mix">Design Mix (PSI -- Days) <span style="color: red;">*</span>:</label>
-                <select id="design_mix" name="design_mix" required>
-                    <option value="">-- Select --</option>
-                    <?php foreach ($concreteOptions as $opt):
-                        $display = $opt['concrete_psi'] . " -- " . $opt['curration_days'];
-                        $selected = ($design_mix === $display) ? 'selected' : '';
-                        echo "<option value='" . htmlspecialchars($display) . "' $selected>" . htmlspecialchars($display) . "</option>";
-                    endforeach; ?>
-                </select>
-            </div>
+    <?php if ($error_message): ?>
+        <p style="color: red;"><?= htmlspecialchars($error_message) ?></p>
+    <?php endif; ?>
 
-            <div class="form-row">
-                <label for="concrete_type">Concrete Type <span style="color: red;">*</span>:</label>
-                <select id="concrete_type" name="concrete_type" required>
-                    <option value="">-- Select --</option>
-                    <?php foreach ($concreteTypeOptions as $type):
-                        $selected = ($concrete_type === $type) ? 'selected' : '';
-                        echo "<option value='" . htmlspecialchars($type) . "' $selected>" . htmlspecialchars($type) . "</option>";
-                    endforeach; ?>
-                </select>
-            </div>
+    <form method="POST" action="ip_editModal.php?id=<?= $id ?>"
+        style="background: white; padding: 20px; max-width: 600px; margin: auto;">
+        <h2>Edit Inventory</h2>
 
-            <div class="form-row">
-                <label for="batch">Batch:</label>
-                <input type="text" id="batch" name="batch" value="<?php echo htmlspecialchars($batch); ?>">
-            </div>
+        <input type="hidden" name="update_id" value="<?= $id ?>">
 
-            <div class="form-row">
-                <label for="stocks_in">Stocks In:</label>
-                <input type="number" id="stocks_in" name="stocks_in" value="<?php echo intval($stocks_in); ?>" min="0">
-            </div>
+        <label>Date:</label>
+        <input type="date" name="date_added" value="<?= htmlspecialchars($date_added) ?>" required><br><br>
 
-            <div class="form-row">
-                <label for="stocks_out">Stocks Out:</label>
-                <input type="number" id="stocks_out" name="stocks_out" value="<?php echo intval($stocks_out); ?>"
-                    min="0">
-            </div>
+        <label>Design Mix:</label>
+        <select name="design_mix" required>
+            <option value="">-- Select --</option>
+            <?php foreach ($concreteOptions as $opt):
+                $display = $opt['concrete_psi'] . " -- " . $opt['curration_days']; ?>
+                <option value="<?= htmlspecialchars($display) ?>" <?= $design_mix === $display ? 'selected' : '' ?>>
+                    <?= htmlspecialchars($display) ?>
+                </option>
+            <?php endforeach; ?>
+        </select><br><br>
 
-            <div class="form-row">
-                <label for="remarks">Remarks:</label>
-                <textarea id="remarks" name="remarks"><?php echo htmlspecialchars($remarks); ?></textarea>
-            </div>
+        <label>Concrete Type:</label>
+        <select name="concrete_type" required>
+            <option value="">-- Select --</option>
+            <?php foreach ($concreteTypeOptions as $type): ?>
+                <option value="<?= htmlspecialchars($type) ?>" <?= $concrete_type === $type ? 'selected' : '' ?>>
+                    <?= htmlspecialchars($type) ?>
+                </option>
+            <?php endforeach; ?>
+        </select><br><br>
 
-            <input type="hidden" name="update_id" value="<?php echo $id; ?>">
+        <label>Batch:</label>
+        <input type="text" name="batch" value="<?= htmlspecialchars($batch) ?>"><br><br>
 
-            <!-- Wrap buttons in a row for centering -->
-            <div class="button-row">
-                <button type="submit">Save Inventory</button>
-                <button type="button" onclick="closeModal()">Cancel</button>
-            </div>
-        </form>
-    </div>
-</div>
+        <label>Stocks In:</label>
+        <input type="number" name="stocks_in" value="<?= $stocks_in ?>" min="0"><br><br>
 
-<script>
-    function closeModal() {
-        document.getElementById('editModal').style.display = 'none';
-    }
-</script>
+        <label>Stocks Out:</label>
+        <input type="number" name="stocks_out" value="<?= $stocks_out ?>" min="0"><br><br>
+
+        <label>Remarks:</label>
+        <textarea name="remarks" rows="4"><?= htmlspecialchars($remarks) ?></textarea><br><br>
+
+        <button type="submit" style="background: green; color: white; padding: 10px;">Save</button>
+        <a href="inventory_management.php"
+            style="background: red; color: white; padding: 10px; text-decoration: none;">Cancel</a>
+    </form>
+</body>
+
+</html>

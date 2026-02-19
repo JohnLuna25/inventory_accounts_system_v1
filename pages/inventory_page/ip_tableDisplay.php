@@ -85,6 +85,7 @@ if (!$result)
                 <th>ID</th>
                 <th>Date</th>
                 <th>Design Mix</th>
+                <th>Concrete Type</th>
                 <th>Batch</th>
                 <th>Stocks In</th>
                 <th>Stocks Out</th>
@@ -100,17 +101,15 @@ if (!$result)
                     <td><?= $row['id'] ?></td>
                     <td><?= htmlspecialchars($row['date_added']) ?></td>
                     <td><?= htmlspecialchars($row['design_mix_id']) ?></td>
+                    <td><?= htmlspecialchars($row['concrete_type']) ?></td>
                     <td><?= htmlspecialchars($row['batch']) ?></td>
                     <td><?= intval($row['stocks_in']) ?></td>
                     <td><?= intval($row['stocks_out']) ?></td>
                     <td><?= $current ?></td>
-                    <td class="remarks" title="<?= htmlspecialchars($row['remarks']) ?>">
+                    <td><?= htmlspecialchars($row['remarks']) ?></td>
                     <td>
                         <!-- EDIT BUTTON (POST, no ID in URL) -->
-                        <form method="POST" style="display:inline;">
-                            <input type="hidden" name="id" value="<?= $row['id'] ?>">
-                            <button type="submit" formaction="ip_editModal.php">Edit</button>
-                        </form>
+                        <a href="ip_editModal.php?id=<?= $row['id'] ?>" class="edit-btn">Edit</a>
 
                         <!-- DELETE BUTTON (your existing one) -->
                         <form method="POST" style="display:inline;" onsubmit="return confirm('Are you sure?')">
