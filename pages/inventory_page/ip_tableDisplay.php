@@ -50,15 +50,17 @@ if (!$result)
             background: #f4f4f4;
         }
 
-        a.edit-inventory-btn {
+        .edit-btn {
             background: #4caf50;
             color: white;
+            border: none;
             padding: 5px 10px;
-            text-decoration: none;
             border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
         }
 
-        a.edit-inventory-btn:hover {
+        .edit-btn:hover {
             background: #45a049;
         }
 
@@ -108,10 +110,10 @@ if (!$result)
                     <td><?= $current ?></td>
                     <td><?= htmlspecialchars($row['remarks']) ?></td>
                     <td>
-                        <!-- EDIT BUTTON (POST, no ID in URL) -->
+                        <!-- EDIT BUTTON - Using link instead of form -->
                         <a href="ip_editModal.php?id=<?= $row['id'] ?>" class="edit-btn">Edit</a>
 
-                        <!-- DELETE BUTTON (your existing one) -->
+                        <!-- DELETE BUTTON -->
                         <form method="POST" style="display:inline;" onsubmit="return confirm('Are you sure?')">
                             <input type="hidden" name="id" value="<?= $row['id'] ?>">
                             <input type="hidden" name="action" value="delete">

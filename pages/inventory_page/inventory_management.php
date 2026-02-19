@@ -112,30 +112,29 @@ $conn->close();
     <?php endif; ?>
 
     <div class="inventory-controls">
-        <a href="ip_addModal.php" class="add-inventory-btn">+ Add Inventory</a>
+        <a href="ip_addForm.php" class="add-inventory-btn">+ Add Inventory</a>
         <a href="mixture_inventory.php" class="open-mixture-btn">Open Mixture Inventory</a>
     </div>
 
     <!-- TABLE DISPLAY -->
     <?php include __DIR__ . '/ip_tableDisplay.php'; ?>
 
-    <!-- EDIT MODAL (Inline Content - Extracted from ip_editModal.php) -->
-    <div id="editModal"
+    <!-- EDIT MODAL (Inline Content - Extracted from ip_editForm.php) -->
+    <div id="editForm"
         style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000;">
         <div
             style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 8px; max-width: 700px; width: 90%;">
-            <!-- Insert the form content from ip_editModal.php here, without DOCTYPE/head/body -->
-            <!-- Example: Copy the <form> and related PHP from ip_editModal.php -->
-            <p>Modal content goes here. Replace with actual form from ip_editModal.php.</p>
+            <!-- Insert the form content from ip_editForm.php here, without DOCTYPE/head/body -->
+            <!-- Example: Copy the <form> and related PHP from ip_editForm.php -->
+            <p>Modal content goes here. Replace with actual form from ip_editForm.php.</p>
             <button onclick="closeModal()">Close</button>
         </div>
     </div>
 
     <!-- FUNCTION SOURCE -->
-    <script src="ip_functions.js"></script>
     <script>
         function closeModal() {
-            document.getElementById('editModal').style.display = 'none';
+            document.getElementById('editForm').style.display = 'none';
         }
         // Add logic to open modal, e.g., from table rows
     </script>
