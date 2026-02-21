@@ -1,73 +1,89 @@
 <style>
-    /* Sidebar container styling */
-    #sidebar {
-        background-color: lightblue;
-        padding: 0;
-        top: 131px;
-        width: 0;
-        /* Sidebar initially hidden */
-        min-height: 100vh;
-        position: fixed;
-        overflow: hidden;
-        transition: width 0.2s, padding 0.2s;
+    /* Main content: push buttons down from top */
+    #main-content {
+        transition: none;
+        /* no need for sidebar transition now */
     }
 
-    /* Sidebar list styling */
-    #sidebar ul {
-        display: flex;
-        flex-direction: column;
-        margin-top: 200px;
+    /* Dashboard buttons: 2 columns, 4 rows layout */
+    .dashboard-buttons {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+        justify-items: center;
+        /* center buttons horizontally */
+        align-items: center;
+        max-width: 800px;
+        /* optional, keeps them from stretching too far */
+        margin: 0 auto;
+        /* center the grid in the page */
     }
 
-    /* Buttons inside sidebar */
-    .sidebar-button {
-        margin: 5px 0;
-        background-color: cornflowerblue;
-        border-radius: 40px;
-        padding: 10px;
+    /* Individual buttons */
+    .dashboard-buttons button {
+        width: 200px;
+        height: 60px;
         font-size: 16px;
+        border-radius: 40px;
+        /* rounded-pill */
         cursor: pointer;
     }
 
-    /* Hover effect for sidebar buttons */
-    .sidebar-button:hover {
-        background-color: #0004ffff;
-        color: white;
+    /* Bootstrap buttons override if needed */
+    .dashboard-buttons .btn-primary {
+        background-color: #0d6efd;
+        /* standard primary color */
+        border: none;
     }
 
-    /* Main content area transitions when sidebar opens/closes */
-    #main-content {
-        transition: margin-left 0.2s;
+    .dashboard-buttons .btn-primary:hover {
+        background-color: #0b5ed7;
     }
 
-
-    /* Logout button appearance */
+    /* Logout button styling */
     #logout-button {
-        margin-top: 75px;
-        margin-bottom: 20px;
-        color: black;
-        background-color: #ff2600ff;
+        background-color: #ff2600;
+        color: white;
         border-radius: 20px;
         border: none;
         padding: 10px 20px;
-        cursor: pointer;
+        width: 200px;
     }
 
     #logout-button:hover {
-        background-color: #ff0000ff;
-        color: white;
+        background-color: #ff0000;
     }
 
-    /* Welcome message styling in sidebar */
-    #welcome-user {
-        font-size: 17px;
-        font-weight: bold;
-        color: darkblue;
+    /* Optional: responsive adjustment */
+    @media (max-width: 768px) {
+        #main-content {
+            padding-top: 800px;
+            /* smaller screens, less offset */
+        }
+
+        .dashboard-buttons {
+            grid-template-columns: 1fr;
+            /* single column on mobile */
+            gap: 1.5rem;
+        }
+
+        .dashboard-buttons button,
+        #logout-button {
+            width: 80%;
+            /* fit mobile screen */
+        }
+    }
+
+    /* Footer styling */
+    footer {
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        background-color: #0d6efd;
+        color: #ffd34e;
         text-align: center;
-        margin-top: -180px;
-        margin-bottom: 30px;
-        border-radius: 20px;
-        padding: 10px;
-        background-color: cornflowerblue;
+        padding: 5px 0;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
     }
 </style>

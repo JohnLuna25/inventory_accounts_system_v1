@@ -1,17 +1,10 @@
 <?php
-// Start a session to store user data
 session_start();
+require_once __DIR__ . '/../../FunctionAndDB/Web_Functions.php';
 
-// Include external PHP files with helper functions
-require_once __DIR__ . '/../../FunctionAndDB/Web_Functions.php'; // Web functions
-
-// Get the logged-in employee's name from session; default to 'User' if not set
 $employee_name = isset($_SESSION['employee_name']) ? htmlspecialchars($_SESSION['employee_name']) : 'User';
-
-// --- NEW: Get the role from session, default to Employee if not set ---
 $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Employee';
 ?>
-
 
 <!DOCTYPE html>
 <html lang="en">
@@ -21,12 +14,11 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Employee';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SORCOM Inventory and Accounts Management System</title>
 
-    <!-- External stylesheet -->
-    <link rel="stylesheet" href="/Inventory-Accounts-System-v1/assets/css/sidebar.css">
+    <!-- Bootstrap CSS -->
+    <link href="/Inventory-Accounts-System-v1/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
-
+    <!-- Optional custom styles -->
     <?php include 'home_style.php'; ?>
-
 </head>
 
 <body style="margin:0; font-family: Arial, sans-serif; 
@@ -36,150 +28,141 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Employee';
              background-repeat:no-repeat; 
              height:100vh;">
 
-    <!-- Header section with title, subtitle, logo, and clock -->
-    <div style="background-color: blue; padding: 7px; width: 100%; position: fixed; text-align: center;">
-        <h1 style="font-size: 30px; font-weight: bold; color: yellow;">SORCOM READY-MIX CONCRETE</h1>
-        <p style="font-size: 20px; font-weight: 600; color: yellow;">Inventory and Accounts Management System.</p>
+    <header class="position-fixed w-100 bg-primary" style="top:0; z-index:1040; height:110px; color: #ffff00;">
+        <div class="container-fluid h-100 d-flex align-items-center justify-content-between position-relative">
 
-        <img src="/Inventory-Accounts-System-v1/assets/images/SRMCP.jpg" alt="SORCOM Logo"
-            style="height:80px; width:auto; position:absolute; top:25px; left:45px;">
+            <!-- Left: Logo -->
+            <div class="d-flex align-items-center">
+                <img src="/Inventory-Accounts-System-v1/assets/images/SRMCP.jpg" alt="SORCOM Logo" height="60">
+            </div>
 
-        <p id="clock"
-            style="font-size: 18px; font-weight: 400; color: yellow; position: absolute; top: 60px; right: 30px; margin: 0;">
-            <!-- JavaScript will update the clock here -->
-        </p>
-    </div>
+            <!-- Right: Clock -->
+            <div class="d-flex align-items-center">
+                <p id="clock" class="mb-0" style="font-weight: bold; letter-spacing: 0.1em;"></p>
+            </div>
 
-    <!-- Sidebar menu -->
-    <div id="sidebar">
-        <ul>
-            <p id="welcome-user">
-                Welcome, <?php echo htmlspecialchars($employee_name); ?>!
-            </p>
+            <!-- Center: Title + Subtitle (absolute, won't affect flex) -->
+            <div class="position-absolute top-50 start-50 translate-middle text-center">
+                <h1 class="h4 mb-2" style="font-weight: bold;">SORCOM READY-MIX CONCRETE</h1>
+                <p class="mb-0" style="font-size: 1rem;">Inventory and Accounts Management System</p>
+            </div>
 
-            <!-- Concrete Design: Everyone can see -->
-            <button class="sidebar-button"
-                onclick="window.location.href='/Inventory-Accounts-System-v1/pages/concrete_design_page/concrete_design_list.php'">
-                Concrete Design List
-            </button>
+        </div>
+    </header>
+
+    <!-- Main content -->
+    <main id="main-content" class="container" style="padding-top:130px;">
+
+        <!-- Welcome message above buttons -->
+        <div class="text-center mb-4">
+            <span class="fw-bold" style="color: #ffff00; 
+         font-size: 1.5rem; 
+         -webkit-text-stroke: 0.6px black; 
+         text-stroke: 0.5px black;
+         letter-spacing: 0.1em;">
+                Welcome, <?php echo $employee_name; ?>!
+            </span>
+        </div>
+
+        <!-- Dashboard buttons -->
+        <div class="row row-cols-1 row-cols-md-2 g-5 justify-content-center">
+
+            <!-- Concrete Design -->
+            <div class="col d-flex justify-content-center">
+                <button class="btn btn-primary btn-lg w-75 rounded-pill"
+                    onclick="window.location.href='/Inventory-Accounts-System-v1/pages/concrete_design_page/concrete_design_list.php'">
+                    Concrete Design List
+                </button>
+            </div>
 
             <!-- Inventory Management: Manager only -->
             <?php if ($role === 'Manager'): ?>
-                <button class="sidebar-button"
-                    onclick="window.location.href='/Inventory-Accounts-System-v1/pages/inventory_page/inventory_management.php'">
-                    Inventory Management
-                </button>
+                <div class="col d-flex justify-content-center">
+                    <button class="btn btn-primary btn-lg w-75 rounded-pill"
+                        onclick="window.location.href='/Inventory-Accounts-System-v1/pages/inventory_page/inventory_management.php'">
+                        Inventory Management
+                    </button>
+                </div>
             <?php endif; ?>
 
-            <!-- User Accounts: Everyone -->
-            <button class="sidebar-button"
-                onclick="window.location.href='/Inventory-Accounts-System-v1/pages/statement_account_page/sap_accountsManagement.php'">
-                User Accounts
-            </button>
+            <!-- User Accounts -->
+            <div class="col d-flex justify-content-center">
+                <button class="btn btn-primary btn-lg w-75 rounded-pill"
+                    onclick="window.location.href='/Inventory-Accounts-System-v1/pages/statement_account_page/sap_accountsManagement.php'">
+                    User Accounts
+                </button>
+            </div>
 
             <!-- Reports: Manager only -->
             <?php if ($role === 'Manager'): ?>
-                <button class="sidebar-button"
-                    onclick="window.location.href='/Inventory-Accounts-System-v1/pages/reports_management.php'">
-                    Reports
-                </button>
+                <div class="col d-flex justify-content-center">
+                    <button class="btn btn-primary btn-lg w-75 rounded-pill"
+                        onclick="window.location.href='/Inventory-Accounts-System-v1/pages/reports_management.php'">
+                        Reports
+                    </button>
+                </div>
             <?php endif; ?>
 
-            <!-- Settings: Everyone -->
-            <button class="sidebar-button"
-                onclick="window.location.href='/Inventory-Accounts-System-v1/pages/settings_management.php'">
-                Settings
-            </button>
-
+            <!-- Settings -->
+            <div class="col d-flex justify-content-center">
+                <button class="btn btn-primary btn-lg w-75 rounded-pill"
+                    onclick="window.location.href='/Inventory-Accounts-System-v1/pages/settings_management.php'">
+                    Settings
+                </button>
+            </div>
 
             <!-- Add Manager: Manager only -->
             <?php if ($role === 'Manager'): ?>
-                <button class="sidebar-button"
-                    onclick="window.location.href='/Inventory-Accounts-System-v1/pages/add_manager_page/add_manager.php'">
-                    Add Manager
-                </button>
+                <div class="col d-flex justify-content-center">
+                    <button class="btn btn-primary btn-lg w-75 rounded-pill"
+                        onclick="window.location.href='/Inventory-Accounts-System-v1/pages/add_manager_page/add_manager.php'">
+                        Add Manager
+                    </button>
+                </div>
+
+                <div class="col d-flex justify-content-center">
+                    <button class="btn btn-primary btn-lg w-75 rounded-pill"
+                        onclick="window.location.href='/Inventory-Accounts-System-v1/pages/manage_employee_accounts/mea.php'">
+                        Manage Employee Accounts
+                    </button>
+                </div>
             <?php endif; ?>
 
-            <!-- Manage Employee Accounts: Manager only -->
-            <?php if (isset($role) && strtolower(trim($role)) === 'manager'): ?>
-                <button class="sidebar-button"
-                    onclick="window.location.href='/Inventory-Accounts-System-v1/pages/manage_employee_accounts/mea.php'">
-                    Manage Employee Accounts
+            <!-- Logout -->
+            <div class="col d-flex justify-content-center">
+                <button id="logout-button" class="btn btn-danger btn-lg w-75 rounded-pill"
+                    onclick="if(confirm('Did you save all changes?')){if(confirm('Are you sure you want to log out?')){window.location.href='/Inventory-Accounts-System-v1/login_page/web_login.php';}};">
+                    Logout
                 </button>
-            <?php endif; ?>
+            </div>
 
-            <!-- Logout: Everyone -->
-            <button id="logout-button" class="sidebar-button" style="margin-top: 20%"
-                onclick="if(confirm('Did you save all changes?')){if(confirm('Are you sure you want to log out?')){window.location.href='/Inventory-Accounts-System-v1/login_page/web_login.php';}};">
-                Logout
-            </button>
-        </ul>
-    </div>
+        </div>
+    </main>
 
-    <!-- Button to toggle sidebar open/close -->
-    <button id="toggle-btn"
-        style="position: fixed; top: 112px; left: -25px; transform: translateX(50%); border: none; background: none; color: darkblue; font-size: 24px; cursor: pointer;">➡️</button>
+    <!-- Footer -->
+    <footer class="bg-primary text-warning text-center py-2 fixed-bottom" style="font-size: px; text-align: center;">
+        &copy; <?php echo date("Y"); ?> SORCOM Ready-Mix Concrete. All rights reserved.
+    </footer>
 
-    <!-- Main content area -->
-    <div id="main-content" style="margin-left:0; padding: 20px;">
-
-
-
-
-
-    </div> <!-- End main content -->
-
-    <!-- Sidebar toggle JavaScript -->
+    <!-- Scripts -->
     <script>
-        const sidebar = document.getElementById("sidebar");
-        const mainContent = document.getElementById("main-content");
-        const toggleBtn = document.getElementById("toggle-btn");
-        let isClose = true;
-
-        toggleBtn.addEventListener("click", () => {
-            if (isClose) {
-                sidebar.style.width = "18%";
-                sidebar.style.padding = "10px";
-                mainContent.style.marginLeft = "18%";
-                toggleBtn.textContent = "⬅️";
-            } else {
-                sidebar.style.width = "0";
-                sidebar.style.padding = "0";
-                mainContent.style.marginLeft = "0";
-                toggleBtn.textContent = "➡️";
-            }
-            isClose = !isClose;
-        });
-
-        // Real-time clock display
+        // Clock
         function realClockTime() {
             const now = new Date();
             const options = { month: 'short', day: '2-digit', year: 'numeric' };
             const dateStr = now.toLocaleDateString('en-US', options).replace(',', '.');
-            let hours = now.getHours().toString().padStart(2, '0');
-            let minutes = now.getMinutes().toString().padStart(2, '0');
-            let seconds = now.getSeconds().toString().padStart(2, '0');
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
             document.getElementById('clock').textContent = `${dateStr} || ${hours}:${minutes}:${seconds}`;
         }
         setInterval(realClockTime, 1000);
         realClockTime();
     </script>
 
-</body>
+    <!-- Bootstrap JS -->
+    <script src="/Inventory-Accounts-System-v1/assets/bootstrap/js/bootstrap.bundle.min.js"></script>
 
-<footer style="
-    background-color: blue;
-    color: yellow;
-    text-align: center;
-    padding: 5px 0;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    font-family: Arial, sans-serif;
-    font-size: 14px;
-    box-shadow: 0 -2px 5px rgba(0,0,0,0.2);
-">
-    &copy; <?php echo date("Y"); ?> SORCOM Ready-Mix Concrete. All rights reserved.
-</footer>
+</body>
 
 </html>
