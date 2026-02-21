@@ -1,5 +1,4 @@
 <?php
-
 require_once __DIR__ . '/../../FunctionAndDB/Web_Functions.php';
 
 error_reporting(E_ALL);
@@ -89,9 +88,10 @@ if (!$result)
     <table>
         <thead>
             <tr>
-                <th>ID</th>
+
                 <th>Date</th>
                 <th>Design Mix</th>
+                <th>Curation Days</th>
                 <th>Concrete Type</th>
                 <th>Batch</th>
                 <th>Stocks In</th>
@@ -105,9 +105,9 @@ if (!$result)
             <?php while ($row = $result->fetch_assoc()):
                 $current = intval($row['stocks_in']) - intval($row['stocks_out']); ?>
                 <tr>
-                    <td><?= $row['id'] ?></td>
                     <td><?= htmlspecialchars($row['date_added']) ?></td>
                     <td><?= htmlspecialchars($row['design_mix_id']) ?></td>
+                    <td><?= isset($row['curation_days']) ? intval($row['curation_days']) : '0' ?></td>
                     <td><?= htmlspecialchars($row['concrete_type']) ?></td>
                     <td><?= htmlspecialchars($row['batch']) ?></td>
                     <td><?= intval($row['stocks_in']) ?></td>

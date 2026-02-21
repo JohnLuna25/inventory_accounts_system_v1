@@ -2,16 +2,17 @@
 // Include necessary files
 require_once __DIR__ . '/../../FunctionAndDB/db_connect.php';
 require_once __DIR__ . '/../../FunctionAndDB/Web_Functions.php';
-include_once __DIR__ . '/ip_postHandler.php';  // Assuming this handles POST logic
+include_once __DIR__ . '/ip_postHandler.php';
 
 // Initialize error message
 $error_message = "";
 
 // --- Handle POST edit BEFORE ANY OUTPUT ---
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_id'])) {  // Changed from 'edit_id' to 'update_id'
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_id'])) {
     $edit_id = intval($_POST['update_id']);
     $date_added = trim($_POST['date_added'] ?? date('Y-m-d'));
     $design_mix = trim($_POST['design_mix'] ?? '');
+    $curation_days = intval($_POST['curation_days'] ?? 0);
     $batch = trim($_POST['batch'] ?? '');
     $stocks_in = intval($_POST['stocks_in'] ?? 0);
     $stocks_out = intval($_POST['stocks_out'] ?? 0);
@@ -23,13 +24,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_id'])) {  // C
         $error_message = "Please fill in all required fields.";
     } else {
         $stmt = $conn->prepare("UPDATE sorcom_readymix_inventory 
-            SET date_added = ?, design_mix_id = ?, batch = ?, stocks_in = ?, stocks_out = ?, remarks = ?, concrete_type = ? 
+            SET date_added = ?, design_mix_id = ?, curation_days = ?, batch = ?, stocks_in = ?, stocks_out = ?, remarks = ?, concrete_type = ? 
             WHERE id = ?");
         if ($stmt) {
-            $stmt->bind_param("sssiiisi", $date_added, $design_mix, $batch, $stocks_in, $stocks_out, $remarks, $concrete_type, $edit_id);
+            $stmt->bind_param("sssiiissi", $date_added, $design_mix, $curation_days, $batch, $stocks_in, $stocks_out, $remarks, $concrete_type, $edit_id);
             if ($stmt->execute()) {
                 $stmt->close();
-                // Add logging for success
                 error_log("Inventory updated successfully for ID: $edit_id");
                 header("Location: inventory_management.php");
                 exit;
@@ -104,7 +104,6 @@ $conn->close();
 </head>
 
 <body>
-
 
     <h2>Ready-Mix Inventory</h2>
 
