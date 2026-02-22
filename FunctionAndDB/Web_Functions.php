@@ -3,30 +3,29 @@ function showHeader()
 {
     echo '
 <div class="main-header">
-    <!-- Left: Home Button -->
-    <div class="header-left">
-        <a href="/Inventory-Accounts-System-v1/pages/home_page/home.php">
-            <img src="/Inventory-Accounts-System-v1/assets/images/home_button.png" alt="Home" class="home-icon">
-        </a>
-    </div>
+    <div class="header-grid">
+        <!-- Left: Home Button -->
+        <div class="header-left">
+            <a href="/Inventory-Accounts-System-v1/pages/home_page/home.php">
+                <img src="/Inventory-Accounts-System-v1/assets/images/home_button.png" alt="Home" class="home-icon">
+            </a>
+        </div>
 
-    <!-- Center: Title -->
-    <div class="header-center">
-        <h1 class="header-title">SORCOM READY-MIX CONCRETE</h1>
-        <p class="header-subtitle">Inventory and Accounts Management System</p>
-    </div>
+        <!-- Center: Title -->
+        <div class="header-center">
+            <h1 class="header-title">SORCOM READY-MIX CONCRETE</h1>
+            <p class="header-subtitle">Inventory and Accounts Management System</p>
+        </div>
 
-    <!-- Right: Clock -->
-    <div class="header-right">
-        <p id="clock" class="clock-text"></p>
+        <!-- Right: Clock -->
+        <div class="header-right">
+            <p id="clock" class="clock-text"></p>
+        </div>
     </div>
 </div>
 
 <style>
     .main-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
         background-color: #0d6efd;
         padding: 8px 15px;
         width: 100%;
@@ -35,11 +34,15 @@ function showHeader()
         left: 0;
         z-index: 1000;
         box-sizing: border-box;
-        min-height: 60px;
     }
 
-    .header-left {
-        flex: 0 0 auto;
+    .header-grid {
+        display: grid;
+        grid-template-columns: auto 1fr auto;
+        align-items: center;
+        gap: 15px;
+        max-width: 1200px;
+        margin: 0 auto;
     }
 
     .home-icon {
@@ -48,9 +51,7 @@ function showHeader()
     }
 
     .header-center {
-        flex: 1;
         text-align: center;
-        padding: 0 10px;
     }
 
     .header-title {
@@ -71,10 +72,6 @@ function showHeader()
         white-space: nowrap;
     }
 
-    .header-right {
-        flex: 0 0 auto;
-    }
-
     .clock-text {
         font-family: Arial, sans-serif;
         font-weight: 600;
@@ -84,11 +81,10 @@ function showHeader()
         white-space: nowrap;
     }
 
-    /* Responsive Styles */
     @media (max-width: 768px) {
-        .main-header {
-            padding: 6px 10px;
-            min-height: 55px;
+        .header-grid {
+            grid-template-columns: auto 1fr auto;
+            gap: 10px;
         }
 
         .home-icon {
@@ -110,28 +106,29 @@ function showHeader()
 
     @media (max-width: 576px) {
         .main-header {
-            flex-direction: row;
-            flex-wrap: wrap;
             padding: 5px 10px;
-            min-height: auto;
         }
 
-        .header-left {
-            flex: 0 0 auto;
-            order: 1;
+        .header-grid {
+            grid-template-columns: 1fr;
+            gap: 5px;
         }
 
         .header-center {
-            flex: 1 1 auto;
+            order: 1;
+        }
+
+        .header-left {
             order: 2;
-            text-align: center;
-            padding: 0 5px;
-            min-width: 0;
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
         }
 
         .header-right {
-            flex: 0 0 auto;
             order: 3;
+            text-align: center;
         }
 
         .home-icon {
@@ -139,35 +136,29 @@ function showHeader()
         }
 
         .header-title {
-            font-size: 11px;
-            line-height: 1.2;
+            font-size: 12px;
         }
 
         .header-subtitle {
-            font-size: 7px;
-            line-height: 1.2;
+            font-size: 8px;
         }
 
         .clock-text {
-            font-size: 9px;
+            font-size: 10px;
         }
     }
 
     @media (max-width: 400px) {
         .header-title {
-            font-size: 10px;
+            font-size: 11px;
         }
 
         .header-subtitle {
-            font-size: 6px;
+            font-size: 7px;
         }
 
         .clock-text {
-            font-size: 8px;
-        }
-
-        .home-icon {
-            height: 20px;
+            font-size: 9px;
         }
     }
 </style>

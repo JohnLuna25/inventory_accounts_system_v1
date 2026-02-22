@@ -8,28 +8,30 @@ $date_added = $design_mix = $curation_days = $batch = $remarks = $concrete_type 
 $stocks_in = $stocks_out = 0;
 $error_message = "";
 
-// --- Fetch all PSI options with their corresponding curation_days and concrete_type ---
+// --- Fetch all PSI options with their corresponding curation_days, concrete_type, and total ---
 $psiData = [];
-$sql = "SELECT DISTINCT concrete_psi, curation_days, concrete_type FROM sorcom_concrete_design_masterlist";
+$sql = "SELECT concrete_psi, curation_days, concrete_type, total FROM sorcom_concrete_design_masterlist";
 if ($result = $conn->query($sql)) {
     while ($row = $result->fetch_assoc()) {
         $psi = $row['concrete_psi'];
         $days = $row['curation_days'];
         $type = $row['concrete_type'];
+        $total = floatval($row['total']);
 
-        if (!isset($psiData[$psi]['days'])) {
-            $psiData[$psi]['days'] = [];
+        if (!isset($psiData[$psi])) {
+            $psiData[$psi] = ['days' => [], 'types' => [], 'totals' => []];
         }
+
         if (!in_array($days, $psiData[$psi]['days'])) {
             $psiData[$psi]['days'][] = $days;
         }
 
-        if (!isset($psiData[$psi]['types'])) {
-            $psiData[$psi]['types'] = [];
-        }
         if (!in_array($type, $psiData[$psi]['types'])) {
             $psiData[$psi]['types'][] = $type;
         }
+
+        // Store total with key of days-type
+        $psiData[$psi]['totals'][$days . '-' . $type] = $total;
     }
     $result->free();
 }
@@ -49,18 +51,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $date_added = $_POST['date_added'] ?? date('Y-m-d');
     $design_mix = $_POST['design_mix'] ?? '';
     $curation_days = $_POST['curation_days'] ?? '';
-    $batch = $_POST['batch'] ?? '';
+    $concrete_type = $_POST['concrete_type'] ?? '';
     $stocks_in = intval($_POST['stocks_in'] ?? 0);
     $stocks_out = intval($_POST['stocks_out'] ?? 0);
     $remarks = $_POST['remarks'] ?? '';
-    $concrete_type = $_POST['concrete_type'] ?? '';
 
+    // Basic validation
     if (empty($date_added) || empty($design_mix) || empty($curation_days) || empty($concrete_type)) {
         $error_message = "Please fill in all required fields.";
     } else {
         $sql = "INSERT INTO sorcom_readymix_inventory 
-            (date_added, design_mix_id, curation_days, batch, stocks_in, stocks_out, remarks, concrete_type) 
-            VALUES ('$date_added', '$design_mix', '$curation_days', '$batch', $stocks_in, $stocks_out, '$remarks', '$concrete_type')";
+            (date_added, design_mix_id, curation_days, concrete_type, stocks_in, stocks_out, remarks) 
+            VALUES ('$date_added', '$design_mix', '$curation_days', '$concrete_type', $stocks_in, $stocks_out, '$remarks')";
 
         if ($conn->query($sql)) {
             header("Location: inventory_management.php");
@@ -86,10 +88,6 @@ $conn->close();
 </head>
 
 <body style="background-color: #bfc3aa; font-family: Arial; padding: 20px;">
-
-    <?php if ($error_message): ?>
-        <p style="color: red; text-align: center; font-weight: bold;"><?= htmlspecialchars($error_message) ?></p>
-    <?php endif; ?>
 
     <div class="modal-content">
         <form method="POST" action="ip_addForm.php">
@@ -118,7 +116,7 @@ $conn->close();
             <!-- Curation Days -->
             <div class="form-row">
                 <label>Curation Days:</label>
-                <select name="curation_days" id="curation_days" required>
+                <select name="curation_days" id="curation_days" required onchange="autoFillBatch()">
                     <option value="">-- Select Days --</option>
                 </select>
             </div>
@@ -126,15 +124,15 @@ $conn->close();
             <!-- Concrete Type -->
             <div class="form-row">
                 <label>Concrete Type:</label>
-                <select name="concrete_type" id="concrete_type" required>
+                <select name="concrete_type" id="concrete_type" required onchange="autoFillBatch()">
                     <option value="">-- Select --</option>
                 </select>
             </div>
 
-            <!-- Batch -->
+            <!-- Batch (Auto-filled) -->
             <div class="form-row">
-                <label>Batch:</label>
-                <input type="text" name="batch" value="<?= htmlspecialchars($batch) ?>">
+                <label>Batch (kgs/m³):</label>
+                <input type="text" name="batch" id="batch" value="" readonly style="background-color: #e0e0e0;">
             </div>
 
             <!-- Stocks In -->
@@ -145,7 +143,7 @@ $conn->close();
 
             <!-- Stocks Out -->
             <div class="form-row">
-                <label>Stocks Out:</label>
+                <label>Stock Out:</label>
                 <input type="number" name="stocks_out" value="<?= $stocks_out ?>" min="0">
             </div>
 
@@ -170,9 +168,11 @@ $conn->close();
             var selectedPSI = document.getElementById('design_mix').value;
             var curationSelect = document.getElementById('curation_days');
             var typeSelect = document.getElementById('concrete_type');
+            var batchInput = document.getElementById('batch');
 
             curationSelect.innerHTML = '<option value="">-- Select Days --</option>';
             typeSelect.innerHTML = '<option value="">-- Select --</option>';
+            batchInput.value = ''; // Clear batch when PSI changes
 
             if (selectedPSI && psiData[selectedPSI]) {
                 var days = psiData[selectedPSI]['days'] || [];
@@ -193,6 +193,26 @@ $conn->close();
             }
         }
 
+        function autoFillBatch() {
+            var selectedPSI = document.getElementById('design_mix').value;
+            var selectedDays = document.getElementById('curation_days').value;
+            var selectedType = document.getElementById('concrete_type').value;
+            var batchInput = document.getElementById('batch');
+
+            // Only auto-fill if all three fields are filled
+            if (selectedPSI && selectedDays && selectedType && psiData[selectedPSI] && psiData[selectedPSI]['totals']) {
+                var key = selectedDays + '-' + selectedType;
+                if (psiData[selectedPSI]['totals'][key]) {
+                    batchInput.value = psiData[selectedPSI]['totals'][key];
+                } else {
+                    batchInput.value = '';
+                }
+            } else {
+                batchInput.value = '';
+            }
+        }
+
+        // Initialize dropdowns on page load if PSI is already selected (for edit)
         document.addEventListener('DOMContentLoaded', function () {
             var selectedPSI = document.getElementById('design_mix').value;
             if (selectedPSI) {

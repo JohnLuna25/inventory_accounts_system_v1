@@ -1,5 +1,5 @@
 <?php
-// ip_editForm.php - Full page edit form
+// ip_editForm.php
 
 require_once __DIR__ . '/../../FunctionAndDB/db_connect.php';
 require_once __DIR__ . '/../../FunctionAndDB/Web_Functions.php';
@@ -20,51 +20,59 @@ if (!isset($_GET['id'])) {
 
 $id = intval($_GET['id']);
 
-// --- Fetch all PSI options with their corresponding curation_days and concrete_type ---
+// --- Fetch all PSI options with their corresponding curation_days, concrete_type, and total ---
 $psiData = [];
-$sql = "SELECT DISTINCT concrete_psi, curation_days, concrete_type FROM sorcom_concrete_design_masterlist";
+$sql = "SELECT concrete_psi, curation_days, concrete_type, total FROM sorcom_concrete_design_masterlist";
 if ($result = $conn->query($sql)) {
     while ($row = $result->fetch_assoc()) {
         $psi = $row['concrete_psi'];
         $days = $row['curation_days'];
         $type = $row['concrete_type'];
-
-        if (!isset($psiData[$psi]['days'])) {
-            $psiData[$psi]['days'] = [];
+        $total = floatval($row['total']);
+        
+        if (!isset($psiData[$psi])) {
+            $psiData[$psi] = ['days' => [], 'types' => [], 'totals' => []];
         }
+        
         if (!in_array($days, $psiData[$psi]['days'])) {
             $psiData[$psi]['days'][] = $days;
         }
-
-        if (!isset($psiData[$psi]['types'])) {
-            $psiData[$psi]['types'] = [];
-        }
+        
         if (!in_array($type, $psiData[$psi]['types'])) {
             $psiData[$psi]['types'][] = $type;
         }
+        
+        $psiData[$psi]['totals'][$days . '-' . $type] = $total;
     }
     $result->free();
 }
 
-// Sort curation days for each PSI
 foreach ($psiData as $psi => $data) {
     sort($psiData[$psi]['days']);
 }
 
-// Get all unique PSI values sorted
 $psiOptions = array_keys($psiData);
 sort($psiOptions);
 
 // Load existing inventory data
-$stmt = $conn->prepare("SELECT date_added, design_mix_id, curation_days, batch, stocks_in, stocks_out, remarks, concrete_type FROM sorcom_readymix_inventory WHERE id = ?");
+$stmt = $conn->prepare("SELECT date_added, design_mix_id, curation_days, concrete_type, stocks_in, stocks_out, remarks FROM sorcom_readymix_inventory WHERE id = ?");
 if ($stmt) {
     $stmt->bind_param("i", $id);
     $stmt->execute();
-    $stmt->bind_result($date_added, $design_mix, $curation_days, $batch, $stocks_in, $stocks_out, $remarks, $concrete_type);
+    $stmt->bind_result($date_added, $design_mix, $curation_days, $concrete_type, $stocks_in, $stocks_out, $remarks);
     $stmt->fetch();
     $stmt->close();
 } else {
     $error_message = "Error preparing statement: " . $conn->error;
+}
+
+// Get the batch for the current record
+$currentBatch = '';
+if ($design_mix && $curation_days && $concrete_type) {
+    $key = $curation_days . '-' . $concrete_type;
+    if (isset($psiData[$design_mix]['totals'][$key])) {
+        $currentBatch = $psiData[$design_mix]['totals'][$key];
+    }
 }
 
 $conn->close();
@@ -77,11 +85,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $date_added = $_POST['date_added'] ?? date('Y-m-d');
     $design_mix = $_POST['design_mix'] ?? '';
     $curation_days = $_POST['curation_days'] ?? '';
-    $batch = $_POST['batch'] ?? '';
+    $concrete_type = $_POST['concrete_type'] ?? '';
     $stocks_in = intval($_POST['stocks_in'] ?? 0);
     $stocks_out = intval($_POST['stocks_out'] ?? 0);
     $remarks = $_POST['remarks'] ?? '';
-    $concrete_type = $_POST['concrete_type'] ?? '';
 
     $conn2 = new mysqli('localhost', 'root', '', 'sorcom_db');
 
@@ -89,11 +96,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         SET date_added='$date_added', 
             design_mix_id='$design_mix', 
             curation_days='$curation_days', 
-            batch='$batch', 
+            concrete_type='$concrete_type', 
             stocks_in=$stocks_in, 
             stocks_out=$stocks_out, 
-            remarks='$remarks', 
-            concrete_type='$concrete_type' 
+            remarks='$remarks' 
         WHERE id=$id";
 
     $conn2->query($sql);
@@ -148,7 +154,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <!-- Curation Days -->
             <div class="form-row">
                 <label>Curation Days:</label>
-                <select name="curation_days" id="curation_days" required>
+                <select name="curation_days" id="curation_days" required onchange="autoFillBatch()">
                     <option value="">-- Select Days --</option>
                     <?php if (!empty($curation_days)): ?>
                         <option value="<?= htmlspecialchars($curation_days) ?>" selected>
@@ -161,7 +167,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <!-- Concrete Type -->
             <div class="form-row">
                 <label>Concrete Type:</label>
-                <select name="concrete_type" id="concrete_type" required>
+                <select name="concrete_type" id="concrete_type" required onchange="autoFillBatch()">
                     <option value="">-- Select --</option>
                     <?php if (!empty($concrete_type)): ?>
                         <option value="<?= htmlspecialchars($concrete_type) ?>" selected>
@@ -171,10 +177,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </select>
             </div>
 
-            <!-- Batch -->
+            <!-- Batch (Auto-filled) -->
             <div class="form-row">
-                <label>Batch:</label>
-                <input type="text" name="batch" value="<?= htmlspecialchars($batch) ?>">
+                <label>Batch (kgs/m³):</label>
+                <input type="text" name="batch" id="batch" value="<?= htmlspecialchars($currentBatch) ?>" readonly style="background-color: #e0e0e0;">
             </div>
 
             <!-- Stocks In -->
@@ -185,7 +191,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <!-- Stocks Out -->
             <div class="form-row">
-                <label>Stocks Out:</label>
+                <label>Stock Out:</label>
                 <input type="number" name="stocks_out" value="<?= $stocks_out ?>" min="0">
             </div>
 
@@ -206,54 +212,4 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script>
         var psiData = <?php echo json_encode($psiData); ?>;
         var selectedPSI = "<?php echo htmlspecialchars($design_mix); ?>";
-        var selectedDays = "<?php echo htmlspecialchars($curation_days); ?>";
-        var selectedType = "<?php echo htmlspecialchars($concrete_type); ?>";
-
-        function updateDropdowns() {
-            var selectedPSI = document.getElementById('design_mix').value;
-            var curationSelect = document.getElementById('curation_days');
-            var typeSelect = document.getElementById('concrete_type');
-
-            curationSelect.innerHTML = '<option value="">-- Select Days --</option>';
-            typeSelect.innerHTML = '<option value="">-- Select --</option>';
-
-            if (selectedPSI && psiData[selectedPSI]) {
-                var days = psiData[selectedPSI]['days'] || [];
-                days.forEach(function (day) {
-                    var option = document.createElement('option');
-                    option.value = day;
-                    option.textContent = day + ' days';
-                    curationSelect.appendChild(option);
-                });
-
-                var types = psiData[selectedPSI]['types'] || [];
-                types.forEach(function (type) {
-                    var option = document.createElement('option');
-                    option.value = type;
-                    option.textContent = type;
-                    typeSelect.appendChild(option);
-                });
-            }
-        }
-
-        // Initialize dropdowns on page load
-        document.addEventListener('DOMContentLoaded', function () {
-            if (selectedPSI && psiData[selectedPSI]) {
-                updateDropdowns();
-                // Set selected values after populating
-                var curationSelect = document.getElementById('curation_days');
-                var typeSelect = document.getElementById('concrete_type');
-
-                if (selectedDays) {
-                    curationSelect.value = selectedDays;
-                }
-                if (selectedType) {
-                    typeSelect.value = selectedType;
-                }
-            }
-        });
-    </script>
-
-</body>
-
-</html>
+        var selectedDays

@@ -158,14 +158,14 @@ $result = $stmt->get_result();
             border-collapse: collapse;
         }
 
-        .dropbar-inner td:first-child {
+        .dropbar-inner td {
+            text-align: center;
             font-weight: bold;
-            width: 45%;
             background: #f0f0f0;
         }
 
         .dropbar-inner td:last-child {
-            text-align: right;
+            background: #fff;
         }
 
         /* Responsive */
@@ -264,7 +264,7 @@ $result = $stmt->get_result();
                             echo "<td>" . (isset($row['concrete_psi']) ? $row['concrete_psi'] : '') . "</td>";
                             echo "<td>" . (isset($row['curation_days']) ? $row['curation_days'] : '') . "</td>";
                             echo "<td>" . (isset($row['concrete_type']) ? $row['concrete_type'] : '') . "</td>";
-                            echo "<td>" . (isset($row['total']) ? $row['total'] : '') . "</td>";
+                            echo "<td>" . (isset($row['total']) ? $row['total'] . ' kgs/m³' : '') . "</td>";
                             echo "<td>" . (isset($row['concrete_price']) ? $row['concrete_price'] : '') . "</td>";
                             echo "<td>";
                             echo "<a href='#' class='btn-view' onclick='toggleDropbar(" . $id . "); return false;'>View</a>";

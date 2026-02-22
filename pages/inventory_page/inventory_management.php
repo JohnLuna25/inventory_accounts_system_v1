@@ -13,33 +13,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_id'])) {
     $date_added = trim($_POST['date_added'] ?? date('Y-m-d'));
     $design_mix = trim($_POST['design_mix'] ?? '');
     $curation_days = intval($_POST['curation_days'] ?? 0);
-    $batch = trim($_POST['batch'] ?? '');
+    $concrete_type = trim($_POST['concrete_type'] ?? '');
     $stocks_in = intval($_POST['stocks_in'] ?? 0);
     $stocks_out = intval($_POST['stocks_out'] ?? 0);
     $remarks = trim($_POST['remarks'] ?? '');
-    $concrete_type = trim($_POST['concrete_type'] ?? '');
 
     // Basic validation
     if (empty($date_added) || empty($design_mix) || empty($concrete_type)) {
         $error_message = "Please fill in all required fields.";
     } else {
         $stmt = $conn->prepare("UPDATE sorcom_readymix_inventory 
-            SET date_added = ?, design_mix_id = ?, curation_days = ?, batch = ?, stocks_in = ?, stocks_out = ?, remarks = ?, concrete_type = ? 
+            SET date_added = ?, design_mix_id = ?, curation_days = ?, concrete_type = ?, stocks_in = ?, stocks_out = ?, remarks = ? 
             WHERE id = ?");
         if ($stmt) {
-            $stmt->bind_param("sssiiissi", $date_added, $design_mix, $curation_days, $batch, $stocks_in, $stocks_out, $remarks, $concrete_type, $edit_id);
+            $stmt->bind_param("sssiiisi", $date_added, $design_mix, $curation_days, $concrete_type, $stocks_in, $stocks_out, $remarks, $edit_id);
             if ($stmt->execute()) {
                 $stmt->close();
-                error_log("Inventory updated successfully for ID: $edit_id");
                 header("Location: inventory_management.php");
                 exit;
             } else {
                 $error_message = "Error updating inventory: " . $stmt->error;
-                error_log("Update failed for ID $edit_id: " . $stmt->error);
             }
         } else {
             $error_message = "Error preparing update statement: " . $conn->error;
-            error_log("Prepare failed: " . $conn->error);
         }
     }
 }
@@ -119,25 +115,6 @@ $conn->close();
     <!-- TABLE DISPLAY -->
     <?php include __DIR__ . '/ip_tableDisplay.php'; ?>
 
-    <!-- EDIT MODAL (Inline Content - Extracted from ip_editForm.php) -->
-    <div id="editForm"
-        style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 2000;">
-        <div
-            style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 8px; max-width: 700px; width: 90%;">
-            <!-- Insert the form content from ip_editForm.php here, without DOCTYPE/head/body -->
-            <!-- Example: Copy the <form> and related PHP from ip_editForm.php -->
-            <p>Modal content goes here. Replace with actual form from ip_editForm.php.</p>
-            <button onclick="closeModal()">Close</button>
-        </div>
-    </div>
-
-    <!-- FUNCTION SOURCE -->
-    <script>
-        function closeModal() {
-            document.getElementById('editForm').style.display = 'none';
-        }
-        // Add logic to open modal, e.g., from table rows
-    </script>
 </body>
 
 </html>

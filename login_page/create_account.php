@@ -73,17 +73,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 <body>
 
-        <?php if ($createSuccess): ?>
+    <?php if ($createSuccess): ?>
         <div class="success-box">
             Employee account created successfully!<br>Redirecting to login...
         </div>
-        <?php else: ?>
+    <?php else: ?>
         <form class="form-container" action="" method="post">
             <h2 style="color:blue; text-align:center;">Create Employee Account</h2>
 
-                <?php if ($createError): ?>
+            <?php if ($createError): ?>
                 <div class="message error"><?= htmlspecialchars($createError) ?></div>
-                <?php endif; ?>
+            <?php endif; ?>
 
             <label for="employee_number">Employee Number:</label>
             <input type="text" id="employee_number" name="employee_number" required autocomplete="off">
@@ -99,7 +99,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             <input type="submit" value="Create Account">
         </form>
-        <?php endif; ?>
+    <?php endif; ?>
 
 </body>
 

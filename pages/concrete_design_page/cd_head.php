@@ -4,7 +4,7 @@
     <title>Concrete Design List</title>
     <link rel="stylesheet" href="/Inventory-Accounts-System-v1/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="../assets/css/style.css">
-    <?php showHeader(); ?>
+
 
     <style>
         body {

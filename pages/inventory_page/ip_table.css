@@ -10,7 +10,7 @@ body {
 
 table {
   border-collapse: collapse;
-  width: 97%;
+  width: 98%;
   margin: 20px auto;
   margin-top: 25px;
   background: #fff;
@@ -19,20 +19,23 @@ table {
 table th,
 table td {
   border: 1px solid #ccc;
-  padding: 8px;
+  padding: 6px;
   text-align: center;
+  font-size: 13px;
 }
 
 table th {
   background: #0b63c4;
   color: #fff;
+  font-size: 12px;
 }
 
 button {
-  padding: 5px 10px;
+  padding: 4px 8px;
   margin: 2px;
   cursor: pointer;
   border-radius: 5px;
+  font-size: 11px;
 }
 
 .modal {

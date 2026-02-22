@@ -4,16 +4,14 @@ session_start();
 // --- Grab session variables set by login_decision.php ---
 $invalidError = $_SESSION['login_error'] ?? '';
 $errorType = $_SESSION['error_type'] ?? '';
-$nextAttemptTime = $_SESSION['next_attempt_time'] ?? 0;
+$nextAttemptTime = $_SESSION['next_attempt_time'] ?? '';
 
 // --- Clear invalid login messages after displaying ---
-// Only clear if type is 'invalid'; wait/lock states need to persist
 if ($errorType === 'invalid') {
     unset($_SESSION['login_error'], $_SESSION['error_type']);
 }
 
 // --- Handle Master Override unlock ---
-// If a master override unlocked this user, clear previous failed attempts & locks
 if (isset($_SESSION['override_employee_id'])) {
     $_SESSION['failed_attempts'] = 0;
     $_SESSION['last_attempt_time'] = 0;
@@ -27,18 +25,243 @@ if (isset($_SESSION['override_employee_id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sorcom Log In</title>
-    <?php include 'wl_style.php'; ?>
+    <link rel="stylesheet" href="/Inventory-Accounts-System-v1/assets/bootstrap/css/bootstrap.min.css">
+    <style>
+        /* KEEP ORIGINAL COLORS FROM wl_style.php */
+        body {
+            background-color: blue;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #clock {
+            font-size: 18px;
+            font-weight: 500;
+            color: yellow;
+            position: absolute;
+            top: 40px;
+            left: 30px;
+            margin: 0;
+        }
+
+        fieldset {
+            width: 98%;
+            max-width: 1450px;
+            border-radius: 10px;
+            background-color: blue;
+            padding: 30px;
+            border: 3px solid white;
+            box-sizing: border-box;
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .title-section {
+            text-align: left;
+            color: yellow;
+            padding-left: 50px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .title-section h1 {
+            font-size: 50px;
+            margin-top: 10px;
+            white-space: nowrap;
+        }
+
+        .title-section h2 {
+            font-size: 30px;
+            margin-top: 10px;
+            white-space: nowrap;
+        }
+
+        .login-section {
+            flex: 1;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding-right: 50px;
+        }
+
+        form {
+            background-color: lightgray;
+            padding: 55px;
+            border-radius: 40px;
+            width: 340px;
+            box-sizing: border-box;
+            text-align: left;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 91%;
+            padding: 10px;
+            margin-bottom: 40px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+
+        input[type="submit"],
+        input[type="button"] {
+            flex: 1;
+            padding: 10px;
+            background-color: blue;
+            color: yellow;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .form-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        #errorMessage {
+            height: 20px;
+            margin-bottom: 10px;
+            color: red;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        /* ========== RESPONSIVE STYLES ========== */
+
+        /* Tablet */
+        @media (max-width: 992px) {
+            .title-section h1 {
+                font-size: 40px;
+            }
+
+            .title-section h2 {
+                font-size: 24px;
+            }
+
+            form {
+                padding: 40px;
+                width: 300px;
+            }
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+            body {
+                align-items: flex-start;
+                padding-top: 20px;
+            }
+
+            #clock {
+                position: relative;
+                top: auto;
+                left: auto;
+                text-align: center;
+                margin-bottom: 20px;
+            }
+
+            fieldset {
+                flex-direction: column;
+                padding: 20px;
+                border: none;
+                background: transparent;
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .title-section {
+                text-align: center;
+                padding-left: 0;
+                padding-right: 0;
+                margin-bottom: 30px;
+                flex: none;
+            }
+
+            .title-section h1 {
+                font-size: 36px;
+                margin-top: 0;
+                margin-bottom: 10px;
+            }
+
+            .title-section h2 {
+                font-size: 20px;
+                margin-top: 0;
+            }
+
+            .login-section {
+                justify-content: center;
+                padding-right: 0;
+                flex: none;
+            }
+
+            form {
+                width: 100%;
+                max-width: 340px;
+                padding: 30px;
+                border-radius: 30px;
+            }
+
+            input[type="text"],
+            input[type="password"] {
+                width: 100%;
+                margin-bottom: 25px;
+            }
+
+            .form-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            input[type="submit"],
+            input[type="button"] {
+                width: 100%;
+                padding: 12px;
+            }
+        }
+
+        /* Small Mobile */
+        @media (max-width: 480px) {
+            .title-section h1 {
+                font-size: 28px;
+            }
+
+            .title-section h2 {
+                font-size: 14px;
+            }
+
+            form {
+                padding: 25px 20px;
+                border-radius: 25px;
+            }
+
+            input[type="text"],
+            input[type="password"] {
+                margin-bottom: 20px;
+                padding: 8px;
+            }
+        }
+    </style>
 </head>
 
 <body>
     <p id="clock"></p>
 
     <fieldset>
+        <!-- Title Section -->
         <div class="title-section">
-            <h1 id="title" style="font-size:50px; margin-top:10px; white-space:nowrap;"></h1>
-            <h2 id="subtitle" style="font-size:30px; margin-top:10px; white-space:nowrap;"></h2>
+            <h1 id="title"></h1>
+            <h2 id="subtitle"></h2>
         </div>
 
+        <!-- Login Form Section -->
         <div class="login-section">
             <form action="login_decision.php" method="post">
                 <?php if (!empty($invalidError)): ?>
@@ -69,11 +292,7 @@ if (isset($_SESSION['override_employee_id'])) {
 
             if (!errorDiv) return;
 
-            // -------------------
-            // WAIT STATE COUNTDOWN
-            // -------------------
             if ((errorType === "wait" || errorType === "lock") && nextAttempt > 0) {
-
                 if (loginButton) loginButton.disabled = true;
 
                 const timer = setInterval(() => {
@@ -93,9 +312,6 @@ if (isset($_SESSION['override_employee_id'])) {
                 }, 1000);
             }
 
-            // -------------------------
-            // INVALID LOGIN FADE AFTER 5 SEC
-            // -------------------------
             if (errorType === "invalid") {
                 setTimeout(() => {
                     errorDiv.style.transition = "opacity 0.5s ease";
@@ -116,6 +332,7 @@ if (isset($_SESSION['override_employee_id'])) {
         };
     </script>
 
+    <script src="/Inventory-Accounts-System-v1/assets/bootstrap/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
