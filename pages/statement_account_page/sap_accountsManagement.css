@@ -9,12 +9,13 @@ body {
 
 .main-content {
   padding-top: 70px;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .page-title-bar {
   background: white;
-  margin
-  margin: 15px;
+  margin: 15px 10px;
   padding: 20px;
   border-radius: 15px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -55,7 +56,7 @@ body {
 
 .table-container {
   background: white;
-  margin: 15px;
+  margin: 15px 10px;
   padding: 10px;
   border-radius: 15px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -134,7 +135,7 @@ tr:hover {
   }
 
   .page-title-bar {
-    margin: 10px;
+    margin: 10px 8px;
     padding: 15px;
   }
 
@@ -153,7 +154,7 @@ tr:hover {
   }
 
   .table-container {
-    margin: 10px;
+    margin: 10px 8px;
     padding: 8px;
   }
 

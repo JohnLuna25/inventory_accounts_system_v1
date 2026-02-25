@@ -120,7 +120,7 @@ echo "VB Rows: $vb_count, SSD Rows: $ssd_count";
         }
 
         td {
-            border: 1px solid #888;
+            border: 1px solid #000000;
             padding: 10px 8px;
             text-align: center;
             font-size: 13px;
@@ -153,7 +153,7 @@ echo "VB Rows: $vb_count, SSD Rows: $ssd_count";
         }
 
         .dropbar-row td {
-            background: #fafafa;
+            background: #0b63c4;
             text-align: left;
             padding: 10px;
         }
@@ -161,12 +161,16 @@ echo "VB Rows: $vb_count, SSD Rows: $ssd_count";
         .dropbar-inner {
             width: 100%;
             border-collapse: collapse;
+
+            border-radius: 40px;
+            overflow: hidden;
         }
 
+        /* Whole Table Except Merged rows */
         .dropbar-inner td {
             text-align: center;
             font-weight: bold;
-            background: #f0f0f0;
+            background: #becedb;
         }
 
         .dropbar-inner td:first-child {
@@ -174,16 +178,28 @@ echo "VB Rows: $vb_count, SSD Rows: $ssd_count";
             min-width: 120px;
         }
 
+        /* SSD and VB row */
         .dropbar-inner td.ssd-col,
         .dropbar-inner td.vb-col {
             width: 40%;
             min-width: 150px;
+            background: #becedb;
         }
 
-        .dropbar-inner td.merged-cell {
+        .dropbar-inner td.ssd-data,
+        .dropbar-inner td.vb-data {
             background: #fff;
+        }
+
+
+        .dropbar-inner td.merged-cell {
+            background: #ffffff;
             text-align: center;
             width: 80%;
+        }
+
+        .dropbar-inner>tr:first-child td {
+            background: #add8e6;
         }
 
         @media (max-width:576px) {
@@ -227,6 +243,12 @@ echo "VB Rows: $vb_count, SSD Rows: $ssd_count";
                 font-size: 11px;
             }
 
+            .dropbar-inner td {
+                text-align: center;
+                font-weight: bold;
+                background: #e0e0e0;
+            }
+
             .dropbar-inner td:first-child {
                 width: 25%;
                 min-width: 100px;
@@ -236,11 +258,19 @@ echo "VB Rows: $vb_count, SSD Rows: $ssd_count";
             .dropbar-inner td.vb-col {
                 width: 37.5%;
                 min-width: 100px;
+                background: #add8e6;
             }
 
             .dropbar-inner td.merged-cell {
-                width: 75%;
+                background: #fff;
+                text-align: center;
+                width: 80%;
             }
+
+            .dropbar-inner>tr:first-child td {
+                background: #add8e6;
+            }
+
         }
 
         @media (max-width:400px) {
@@ -290,7 +320,7 @@ echo "VB Rows: $vb_count, SSD Rows: $ssd_count";
                         echo "<td>" . ($vb_row['vb_concrete_price'] ?? '') . "</td>";
                         echo "<td>";
                         echo "<a href='#' class='btn-view' onclick='toggleDropbar($row_index); return false;'>View</a>";
-                        echo "<a href='edit_design.php?row=$row_index' class='btn-edit'>Edit</a>";
+                        echo "<a href=\"edit_design.php?id=" . $vb_row['vb_id'] . "\" class=\"btn-edit\">Edit</a>";
                         echo "</td>";
                         echo "</tr>";
 
@@ -350,9 +380,8 @@ echo "VB Rows: $vb_count, SSD Rows: $ssd_count";
                             $vb_value = $vb_row['vb_' . $col] ?? '';
                             if ($vb_value == 0)
                                 $vb_value = '';
-                            echo "<tr><td>$label</td><td>$ssd_value</td><td>$vb_value</td></tr>";
+                            echo "<tr><td>$label</td><td class='ssd-data'>$ssd_value</td><td class='vb-data'>$vb_value</td></tr>";
                         }
-
                         echo "</table>";
                         echo "</td>";
                         echo "</tr>";
