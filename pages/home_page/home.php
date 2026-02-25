@@ -84,6 +84,7 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Employee';
 
         /* Button styling */
         .dashboard-btn {
+            margin-top: 20px;
             width: 100%;
             max-width: 300px;
             padding: 15px 20px;
@@ -270,14 +271,6 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Employee';
                             </button>
                         </div>
                     <?php endif; ?>
-
-                    <!-- Settings -->
-                    <div class="col-12 col-sm-6 col-md-4 d-flex justify-content-center">
-                        <button class="btn btn-primary-custom dashboard-btn"
-                            onclick="window.location.href='/Inventory-Accounts-System-v1/pages/settings_management.php'">
-                            Settings
-                        </button>
-                    </div>
 
                     <!-- Add Manager: Manager only -->
                     <?php if ($role === 'Manager'): ?>
