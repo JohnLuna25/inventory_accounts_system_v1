@@ -13,15 +13,62 @@ if (!isset($conn)) {
     die("Database connection not established.");
 }
 
-// Check for design ID
-if (!isset($_GET['id'])) {
-    die("No concrete design selected.");
+// Check for design ID (accept both 'id' and 'row' parameters)
+$vb_id = 0;
+if (isset($_GET['id'])) {
+    $vb_id = intval($_GET['id']);
+} elseif (isset($_GET['row'])) {
+    $vb_id = intval($_GET['row']);
 }
 
-$design_id = intval($_GET['id']);
+if ($vb_id <= 0) {
+    die("No concrete design selected. vb_id: $vb_id");
+}
+
+// DEBUG: Show what ID we're looking for
+echo "<!-- Looking for vb_id: $vb_id -->";
+
+// Fetch VB data using vb_id
+$vb_result = $conn->query("SELECT * FROM scd_vb_list WHERE vb_id = $vb_id");
+if (!$vb_result) {
+    die("VB Query Error: " . $conn->error);
+}
+if ($vb_result->num_rows == 0) {
+    // DEBUG: Show all IDs in the table
+    $all_ids = $conn->query("SELECT vb_id FROM scd_vb_list LIMIT 10");
+    $id_list = [];
+    while ($row = $all_ids->fetch_assoc()) {
+        $id_list[] = $row['vb_id'];
+    }
+    die("Volume Batch design not found. ID: $vb_id. Available IDs: " . implode(', ', $id_list));
+}
+$vb_design = $vb_result->fetch_assoc();
+
+// DEBUG: Show column names
+echo "<!-- VB Columns: " . implode(', ', array_keys($vb_design)) . " -->";
+
+// Fetch SSD data using ssd_id (same ID as VB)
+$ssd_result = $conn->query("SELECT * FROM scd_ssd_list WHERE ssd_id = $vb_id");
+if (!$ssd_result) {
+    die("SSD Query Error: " . $conn->error);
+}
+if ($ssd_result->num_rows == 0) {
+    // DEBUG: Show all SSD IDs
+    $all_ssd_ids = $conn->query("SELECT ssd_id FROM scd_ssd_list LIMIT 10");
+    $ssd_id_list = [];
+    while ($row = $all_ssd_ids->fetch_assoc()) {
+        $ssd_id_list[] = $row['ssd_id'];
+    }
+    echo "<!-- SSD not found for ID: $vb_id. Available SSD IDs: " . implode(', ', $ssd_id_list) . " -->";
+    $ssd_design = [];
+} else {
+    $ssd_design = $ssd_result->fetch_assoc();
+    echo "<!-- SSD Columns: " . implode(', ', array_keys($ssd_design)) . " -->";
+}
 
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // VB Fields
     $psi = $_POST['concrete_psi'] ?? '';
     $curation_days = $_POST['curation_days'] ?? '';
     $type = $_POST['concrete_type'] ?? '';
@@ -43,29 +90,65 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $others = $_POST['others'] ?? '';
     $total = $_POST['total'] ?? '';
 
-    $update_sql = "UPDATE sorcom_concrete_design_masterlist SET
-        concrete_psi='$psi', curation_days='$curation_days', concrete_type='$type',
-        cubic_meter='$cubic', concrete_slump='$slump', wc_ratio='$wc',
-        cement_source='$cement_source', admix_source='$admix_source',
-        cement_mix='$cement_mix', concrete_price='$concrete_price',
-        fly_ash='$fly_ash', sand='$sand', three_eight='$three_eight',
-        three_fourth='$three_fourth', G1='$g1', admix='$admix',
-        water='$water', air='$air', others='$others', total='$total'
-        WHERE id=$design_id";
+    // SSD Fields
+    $ssd_cubic = $_POST['ssd_cubic_meter'] ?? '';
+    $ssd_cement_source = $_POST['ssd_cement_source'] ?? '';
+    $ssd_cement_mix = $_POST['ssd_cement_mix'] ?? '';
+    $ssd_fly_ash = $_POST['ssd_fly_ash'] ?? '';
+    $ssd_three_fourth = $_POST['ssd_three_fourth'] ?? '';
+    $ssd_three_eight = $_POST['ssd_three_eight'] ?? '';
+    $ssd_water = $_POST['ssd_water'] ?? '';
+    $ssd_concrete_slump = $_POST['ssd_concrete_slump'] ?? '';
+    $ssd_admix_source = $_POST['ssd_admix_source'] ?? '';
+    $ssd_sand = $_POST['ssd_sand'] ?? '';
+    $ssd_g1 = $_POST['ssd_G1'] ?? '';
+    $ssd_air = $_POST['ssd_air'] ?? '';
+    $ssd_wc = $_POST['ssd_wc_ratio'] ?? '';
+    $ssd_admix = $_POST['ssd_admix'] ?? '';
+    $ssd_others = $_POST['ssd_others'] ?? '';
 
-    if ($conn->query($update_sql)) {
+    // Escape values for SQL safety
+    $escape = function ($value) use ($conn) {
+        return $conn->real_escape_string($value);
+    };
+
+    // Update VB table using vb_id
+    $update_vb = "UPDATE scd_vb_list SET
+        concrete_psi='" . $escape($psi) . "', curation_days='" . $escape($curation_days) . "', concrete_type='" . $escape($type) . "',
+        cubic_meter='" . $escape($cubic) . "', concrete_slump='" . $escape($slump) . "', wc_ratio='" . $escape($wc) . "',
+        cement_source='" . $escape($cement_source) . "', admix_source='" . $escape($admix_source) . "',
+        cement_mix='" . $escape($cement_mix) . "', concrete_price='" . $escape($concrete_price) . "',
+        fly_ash='" . $escape($fly_ash) . "', sand='" . $escape($sand) . "', three_eight='" . $escape($three_eight) . "',
+        three_fourth='" . $escape($three_fourth) . "', G1='" . $escape($g1) . "', admix='" . $escape($admix) . "',
+        water='" . $escape($water) . "', air='" . $escape($air) . "', others='" . $escape($others) . "', total='" . $escape($total) . "'
+        WHERE vb_id=$vb_id";
+
+    // Update SSD table using ssd_id
+    $update_ssd = "UPDATE scd_ssd_list SET
+        cubic_meter='" . $escape($ssd_cubic) . "', cement_source='" . $escape($ssd_cement_source) . "',
+        cement_mix='" . $escape($ssd_cement_mix) . "', fly_ash='" . $escape($ssd_fly_ash) . "',
+        three_fourth='" . $escape($ssd_three_fourth) . "', three_eight='" . $escape($ssd_three_eight) . "',
+        water='" . $escape($ssd_water) . "', concrete_slump='" . $escape($ssd_concrete_slump) . "',
+        admix_source='" . $escape($ssd_admix_source) . "', sand='" . $escape($ssd_sand) . "',
+        G1='" . $escape($ssd_g1) . "', air='" . $escape($ssd_air) . "', wc_ratio='" . $escape($ssd_wc) . "',
+        admix='" . $escape($ssd_admix) . "', others='" . $escape($ssd_others) . "'
+        WHERE ssd_id=$vb_id";
+
+    $vb_success = $conn->query($update_vb);
+    $ssd_success = $conn->query($update_ssd);
+
+    if ($vb_success && $ssd_success) {
         echo "<script>alert('Design updated successfully!');window.location.href='concrete_design_list.php';</script>";
         exit;
     } else {
-        echo "<script>alert('Error updating design: {$conn->error}');</script>";
+        $error = "";
+        if (!$vb_success)
+            $error .= "VB Error: " . $conn->error . "<br>";
+        if (!$ssd_success)
+            $error .= "SSD Error: " . $conn->error;
+        echo "<script>alert('Error updating design: {$error}');</script>";
     }
 }
-
-$design_result = $conn->query("SELECT * FROM sorcom_concrete_design_masterlist WHERE id = $design_id");
-if (!$design_result || $design_result->num_rows == 0) {
-    die("Concrete design not found.");
-}
-$design = $design_result->fetch_assoc();
 
 $conn->close();
 ?>
@@ -90,7 +173,7 @@ $conn->close();
         }
 
         .form-container {
-            max-width: 800px;
+            max-width: 900px;
             margin: 20px auto;
             background: white;
             padding: 30px;
@@ -102,6 +185,20 @@ $conn->close();
             text-align: center;
             margin-bottom: 25px;
             color: #333;
+        }
+
+        .section-title {
+            background: #0b63c4;
+            color: white;
+            padding: 10px 15px;
+            margin: 20px 0 15px 0;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+
+        .section-title.ssd {
+            background: #4CAF50;
         }
 
         .form-row {
@@ -124,6 +221,14 @@ $conn->close();
             border: 1px solid #ccc;
             border-radius: 5px;
             font-size: 14px;
+        }
+
+        .form-row input.vb-field {
+            border-left: 4px solid #0b63c4;
+        }
+
+        .form-row input.ssd-field {
+            border-left: 4px solid #4CAF50;
         }
 
         .form-buttons {
@@ -195,112 +300,223 @@ $conn->close();
             <h2>Edit Concrete Design</h2>
 
             <form method="POST">
+
+                <div class="section-title">Main Design</div>
+
                 <div class="form-row">
                     <label>Concrete PSI:</label>
-                    <input type="text" name="concrete_psi"
-                        value="<?= htmlspecialchars($design['concrete_psi'] ?? '') ?>">
+                    <input type="text" name="concrete_psi" class="vb-field"
+                        value="<?php echo htmlspecialchars($vb_design['concrete_psi'] ?? ''); ?>">
                 </div>
 
                 <div class="form-row">
                     <label>Curation Days:</label>
-                    <input type="text" name="curation_days"
-                        value="<?= htmlspecialchars($design['curation_days'] ?? '') ?>">
+                    <input type="text" name="curation_days" class="vb-field"
+                        value="<?php echo htmlspecialchars($vb_design['curation_days'] ?? ''); ?>">
                 </div>
 
                 <div class="form-row">
                     <label>Concrete Type:</label>
-                    <input type="text" name="concrete_type"
-                        value="<?= htmlspecialchars($design['concrete_type'] ?? '') ?>">
+                    <input type="text" name="concrete_type" class="vb-field"
+                        value="<?php echo htmlspecialchars($vb_design['concrete_type'] ?? ''); ?>">
                 </div>
+
+                <!-- Volume Batch Section -->
+                <div class="section-title">Volume Batch (VB)</div>
 
                 <div class="form-row">
                     <label>Cubic Meter:</label>
-                    <input type="text" name="cubic_meter" value="<?= htmlspecialchars($design['cubic_meter'] ?? '') ?>">
+                    <input type="text" name="cubic_meter" class="vb-field"
+                        value="<?php echo htmlspecialchars($vb_design['cubic_meter'] ?? ''); ?>">
                 </div>
 
                 <div class="form-row">
                     <label>Concrete Slump:</label>
-                    <input type="text" name="concrete_slump"
-                        value="<?= htmlspecialchars($design['concrete_slump'] ?? '') ?>">
+                    <input type="text" name="concrete_slump" class="vb-field"
+                        value="<?php echo htmlspecialchars($vb_design['concrete_slump'] ?? ''); ?>">
                 </div>
 
                 <div class="form-row">
                     <label>W/C Ratio:</label>
-                    <input type="text" name="wc_ratio" value="<?= htmlspecialchars($design['wc_ratio'] ?? '') ?>">
+                    <input type="text" name="wc_ratio" class="vb-field"
+                        value="<?php echo htmlspecialchars($vb_design['wc_ratio'] ?? ''); ?>">
                 </div>
 
                 <div class="form-row">
                     <label>Cement Source:</label>
-                    <input type="text" name="cement_source"
-                        value="<?= htmlspecialchars($design['cement_source'] ?? '') ?>">
+                    <input type="text" name="cement_source" class="vb-field"
+                        value="<?php echo htmlspecialchars($vb_design['cement_source'] ?? ''); ?>">
                 </div>
 
                 <div class="form-row">
                     <label>Admix Source:</label>
-                    <input type="text" name="admix_source"
-                        value="<?= htmlspecialchars($design['admix_source'] ?? '') ?>">
+                    <input type="text" name="admix_source" class="vb-field"
+                        value="<?php echo htmlspecialchars($vb_design['admix_source'] ?? ''); ?>">
                 </div>
 
                 <div class="form-row">
                     <label>Cement Mix:</label>
-                    <input type="text" name="cement_mix" value="<?= htmlspecialchars($design['cement_mix'] ?? '') ?>">
+                    <input type="text" name="cement_mix" class="vb-field"
+                        value="<?php echo htmlspecialchars($vb_design['cement_mix'] ?? ''); ?>">
                 </div>
 
                 <div class="form-row">
                     <label>Concrete Price:</label>
-                    <input type="text" name="concrete_price"
-                        value="<?= htmlspecialchars($design['concrete_price'] ?? '') ?>">
+                    <input type="text" name="concrete_price" class="vb-field"
+                        value="<?php echo htmlspecialchars($vb_design['concrete_price'] ?? ''); ?>">
                 </div>
 
                 <div class="form-row">
                     <label>Fly Ash:</label>
-                    <input type="text" name="fly_ash" value="<?= htmlspecialchars($design['fly_ash'] ?? '') ?>">
+                    <input type="text" name="fly_ash" class="vb-field"
+                        value="<?php echo htmlspecialchars($vb_design['fly_ash'] ?? ''); ?>">
                 </div>
 
                 <div class="form-row">
                     <label>Sand:</label>
-                    <input type="text" name="sand" value="<?= htmlspecialchars($design['sand'] ?? '') ?>">
+                    <input type="text" name="sand" class="vb-field"
+                        value="<?php echo htmlspecialchars($vb_design['sand'] ?? ''); ?>">
                 </div>
 
                 <div class="form-row">
                     <label>3/8":</label>
-                    <input type="text" name="three_eight" value="<?= htmlspecialchars($design['three_eight'] ?? '') ?>">
+                    <input type="text" name="three_eight" class="vb-field"
+                        value="<?php echo htmlspecialchars($vb_design['three_eight'] ?? ''); ?>">
                 </div>
 
                 <div class="form-row">
                     <label>3/4":</label>
-                    <input type="text" name="three_fourth"
-                        value="<?= htmlspecialchars($design['three_fourth'] ?? '') ?>">
+                    <input type="text" name="three_fourth" class="vb-field"
+                        value="<?php echo htmlspecialchars($vb_design['three_fourth'] ?? ''); ?>">
                 </div>
 
                 <div class="form-row">
                     <label>G1:</label>
-                    <input type="text" name="G1" value="<?= htmlspecialchars($design['G1'] ?? '') ?>">
+                    <input type="text" name="G1" class="vb-field"
+                        value="<?php echo htmlspecialchars($vb_design['G1'] ?? ''); ?>">
                 </div>
 
                 <div class="form-row">
                     <label>Admix:</label>
-                    <input type="text" name="admix" value="<?= htmlspecialchars($design['admix'] ?? '') ?>">
+                    <input type="text" name="admix" class="vb-field"
+                        value="<?php echo htmlspecialchars($vb_design['admix'] ?? ''); ?>">
                 </div>
 
                 <div class="form-row">
                     <label>Water:</label>
-                    <input type="text" name="water" value="<?= htmlspecialchars($design['water'] ?? '') ?>">
+                    <input type="text" name="water" class="vb-field"
+                        value="<?php echo htmlspecialchars($vb_design['water'] ?? ''); ?>">
                 </div>
 
                 <div class="form-row">
                     <label>Air:</label>
-                    <input type="text" name="air" value="<?= htmlspecialchars($design['air'] ?? '') ?>">
+                    <input type="text" name="air" class="vb-field"
+                        value="<?php echo htmlspecialchars($vb_design['air'] ?? ''); ?>">
                 </div>
 
                 <div class="form-row">
                     <label>Others:</label>
-                    <input type="text" name="others" value="<?= htmlspecialchars($design['others'] ?? '') ?>">
+                    <input type="text" name="others" class="vb-field"
+                        value="<?php echo htmlspecialchars($vb_design['others'] ?? ''); ?>">
                 </div>
 
                 <div class="form-row">
                     <label>Total:</label>
-                    <input type="text" name="total" value="<?= htmlspecialchars($design['total'] ?? '') ?>">
+                    <input type="text" name="total" class="vb-field"
+                        value="<?php echo htmlspecialchars($vb_design['total'] ?? ''); ?>">
+                </div>
+
+                <!-- Saturated Surface Dry Section -->
+                <div class="section-title ssd">Saturated Surface Dry (SSD)</div>
+
+                <div class="form-row">
+                    <label>Cubic Meter:</label>
+                    <input type="text" name="ssd_cubic_meter" class="ssd-field"
+                        value="<?php echo htmlspecialchars($ssd_design['cubic_meter'] ?? ''); ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>Cement Source:</label>
+                    <input type="text" name="ssd_cement_source" class="ssd-field"
+                        value="<?php echo htmlspecialchars($ssd_design['cement_source'] ?? ''); ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>Cement Mix:</label>
+                    <input type="text" name="ssd_cement_mix" class="ssd-field"
+                        value="<?php echo htmlspecialchars($ssd_design['cement_mix'] ?? ''); ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>Fly Ash:</label>
+                    <input type="text" name="ssd_fly_ash" class="ssd-field"
+                        value="<?php echo htmlspecialchars($ssd_design['fly_ash'] ?? ''); ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>3/4":</label>
+                    <input type="text" name="ssd_three_fourth" class="ssd-field"
+                        value="<?php echo htmlspecialchars($ssd_design['three_fourth'] ?? ''); ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>3/8":</label>
+                    <input type="text" name="ssd_three_eight" class="ssd-field"
+                        value="<?php echo htmlspecialchars($ssd_design['three_eight'] ?? ''); ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>Water:</label>
+                    <input type="text" name="ssd_water" class="ssd-field"
+                        value="<?php echo htmlspecialchars($ssd_design['water'] ?? ''); ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>Concrete Slump:</label>
+                    <input type="text" name="ssd_concrete_slump" class="ssd-field"
+                        value="<?php echo htmlspecialchars($ssd_design['concrete_slump'] ?? ''); ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>Admix Source:</label>
+                    <input type="text" name="ssd_admix_source" class="ssd-field"
+                        value="<?php echo htmlspecialchars($ssd_design['admix_source'] ?? ''); ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>Sand:</label>
+                    <input type="text" name="ssd_sand" class="ssd-field"
+                        value="<?php echo htmlspecialchars($ssd_design['sand'] ?? ''); ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>G1:</label>
+                    <input type="text" name="ssd_G1" class="ssd-field"
+                        value="<?php echo htmlspecialchars($ssd_design['G1'] ?? ''); ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>Air:</label>
+                    <input type="text" name="ssd_air" class="ssd-field"
+                        value="<?php echo htmlspecialchars($ssd_design['air'] ?? ''); ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>W/C Ratio:</label>
+                    <input type="text" name="ssd_wc_ratio" class="ssd-field"
+                        value="<?php echo htmlspecialchars($ssd_design['wc_ratio'] ?? ''); ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>Admix:</label>
+                    <input type="text" name="ssd_admix" class="ssd-field"
+                        value="<?php echo htmlspecialchars($ssd_design['admix'] ?? ''); ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>Others:</label>
+                    <input type="text" name="ssd_others" class="ssd-field"
+                        value="<?php echo htmlspecialchars($ssd_design['others'] ?? ''); ?>">
                 </div>
 
                 <div class="form-buttons">

@@ -19,7 +19,7 @@ $statusLabels = [
 
 // --- Fetch concrete PSI options from database ---
 $concreteOptions = [];
-$sql = "SELECT concrete_psi, curration_days FROM sorcom_concrete_design_masterlist";
+$sql = "SELECT concrete_psi, curration_days FROM scd_vb_list";
 $concreteOptions = [];
 if ($result = $conn->query($sql)) {
     while ($row = $result->fetch_assoc()) {
@@ -32,7 +32,7 @@ if ($result = $conn->query($sql)) {
 
 // --- Fetch unique description options from database ---
 $descriptionOptions = [];
-$sqlDesc = "SELECT DISTINCT concrete_type FROM sorcom_concrete_design_masterlist";
+$sqlDesc = "SELECT DISTINCT concrete_type FROM scd_vb_list";
 if ($resultDesc = $conn->query($sqlDesc)) {
     while ($row = $resultDesc->fetch_assoc()) {
         $descriptionOptions[] = $row['concrete_type'];

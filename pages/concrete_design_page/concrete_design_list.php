@@ -3,33 +3,39 @@
 include __DIR__ . '/../../FunctionAndDB/db_connect.php';
 include __DIR__ . '/../../FunctionAndDB/Web_Functions.php';
 
-if (!isset($conn)) {
-    die("Database connection not established. Check db_connect.php.");
+// Fetch all VB data
+$vb_result = $conn->query("SELECT * FROM scd_vb_list ORDER BY vb_concrete_psi ASC");
+
+// Fetch all SSD data into an array
+$ssd_result = $conn->query("SELECT * FROM scd_ssd_list ORDER BY ssd_cement_mix ASC");
+$ssd_rows = [];
+while ($row = $ssd_result->fetch_assoc()) {
+    $ssd_rows[] = $row;
 }
 
-$table_name = 'sorcom_concrete_design_masterlist';
-
-// Handle search query
+// Handle search query (search VB only)
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
-$search_sql = "";
-$params = array();
-$types = "";
-
 if ($search !== "") {
-    $search_param = "%$search%";
-    $search_sql = "WHERE concrete_psi LIKE ? OR curation_days LIKE ? OR concrete_type LIKE ?";
-    $params = array_fill(0, 3, $search_param);
-    $types = str_repeat("s", 3);
+    $search = htmlspecialchars($search);
+    $vb_result = $conn->query("SELECT * FROM scd_vb_list WHERE vb_concrete_psi LIKE '%$search%' OR vb_curation_days LIKE '%$search%' OR vb_concrete_type LIKE '%$search%' ORDER BY vb_concrete_psi ASC");
 }
 
-$sql_summary = "SELECT * FROM $table_name $search_sql ORDER BY id ASC";
-
-$stmt = $conn->prepare($sql_summary);
-if ($search !== "") {
-    $stmt->bind_param($types, $params[0], $params[1], $params[2]);
+// Check VB query
+if (!$vb_result) {
+    echo "VB Query Error: " . $conn->error;
 }
-$stmt->execute();
-$result = $stmt->get_result();
+
+// Check SSD query
+if (!$ssd_result) {
+    echo "SSD Query Error: " . $conn->error;
+}
+
+// Debug: show row counts
+$vb_count = $vb_result ? $vb_result->num_rows : 0;
+$ssd_count = count($ssd_rows);
+echo "VB Rows: $vb_count, SSD Rows: $ssd_count";
+
+
 ?>
 
 <!DOCTYPE html>
@@ -41,8 +47,8 @@ $result = $stmt->get_result();
     <title>Concrete Design Masterlist</title>
     <link rel="stylesheet" href="/Inventory-Accounts-System-v1/assets/bootstrap/css/bootstrap.min.css">
     <?php showHeader() ?>
-
     <style>
+        /* ==== ALL ORIGINAL STYLES KEPT ==== */
         body {
             font-family: Arial, sans-serif;
             background: #BFC3AA;
@@ -51,7 +57,6 @@ $result = $stmt->get_result();
             padding-bottom: 60px;
         }
 
-        /* Push content down below fixed header */
         .main-content {
             padding-top: 70px;
         }
@@ -164,12 +169,24 @@ $result = $stmt->get_result();
             background: #f0f0f0;
         }
 
-        .dropbar-inner td:last-child {
-            background: #fff;
+        .dropbar-inner td:first-child {
+            width: 20%;
+            min-width: 120px;
         }
 
-        /* Responsive */
-        @media (max-width: 576px) {
+        .dropbar-inner td.ssd-col,
+        .dropbar-inner td.vb-col {
+            width: 40%;
+            min-width: 150px;
+        }
+
+        .dropbar-inner td.merged-cell {
+            background: #fff;
+            text-align: center;
+            width: 80%;
+        }
+
+        @media (max-width:576px) {
             .main-content {
                 padding-top: 200px;
             }
@@ -188,10 +205,7 @@ $result = $stmt->get_result();
                 flex-direction: column;
             }
 
-            .search-container input {
-                width: 100%;
-            }
-
+            .search-container input,
             .search-container button {
                 width: 100%;
             }
@@ -214,12 +228,22 @@ $result = $stmt->get_result();
             }
 
             .dropbar-inner td:first-child {
-                width: 40%;
-                font-size: 12px;
+                width: 25%;
+                min-width: 100px;
+            }
+
+            .dropbar-inner td.ssd-col,
+            .dropbar-inner td.vb-col {
+                width: 37.5%;
+                min-width: 100px;
+            }
+
+            .dropbar-inner td.merged-cell {
+                width: 75%;
             }
         }
 
-        @media (max-width: 400px) {
+        @media (max-width:400px) {
             .main-content {
                 padding-top: 230px;
             }
@@ -229,20 +253,16 @@ $result = $stmt->get_result();
 
 <body>
 
-    <!-- Main Content -->
     <div class="main-content">
 
-        <!-- Page Title and Search -->
         <div class="page-title-bar">
             <h2 class="text-center mb-3">Concrete Design Masterlist</h2>
             <form method="get" class="search-container">
-                <input type="text" name="search" placeholder="Search PSI, Days, Type..."
-                    value="<?php echo htmlspecialchars($search); ?>">
+                <input type="text" name="search" placeholder="Search PSI, Days, Type..." value="<?php echo $search; ?>">
                 <button type="submit">Search</button>
             </form>
         </div>
 
-        <!-- Table -->
         <div class="table-container">
             <table>
                 <thead>
@@ -257,46 +277,85 @@ $result = $stmt->get_result();
                 </thead>
                 <tbody>
                     <?php
-                    if ($result->num_rows > 0) {
-                        while ($row = $result->fetch_assoc()) {
-                            $id = $row['id'];
-                            echo "<tr>";
-                            echo "<td>" . (isset($row['concrete_psi']) ? $row['concrete_psi'] : '') . "</td>";
-                            echo "<td>" . (isset($row['curation_days']) ? $row['curation_days'] : '') . "</td>";
-                            echo "<td>" . (isset($row['concrete_type']) ? $row['concrete_type'] : '') . "</td>";
-                            echo "<td>" . (isset($row['total']) ? $row['total'] . ' kgs/m³' : '') . "</td>";
-                            echo "<td>" . (isset($row['concrete_price']) ? $row['concrete_price'] : '') . "</td>";
-                            echo "<td>";
-                            echo "<a href='#' class='btn-view' onclick='toggleDropbar(" . $id . "); return false;'>View</a>";
-                            echo "<a href='edit_design.php?id=" . $id . "' class='btn-edit'>Edit</a>";
-                            echo "</td>";
-                            echo "</tr>";
+                    $row_index = 0;
+                    while ($vb_row = $vb_result->fetch_assoc()) {
+                        $ssd_row = $ssd_rows[$row_index] ?? []; // use corresponding SSD row if exists
+                        $row_index++;
 
-                            // Dropbar row
-                            echo "<tr id='dropbar-" . $id . "' class='dropbar-row'>";
-                            echo "<td colspan='6'>";
-                            echo "<table class='dropbar-inner'>";
-                            echo "<tr><td>Cubic Meter</td><td>" . (isset($row['cubic_meter']) ? $row['cubic_meter'] : '') . "</td></tr>";
-                            echo "<tr><td>Cement Source</td><td>" . (isset($row['cement_source']) ? $row['cement_source'] : '') . "</td></tr>";
-                            echo "<tr><td>Fly Ash</td><td>" . (isset($row['fly_ash']) ? $row['fly_ash'] : '') . "</td></tr>";
-                            echo "<tr><td>3/4\"</td><td>" . (isset($row['three_fourth']) ? $row['three_fourth'] : '') . "</td></tr>";
-                            echo "<tr><td>3/8\"</td><td>" . (isset($row['three_eight']) ? $row['three_eight'] : '') . "</td></tr>";
-                            echo "<tr><td>Water</td><td>" . (isset($row['water']) ? $row['water'] : '') . "</td></tr>";
-                            echo "<tr><td>Concrete Slump</td><td>" . (isset($row['concrete_slump']) ? $row['concrete_slump'] : '') . "</td></tr>";
-                            echo "<tr><td>Admix Source</td><td>" . (isset($row['admix_source']) ? $row['admix_source'] : '') . "</td></tr>";
-                            echo "<tr><td>Sand</td><td>" . (isset($row['sand']) ? $row['sand'] : '') . "</td></tr>";
-                            echo "<tr><td>G1</td><td>" . (isset($row['g1']) ? $row['g1'] : '') . "</td></tr>";
-                            echo "<tr><td>Air</td><td>" . (isset($row['air']) ? $row['air'] : '') . "</td></tr>";
-                            echo "<tr><td>W/C Ratio</td><td>" . (isset($row['wc_ratio']) ? $row['wc_ratio'] : '') . "</td></tr>";
-                            echo "<tr><td>Cement Mix</td><td>" . (isset($row['cement_mix']) ? $row['cement_mix'] : '') . "</td></tr>";
-                            echo "<tr><td>Admix</td><td>" . (isset($row['admix']) ? $row['admix'] : '') . "</td></tr>";
-                            echo "<tr><td>Others</td><td>" . (isset($row['others']) ? $row['others'] : '') . "</td></tr>";
-                            echo "</table>";
-                            echo "</td>";
-                            echo "</tr>";
+                        echo "<tr>";
+                        echo "<td>" . ($vb_row['vb_concrete_psi'] ?? '') . "</td>";
+                        echo "<td>" . ($vb_row['vb_curation_days'] ?? '') . "</td>";
+                        echo "<td>" . ($vb_row['vb_concrete_type'] ?? '') . "</td>";
+                        echo "<td>" . ($vb_row['vb_total'] ?? '') . "</td>";
+                        echo "<td>" . ($vb_row['vb_concrete_price'] ?? '') . "</td>";
+                        echo "<td>";
+                        echo "<a href='#' class='btn-view' onclick='toggleDropbar($row_index); return false;'>View</a>";
+                        echo "<a href='edit_design.php?row=$row_index' class='btn-edit'>Edit</a>";
+                        echo "</td>";
+                        echo "</tr>";
+
+                        // Dropbar row
+                        echo "<tr id='dropbar-$row_index' class='dropbar-row'>";
+                        echo "<td colspan='6'>";
+                        echo "<table class='dropbar-inner'>";
+                        echo "<tr><td></td><td class='ssd-col'>Saturated Surface Dry (SSD)</td><td class='vb-col'>Volume Batch</td></tr>";
+
+
+
+
+                        // Fields to merge (SSD and VB in one cell)
+                        $merged_fields = [
+                            "Cubic Meter" => "cubic_meter",
+                            "Cement Source" => "cement_source",
+                            "Concrete Slump" => "concrete_slump",
+                            "Admix Source" => "admix_source"
+                        ];
+
+                        // Fields that remain separate (SSD left, VB right)
+                        $separate_fields = [
+                            "Cement Mix" => "cement_mix",
+                            "Fly Ash" => "fly_ash",
+                            "3/4\"" => "three_fourth",
+                            "3/8\"" => "three_eight",
+                            "Water" => "water",
+                            "Sand" => "sand",
+                            "G1" => "G1",
+                            "Air" => "air",
+                            "W/C Ratio" => "wc_ratio",
+                            "Admix" => "admix",
+                            "Others" => "others"
+                        ];
+
+                        // Render merged fields first
+                        foreach ($merged_fields as $label => $col) {
+                            $ssd_value = $ssd_row['ssd_' . $col] ?? '';
+                            if ($ssd_value == 0)
+                                $ssd_value = '';
+                            $vb_value = $vb_row['vb_' . $col] ?? '';
+                            if ($vb_value == 0)
+                                $vb_value = '';
+
+                            // Combine both values
+                            $combined = trim($ssd_value . ' ' . $vb_value);
+
+                            echo "<tr><td>$label</td><td colspan='2' class='merged-cell'>$combined</td></tr>";
+
                         }
-                    } else {
-                        echo "<tr><td colspan='6'>No records found.</td></tr>";
+
+                        // Render separate fields
+                        foreach ($separate_fields as $label => $col) {
+                            $ssd_value = $ssd_row['ssd_' . $col] ?? '';
+                            if ($ssd_value == 0)
+                                $ssd_value = '';
+                            $vb_value = $vb_row['vb_' . $col] ?? '';
+                            if ($vb_value == 0)
+                                $vb_value = '';
+                            echo "<tr><td>$label</td><td>$ssd_value</td><td>$vb_value</td></tr>";
+                        }
+
+                        echo "</table>";
+                        echo "</td>";
+                        echo "</tr>";
                     }
                     ?>
                 </tbody>
@@ -306,14 +365,10 @@ $result = $stmt->get_result();
     </div>
 
     <script>
-        function toggleDropbar(id) {
-            var row = document.getElementById('dropbar-' + id);
+        function toggleDropbar(index) {
+            var row = document.getElementById('dropbar-' + index);
             if (!row) return;
-            if (row.style.display === 'table-row') {
-                row.style.display = 'none';
-            } else {
-                row.style.display = 'table-row';
-            }
+            row.style.display = (row.style.display === 'table-row') ? 'none' : 'table-row';
         }
     </script>
 

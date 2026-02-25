@@ -10,7 +10,7 @@ $error_message = "";
 
 // --- Fetch all PSI options with their corresponding curation_days, concrete_type, and total ---
 $psiData = [];
-$sql = "SELECT concrete_psi, curation_days, concrete_type, total FROM sorcom_concrete_design_masterlist";
+$sql = "SELECT concrete_psi, curation_days, concrete_type, total FROM scd_vb_list";
 if ($result = $conn->query($sql)) {
     while ($row = $result->fetch_assoc()) {
         $psi = $row['concrete_psi'];

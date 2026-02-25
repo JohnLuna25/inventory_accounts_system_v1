@@ -22,26 +22,26 @@ $id = intval($_GET['id']);
 
 // --- Fetch all PSI options with their corresponding curation_days, concrete_type, and total ---
 $psiData = [];
-$sql = "SELECT concrete_psi, curation_days, concrete_type, total FROM sorcom_concrete_design_masterlist";
+$sql = "SELECT concrete_psi, curation_days, concrete_type, total FROM scd_vb_list";
 if ($result = $conn->query($sql)) {
     while ($row = $result->fetch_assoc()) {
         $psi = $row['concrete_psi'];
         $days = $row['curation_days'];
         $type = $row['concrete_type'];
         $total = floatval($row['total']);
-        
+
         if (!isset($psiData[$psi])) {
             $psiData[$psi] = ['days' => [], 'types' => [], 'totals' => []];
         }
-        
+
         if (!in_array($days, $psiData[$psi]['days'])) {
             $psiData[$psi]['days'][] = $days;
         }
-        
+
         if (!in_array($type, $psiData[$psi]['types'])) {
             $psiData[$psi]['types'][] = $type;
         }
-        
+
         $psiData[$psi]['totals'][$days . '-' . $type] = $total;
     }
     $result->free();
@@ -180,7 +180,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <!-- Batch (Auto-filled) -->
             <div class="form-row">
                 <label>Batch (kgs/m³):</label>
-                <input type="text" name="batch" id="batch" value="<?= htmlspecialchars($currentBatch) ?>" readonly style="background-color: #e0e0e0;">
+                <input type="text" name="batch" id="batch" value="<?= htmlspecialchars($currentBatch) ?>" readonly
+                    style="background-color: #e0e0e0;">
             </div>
 
             <!-- Stocks In -->

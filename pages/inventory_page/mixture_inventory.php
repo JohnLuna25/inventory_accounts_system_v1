@@ -7,7 +7,7 @@ if ($conn->connect_error)
 
 $result = $conn->query("SELECT * FROM sorcom_mixture_inventory ORDER BY id DESC");
 
-$designs_result = $conn->query("SELECT * FROM sorcom_concrete_design_masterlist");
+$designs_result = $conn->query("SELECT * FROM scd_vb_list");
 $all_designs = [];
 while ($d = $designs_result->fetch_assoc()) {
     $all_designs[] = $d;

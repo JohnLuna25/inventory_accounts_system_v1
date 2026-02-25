@@ -30,7 +30,7 @@ $sql = "SELECT
             i.remarks,
             d.total as batch
         FROM sorcom_readymix_inventory i
-        LEFT JOIN sorcom_concrete_design_masterlist d 
+        LEFT JOIN scd_vb_list d 
             ON i.design_mix_id = d.concrete_psi 
             AND i.curation_days = d.curation_days 
             AND i.concrete_type = d.concrete_type

@@ -24,7 +24,7 @@ $conn->begin_transaction();
 
 try {
     // 1. Get the design details from masterlist
-    $stmt = $conn->prepare("SELECT * FROM sorcom_concrete_design_masterlist 
+    $stmt = $conn->prepare("SELECT * FROM scd_vb_list 
                            WHERE concrete_psi = ? AND curation_days = ? AND concrete_type = ?");
     $stmt->bind_param("sis", $design_psi, $design_days, $design_type);
     $stmt->execute();
