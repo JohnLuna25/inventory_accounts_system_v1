@@ -1,8 +1,26 @@
 <?php
+ob_start();
 require_once __DIR__ . '/../../FunctionAndDB/Web_Functions.php';
 require_once __DIR__ . '/../../FunctionAndDB/db_connect.php';
 
 showHeader();
+
+// Delete function
+function deleteOrder($conn, $sap_id)
+{
+    $stmt = $conn->prepare("DELETE FROM statement_of_account WHERE sap_id = ?");
+    $stmt->bind_param("s", $sap_id);
+    return $stmt->execute();
+}
+
+// Handle delete
+if (isset($_GET['delete'])) {
+    $sap_id = $_GET['delete'];
+    if (deleteOrder($conn, $sap_id)) {
+        header("Location: sap_accountsManagement.php?deleted=1");
+        exit;
+    }
+}
 
 // Fetch all non-done orders
 $sql = "SELECT * FROM statement_of_account WHERE order_status != 'done' ORDER BY sap_id DESC";
@@ -50,7 +68,8 @@ $result = $conn->query($sql);
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
-                    </thead> <tbody>
+                </thead>
+                <tbody>
                     <?php if ($result && $result->num_rows > 0): ?>
                         <?php while ($row = $result->fetch_assoc()): ?>
                             <tr>
@@ -65,23 +84,29 @@ $result = $conn->query($sql);
                                     <?= htmlspecialchars($row['concrete_type']) ?>
                                 </td>
                                 <td>
-                                    <?= htmlspecialchars($row['cubic_meters']) ?></td>
-                                        <td><?= htmlspecialchars($row['order_status']) ?>
+                                    <?= htmlspecialchars($row['cubic_meters']) ?>
+                                </td>
+                                <td class="order-status">
+                                    <?php
+                                    $status = strtolower($row['order_status']);
+                                    $statusClass = str_replace(' ', '-', $status);
+                                    ?>
+                                    <span class="<?= $statusClass ?>"><?= htmlspecialchars($row['order_status']) ?></span>
                                 </td>
                                 <td>
                                     <a href="sap_accountsForm.php?id=<?= urlencode($row['sap_id']) ?>"
                                         class="btn btn-view">Edit</a>
-                                    <a href="delete_order.php?id=<?= urlencode($row['sap_id']) ?>" class="btn btn-delete"
-                                        onclick="return confirm('Delete this order?')">Delete</a>
-                                            </td>
-                                            </tr>
-                                <?php endwhile; ?>
-                            <?php else: ?>
+                                    <a href="sap_accountsManagement.php?delete=<?= urlencode($row['sap_id']) ?>"
+                                        class="btn btn-delete" onclick="return confirm('Delete this order?')">Delete</a>
+                                </td>
+                            </tr>
+                        <?php endwhile; ?>
+                    <?php else: ?>
                         <tr>
-                                    <td colspan="11" class="no-orders">No pending orders</td>
+                            <td colspan="11" class="no-orders">No records of Current Orders yet</td>
                         </tr>
                     <?php endif; ?>
-                    </tbody>
+                </tbody>
             </table>
         </div>
 

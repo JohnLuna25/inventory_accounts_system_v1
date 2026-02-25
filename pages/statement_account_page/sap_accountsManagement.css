@@ -78,11 +78,16 @@ th {
   white-space: nowrap;
 }
 
+td.order-status {
+  background-color: #ffffff;
+}
+
 td {
   border: 1px solid #888;
   padding: 8px 6px;
   text-align: center;
   font-size: 11px;
+  background-color: #ffffff;
 }
 
 tr:nth-child(even) {
@@ -90,7 +95,7 @@ tr:nth-child(even) {
 }
 
 tr:hover {
-  background-color: #e0e0e0;
+  background-color: #696969;
 }
 
 .btn-view {
@@ -127,6 +132,39 @@ tr:hover {
   font-style: italic;
   color: #555;
   padding: 20px 0;
+}
+
+/* Status Colors */
+.pending {
+  background-color: #0084ff;
+  color: #ffffff;
+  padding: 11px 16px;
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+.in-progress {
+  background-color: #ff7300;
+  color: #ffffff;
+  padding: 11px 16px;
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+.delivered {
+  background-color: #c79800;
+  color: #ffffff;
+  padding: 11px 16px;
+  border-radius: 4px;
+  font-weight: 700;
+}
+
+.done {
+  background-color: #00ff3c;
+  color: #ffffff;
+  padding: 11px 16px;
+  border-radius: 4px;
+  font-weight: 700;
 }
 
 @media (max-width: 768px) {

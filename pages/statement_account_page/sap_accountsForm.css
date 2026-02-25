@@ -111,4 +111,34 @@ textarea {
     width: 100%;
     margin: 5px 0;
   }
+
+  /* CSS for status colors */
+
+  .pending {
+    background-color: #bbdaf7;
+    color: #000;
+    padding: 5px 10px;
+    border-radius: 4px;
+  }
+
+  .in-progress {
+    background-color: #ffdfc4;
+    color: #000;
+    padding: 5px 10px;
+    border-radius: 4px;
+  }
+
+  .delivered {
+    background-color: #fff3cd;
+    color: #000;
+    padding: 5px 10px;
+    border-radius: 4px;
+  }
+
+  .done {
+    background-color: #d4edda;
+    color: #000;
+    padding: 5px 10px;
+    border-radius: 4px;
+  }
 }
