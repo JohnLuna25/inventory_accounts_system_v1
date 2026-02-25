@@ -1,61 +1,126 @@
-/* General Body Styling */
+/* ==== SAME STYLE AS CONCRETE DESIGN LIST ==== */
 body {
   font-family: Arial, sans-serif;
-  padding: 20px;
-  background-color: #bfc3aa;
-  color: #000;
-  text-align: center;
+  background: #bfc3aa;
   margin: 0;
+  padding: 0;
+  padding-bottom: 60px;
 }
 
-/* Page Heading */
-h2 {
-  margin-top: 65px;
-  margin-bottom: 20px;
-  font-size: 24px;
+.main-content {
+  padding-top: 70px;
 }
 
-/* Table Styling */
-table {
-  border-collapse: collapse;
-  width: 90%;
-  margin: 20px auto; /* Center table */
-  background-color: #fff;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+.page-title-bar {
+  background: white;
+  margin
+  margin: 15px;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.page-title-bar h2 {
   text-align: center;
-  font-size: 13px;
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #333;
+  font-weight: 300;
 }
 
-/* Table Header */
-table thead {
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.button-container .btn {
+  padding: 10px 20px;
+  font-weight: bold;
+  border-radius: 8px;
+  text-decoration: none;
+  color: white;
+  transition: background-color 0.3s ease;
+}
+
+.button-container .btn-primary {
   background-color: #0b63c4;
-  color: #fff;
 }
 
-table th,
-table td {
-  border: 1px solid #000;
-  padding: 10px 15px;
+.button-container .btn-primary:hover {
+  background-color: #0a4a8f;
+}
+
+.table-container {
+  background: white;
+  margin: 15px;
+  padding: 10px;
+  border-radius: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 600px;
+}
+
+th {
+  background: #0b63c4;
+  color: white;
+  padding: 8px 6px;
   text-align: center;
-  font-size: 13px;
+  font-size: 12px;
+  white-space: nowrap;
 }
 
-table th.actions,
-table td.actions {
-  min-width: 160px;
+td {
+  border: 1px solid #888;
+  padding: 8px 6px;
+  text-align: center;
+  font-size: 11px;
 }
 
-/* Zebra Stripes */
-table tbody tr:nth-child(even) {
+tr:nth-child(even) {
   background-color: #f2f2f2;
 }
 
-/* Hover Effect */
-table tbody tr:hover {
+tr:hover {
   background-color: #e0e0e0;
 }
 
-/* "No pending orders" row */
+.btn-view {
+  background: #4caf50;
+  color: white;
+  padding: 4px 8px;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 10px;
+  display: inline-block;
+  margin-right: 3px;
+}
+
+.btn-view:hover {
+  background: #45a049;
+}
+
+.btn-delete {
+  background: #f44336;
+  color: white;
+  padding: 4px 8px;
+  text-decoration: none;
+  border-radius: 4px;
+  font-size: 10px;
+  display: inline-block;
+}
+
+.btn-delete:hover {
+  background: #d32f2f;
+}
+
 .no-orders {
   text-align: center;
   font-style: italic;
@@ -63,150 +128,50 @@ table tbody tr:hover {
   padding: 20px 0;
 }
 
-/* Responsive Table */
-@media screen and (max-width: 768px) {
-  table {
+@media (max-width: 768px) {
+  .main-content {
+    padding-top: 200px;
+  }
+
+  .page-title-bar {
+    margin: 10px;
+    padding: 15px;
+  }
+
+  .page-title-bar h2 {
+    font-size: 18px;
+    margin-bottom: 12px;
+  }
+
+  .button-container {
+    flex-direction: column;
+  }
+
+  .button-container .btn {
     width: 100%;
+    text-align: center;
   }
 
-  table th,
-  table td {
-    padding: 8px 12px;
-    font-size: 12px;
+  .table-container {
+    margin: 10px;
+    padding: 8px;
+  }
+
+  th,
+  td {
+    padding: 6px 4px;
+    font-size: 10px;
+  }
+
+  .btn-view,
+  .btn-delete {
+    padding: 3px 6px;
+    font-size: 9px;
   }
 }
 
-/* Buttons Styling */
-.done_btn,
-.edit-btn,
-.delete-btn {
-  padding: 4px 8px;
-  margin: 0 2px;
-  border-radius: 3px;
-  cursor: pointer;
-  font-size: 13px;
-  border: none;
-  transition: 0.3s ease;
-}
-
-/* Individual Button Colors */
-.done_btn {
-  background-color: #4caf50;
-  color: #fff;
-}
-
-.done_btn:hover {
-  background-color: #45a049;
-}
-
-.edit-btn {
-  background-color: #ff9800;
-  color: #fff;
-}
-
-.edit-btn:hover {
-  background-color: #e68a00;
-}
-
-.delete-btn {
-  background-color: #f44336;
-  color: #fff;
-}
-
-.delete-btn:hover {
-  background-color: #da190b;
-}
-
-/* Success & Error Messages */
-.success-msg,
-.error-msg {
-  width: 90%;
-  max-width: 800px;
-  margin: 20px auto;
-  padding: 10px 15px;
-  border-radius: 5px;
-  font-size: 14px;
-  opacity: 1;
-  transition: opacity 1s ease-out;
-  text-align: left;
-}
-
-.success-msg {
-  background-color: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
-}
-
-.error-msg {
-  background-color: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
-}
-
-.orders-table {
-  width: 100%; /* table now full width */
-  margin: 0 auto;
-  border-collapse: collapse;
-  font-family: Arial, sans-serif;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-  background-color: #fff;
-  border-radius: 8px;
-  overflow: hidden;
-}
-
-/* Table header */
-.orders-table thead tr {
-  background-color: #132af3;
-  color: white;
-  text-align: center;
-  font-weight: bold;
-}
-
-/* Table body */
-.orders-table tbody tr {
-  border-bottom: 1px solid #ddd;
-  text-align: center;
-  transition: background-color 0.3s ease;
-}
-
-.orders-table tbody tr:hover {
-  background-color: #f1f1f1;
-}
-
-.orders-table th,
-.orders-table td {
-  padding: 12px 15px;
-}
-
-/* Buttons */
-.add-order-btn,
-.show-finished-btn {
-  display: inline-block;
-  padding: 10px 15px;
-  font-weight: bold;
-  border-radius: 5px;
-  text-decoration: none;
-  color: white;
-  transition: background-color 0.3s ease;
-}
-
-.add-order-btn {
-  background-color: #0400ff;
-}
-
-.add-order-btn:hover {
-  background-color: #1976d2;
-}
-
-.show-finished-btn {
-  background-color: #0400ff;
-}
-
-.show-finished-btn:hover {
-  background-color: #1976d2;
-}
-
-/* Highlight finished orders */
-.finished-order {
-  background-color: #54b5ff; /* light blue */
+@media (max-width: 400px) {
+  .main-content {
+    padding-top: 230px;
+  }
 }

@@ -5,7 +5,7 @@ require_once __DIR__ . '/../../FunctionAndDB/db_connect.php';
 showHeader();
 
 // Fetch all non-done orders
-$sql = "SELECT * FROM statement_of_account WHERE order_status != 'done' ORDER BY id DESC";
+$sql = "SELECT * FROM statement_of_account WHERE order_status != 'done' ORDER BY sap_id DESC";
 $result = $conn->query($sql);
 ?>
 
@@ -16,52 +16,77 @@ $result = $conn->query($sql);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Concrete Orders Management</title>
+    <link rel="stylesheet" href="/Inventory-Accounts-System-v1/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="sap_accountsManagement.css">
 </head>
 
 <body>
-    <h2 style="text-align:center; margin-top:60px;">Concrete Orders</h2>
 
-    <div class="table-controls"
-        style="width:100%; margin:auto; display:flex; justify-content: space-between; margin-bottom:2%;">
-        <a href="sap_accountsForm.php" class="add-order-btn">+ Add Order</a>
-        <a href="sap_finishedOrders.php" class="show-finished-btn">Show Finished Orders</a>
+    <div class="main-content">
+
+        <!-- Banner for Title and Buttons -->
+        <div class="page-title-bar">
+            <h2>Concrete Orders</h2>
+            <div class="button-container">
+                <a href="sap_accountsForm.php" class="btn btn-primary">+ Add Order</a>
+                <a href="sap_finishedOrders.php" class="btn btn-primary">Show Finished Orders</a>
+            </div>
+        </div>
+
+        <!-- Banner for Table -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Order Date</th>
+                        <th>Delivery Date</th>
+                        <th>Customer Name</th>
+                        <th>Address</th>
+                        <th>Concrete Design</th>
+                        <th>Curation Days</th>
+                        <th>Concrete Type</th>
+                        <th>Cubic Meters</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead> <tbody>
+                    <?php if ($result && $result->num_rows > 0): ?>
+                        <?php while ($row = $result->fetch_assoc()): ?>
+                            <tr>
+                                <td><?= htmlspecialchars($row['sap_id'] ?? 'N/A') ?></td>
+                                <td><?= htmlspecialchars($row['order_date']) ?></td>
+                                <td><?= htmlspecialchars($row['delivery_date']) ?></td>
+                                <td><?= htmlspecialchars($row['customer_name']) ?></td>
+                                <td><?= htmlspecialchars($row['full_address']) ?></td>
+                                <td><?= htmlspecialchars($row['concrete_psi'] ?? 'N/A') ?></td>
+                                <td><?= htmlspecialchars($row['curation_days'] ?? 'N/A') ?></td>
+                                <td>
+                                    <?= htmlspecialchars($row['concrete_type']) ?>
+                                </td>
+                                <td>
+                                    <?= htmlspecialchars($row['cubic_meters']) ?></td>
+                                        <td><?= htmlspecialchars($row['order_status']) ?>
+                                </td>
+                                <td>
+                                    <a href="sap_accountsForm.php?id=<?= urlencode($row['sap_id']) ?>"
+                                        class="btn btn-view">Edit</a>
+                                    <a href="delete_order.php?id=<?= urlencode($row['sap_id']) ?>" class="btn btn-delete"
+                                        onclick="return confirm('Delete this order?')">Delete</a>
+                                            </td>
+                                            </tr>
+                                <?php endwhile; ?>
+                            <?php else: ?>
+                        <tr>
+                                    <td colspan="11" class="no-orders">No pending orders</td>
+                        </tr>
+                    <?php endif; ?>
+                    </tbody>
+            </table>
+        </div>
+
     </div>
 
-    <table class="orders-table" style="width:100%;">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Order Date</th>
-                <th>Delivery Date</th>
-                <th>Customer Name</th>
-                <th>Address</th>
-                <th>Concrete Type</th>
-                <th>Cubic Meters</th>
-                <th>Status</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php while ($row = $result->fetch_assoc()): ?>
-                <tr>
-                    <td><?= $row['id'] ?></td>
-                    <td><?= htmlspecialchars($row['order_date']) ?></td>
-                    <td><?= htmlspecialchars($row['delivery_date']) ?></td>
-                    <td><?= htmlspecialchars($row['customer_name']) ?></td>
-                    <td><?= htmlspecialchars($row['full_address']) ?></td>
-                    <td><?= htmlspecialchars($row['concrete_type']) ?></td>
-                    <td><?= htmlspecialchars($row['cubic_meters']) ?></td>
-                    <td><?= htmlspecialchars($row['order_status']) ?></td>
-                    <td>
-                        <a href="sap_accountsForm.php?id=<?= $row['id'] ?>" style="color:#2196f3;">Edit</a> |
-                        <a href="delete_order.php?id=<?= $row['id'] ?>" style="color:#f44336;"
-                            onclick="return confirm('Delete this order?')">Delete</a>
-                    </td>
-                </tr>
-            <?php endwhile; ?>
-        </tbody>
-    </table>
 </body>
 
 </html>
