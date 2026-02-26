@@ -8,21 +8,21 @@ $date_added = $design_mix = $curation_days = $batch = $remarks = $concrete_type 
 $stocks_in = $stocks_out = 0;
 $error_message = "";
 
-// --- Fetch all PSI options with their corresponding curation_days, concrete_type, and total ---
+// --- Fetch all PSI options with their corresponding curation_days, concrete_type, and batch ---
 $psiData = [];
-$sql = "SELECT concrete_psi, curation_days, concrete_type, total FROM scd_vb_list";
+$sql = "SELECT vb_concrete_psi, vb_curation_days, vb_concrete_type, vb_total FROM scd_vb_list";
 if ($result = $conn->query($sql)) {
     while ($row = $result->fetch_assoc()) {
-        $psi = $row['concrete_psi'];
-        $days = $row['curation_days'];
-        $type = $row['concrete_type'];
-        $total = floatval($row['total']);
+        $psi = $row['vb_concrete_psi'];
+        $days = $row['vb_curation_days'];
+        $type = $row['vb_concrete_type'];
+        $total = floatval($row['vb_total']);
 
         if (!isset($psiData[$psi])) {
             $psiData[$psi] = ['days' => [], 'types' => [], 'totals' => []];
         }
 
-        if (!in_array($days, $psiData[$psi]['days'])) {
+        if (!in_array($days, $psiData[$psi]['days'], true)) {
             $psiData[$psi]['days'][] = $days;
         }
 
@@ -30,7 +30,7 @@ if ($result = $conn->query($sql)) {
             $psiData[$psi]['types'][] = $type;
         }
 
-        // Store total with key of days-type
+        // Store batch with key of days-type
         $psiData[$psi]['totals'][$days . '-' . $type] = $total;
     }
     $result->free();
@@ -52,8 +52,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $design_mix = $_POST['design_mix'] ?? '';
     $curation_days = $_POST['curation_days'] ?? '';
     $concrete_type = $_POST['concrete_type'] ?? '';
+    $batch = $_POST['batch'] ?? 0;
     $stocks_in = intval($_POST['stocks_in'] ?? 0);
     $stocks_out = intval($_POST['stocks_out'] ?? 0);
+    $current_stock_batch = ($stocks_in - $stocks_out) * $batch;
     $remarks = $_POST['remarks'] ?? '';
 
     // Basic validation
@@ -61,8 +63,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $error_message = "Please fill in all required fields.";
     } else {
         $sql = "INSERT INTO sorcom_readymix_inventory 
-            (date_added, design_mix_id, curation_days, concrete_type, stocks_in, stocks_out, remarks) 
-            VALUES ('$date_added', '$design_mix', '$curation_days', '$concrete_type', $stocks_in, $stocks_out, '$remarks')";
+    (date_added, design_mix_id, curation_days, concrete_type, batch, stocks_in, stocks_out, current_stock_batch, remarks) 
+    VALUES ('$date_added', '$design_mix', '$curation_days', '$concrete_type', $batch, $stocks_in, $stocks_out, $current_stock_batch, '$remarks')";
+
 
         if ($conn->query($sql)) {
             header("Location: inventory_management.php");
@@ -179,7 +182,7 @@ $conn->close();
                 days.forEach(function (day) {
                     var option = document.createElement('option');
                     option.value = day;
-                    option.textContent = day + ' days';
+                    option.textContent = day + (day.toString().includes('days') ? '' : ' days');
                     curationSelect.appendChild(option);
                 });
 

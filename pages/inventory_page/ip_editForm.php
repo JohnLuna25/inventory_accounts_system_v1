@@ -4,6 +4,7 @@
 require_once __DIR__ . '/../../FunctionAndDB/db_connect.php';
 require_once __DIR__ . '/../../FunctionAndDB/Web_Functions.php';
 
+// Check database connection
 if (!$conn || $conn->connect_errno) {
     die("Database connection not available: " . ($conn->connect_error ?? 'Unknown error'));
 }
@@ -13,6 +14,7 @@ $error_message = "";
 $date_added = $design_mix = $curation_days = $batch = $remarks = $concrete_type = "";
 $stocks_in = $stocks_out = 0;
 
+// Redirect if no ID is provided
 if (!isset($_GET['id'])) {
     header("Location: inventory_management.php");
     exit;
@@ -22,13 +24,14 @@ $id = intval($_GET['id']);
 
 // --- Fetch all PSI options with their corresponding curation_days, concrete_type, and total ---
 $psiData = [];
-$sql = "SELECT concrete_psi, curation_days, concrete_type, total FROM scd_vb_list";
+$sql = "SELECT vb_concrete_psi, vb_curation_days, vb_concrete_type, vb_total FROM scd_vb_list";
+
 if ($result = $conn->query($sql)) {
     while ($row = $result->fetch_assoc()) {
-        $psi = $row['concrete_psi'];
-        $days = $row['curation_days'];
-        $type = $row['concrete_type'];
-        $total = floatval($row['total']);
+        $psi = $row['vb_concrete_psi'];
+        $days = preg_replace('/\s+days$/i', '', $row['vb_curation_days']);
+        $type = $row['vb_concrete_type'];
+        $total = floatval($row['vb_total']);
 
         if (!isset($psiData[$psi])) {
             $psiData[$psi] = ['days' => [], 'types' => [], 'totals' => []];
@@ -47,26 +50,42 @@ if ($result = $conn->query($sql)) {
     $result->free();
 }
 
+// Sort curation days for each PSI
 foreach ($psiData as $psi => $data) {
     sort($psiData[$psi]['days']);
 }
 
+// Sorted list of PSI options
 $psiOptions = array_keys($psiData);
 sort($psiOptions);
 
-// Load existing inventory data
-$stmt = $conn->prepare("SELECT date_added, design_mix_id, curation_days, concrete_type, stocks_in, stocks_out, remarks FROM sorcom_readymix_inventory WHERE id = ?");
+// --- Load existing inventory data ---
+$stmt = $conn->prepare("
+    SELECT date_added, design_mix_id, curation_days, concrete_type, batch, stocks_in, stocks_out, remarks
+    FROM sorcom_readymix_inventory
+    WHERE id = ?
+");
+
 if ($stmt) {
     $stmt->bind_param("i", $id);
     $stmt->execute();
-    $stmt->bind_result($date_added, $design_mix, $curation_days, $concrete_type, $stocks_in, $stocks_out, $remarks);
+    $stmt->bind_result(
+        $date_added,
+        $design_mix,
+        $curation_days,
+        $concrete_type,
+        $batch,
+        $stocks_in,
+        $stocks_out,
+        $remarks
+    );
     $stmt->fetch();
     $stmt->close();
 } else {
     $error_message = "Error preparing statement: " . $conn->error;
 }
 
-// Get the batch for the current record
+// --- Get the batch for the current record ---
 $currentBatch = '';
 if ($design_mix && $curation_days && $concrete_type) {
     $key = $curation_days . '-' . $concrete_type;
@@ -77,36 +96,60 @@ if ($design_mix && $curation_days && $concrete_type) {
 
 $conn->close();
 
-// Handle form submission (POST)
+// --- Handle form submission (POST) ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $id = intval($_POST['update_id'] ?? $_GET['id'] ?? 0);
-
     $date_added = $_POST['date_added'] ?? date('Y-m-d');
     $design_mix = $_POST['design_mix'] ?? '';
     $curation_days = $_POST['curation_days'] ?? '';
     $concrete_type = $_POST['concrete_type'] ?? '';
+    $batch = floatval($_POST['batch'] ?? 0);
     $stocks_in = intval($_POST['stocks_in'] ?? 0);
     $stocks_out = intval($_POST['stocks_out'] ?? 0);
+
+    // Calculate current stock for this batch
+    $current_stock_batch = ($stocks_in - $stocks_out) * $batch;
+
     $remarks = $_POST['remarks'] ?? '';
 
+    // Create new connection for update
     $conn2 = new mysqli('localhost', 'root', '', 'sorcom_db');
 
-    $sql = "UPDATE sorcom_readymix_inventory 
-        SET date_added='$date_added', 
-            design_mix_id='$design_mix', 
-            curation_days='$curation_days', 
-            concrete_type='$concrete_type', 
-            stocks_in=$stocks_in, 
-            stocks_out=$stocks_out, 
-            remarks='$remarks' 
-        WHERE id=$id";
+    // Use prepared statement to prevent SQL errors
+    $stmt2 = $conn2->prepare("
+        UPDATE sorcom_readymix_inventory
+        SET date_added = ?, design_mix_id = ?, curation_days = ?, concrete_type = ?, 
+            batch = ?, stocks_in = ?, stocks_out = ?, current_stock_batch = ?, remarks = ?
+        WHERE id = ?
+    ");
 
-    $conn2->query($sql);
-    $conn2->close();
+    // Bind parameters
+    // Note: 's' used for strings, 'd' for double, 'i' for integer
+    $stmt2->bind_param(
+        "ssssdiiissi",
+        $date_added,
+        $design_mix,
+        $curation_days,
+        $concrete_type,
+        $batch,
+        $stocks_in,
+        $stocks_out,
+        $current_stock_batch,
+        $remarks,
+        $id
+    );
 
-    header("Location: inventory_management.php");
-    exit;
+    if ($stmt2->execute()) {
+        $stmt2->close();
+        $conn2->close();
+        header("Location: inventory_management.php");
+        exit;
+    } else {
+        $error_message = "Error updating inventory: " . $stmt2->error;
+        $stmt2->close();
+        $conn2->close();
+    }
 }
 ?>
 

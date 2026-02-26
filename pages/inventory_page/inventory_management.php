@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_id'])) {
     if (empty($date_added) || empty($design_mix) || empty($concrete_type)) {
         $error_message = "Please fill in all required fields.";
     } else {
-        $stmt = $conn->prepare("UPDATE sorcom_readymix_inventory 
+        $stmt = $conn->prepare("UPDATE scd_vb_list 
             SET date_added = ?, design_mix_id = ?, curation_days = ?, concrete_type = ?, stocks_in = ?, stocks_out = ?, remarks = ? 
             WHERE id = ?");
         if ($stmt) {

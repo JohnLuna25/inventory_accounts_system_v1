@@ -203,15 +203,15 @@ while ($d = $designs_result->fetch_assoc()) {
                             $available_designs = [];
                             foreach ($all_designs as $design) {
                                 $can_produce = (
-                                    $stock['cement'] >= floatval($design['cement_mix']) &&
-                                    $stock['fly_ash'] >= floatval($design['fly_ash']) &&
-                                    $stock['sand'] >= floatval($design['sand']) &&
-                                    $stock['3_4'] >= floatval($design['three_fourth']) &&
-                                    $stock['3_8'] >= floatval($design['three_eight']) &&
-                                    $stock['g1'] >= floatval($design['G1']) &&
-                                    $stock['admix'] >= floatval($design['admix']) &&
-                                    $stock['water'] >= floatval($design['water']) &&
-                                    $stock['air'] >= floatval($design['air'])
+                                    $stock['cement'] >= floatval($design['vb_cement_mix'] ?? 0) &&
+                                    $stock['fly_ash'] >= floatval($design['vb_fly_ash'] ?? 0) &&
+                                    $stock['sand'] >= floatval($design['vb_sand'] ?? 0) &&
+                                    $stock['3_4'] >= floatval($design['vb_three_fourth'] ?? 0) &&
+                                    $stock['3_8'] >= floatval($design['vb_three_eight'] ?? 0) &&
+                                    $stock['g1'] >= floatval($design['vb_G1'] ?? 0) &&
+                                    $stock['admix'] >= floatval($design['vb_admix'] ?? 0) &&
+                                    $stock['water'] >= floatval($design['vb_water'] ?? 0) &&
+                                    $stock['air'] >= floatval($design['vb_air'] ?? 0)
                                 );
 
                                 if ($can_produce) {
@@ -247,31 +247,31 @@ while ($d = $designs_result->fetch_assoc()) {
                                             <tr>
                                                 <td
                                                     style="border: 1px solid #000; padding: 6px; font-size: 11px; background-color: #c0c0c0; text-align: center; font-family: Arial, sans-serif;">
-                                                    <?php echo $d['concrete_psi']; ?>
+                                                    <?php echo $d['vb_concrete_psi']; ?>
                                                 </td>
                                                 <td
                                                     style="border: 1px solid #000; padding: 6px; font-size: 11px; background-color: #c0c0c0; text-align: center; font-family: Arial, sans-serif;">
-                                                    <?php echo $d['curation_days']; ?> days
+                                                    <?php echo $d['vb_curation_days']; ?>
                                                 </td>
                                                 <td
                                                     style="border: 1px solid #000; padding: 6px; font-size: 11px; background-color: #c0c0c0; text-align: center; font-family: Arial, sans-serif;">
-                                                    <?php echo $d['concrete_type']; ?>
+                                                    <?php echo $d['vb_concrete_type']; ?>
                                                 </td>
                                                 <td
                                                     style="border: 1px solid #000; padding: 6px; font-size: 11px; background-color: #c0c0c0; text-align: center; font-family: Arial, sans-serif;">
-                                                    <?php echo $d['total']; ?>
+                                                    <?php echo $d['vb_total']; ?>
                                                 </td>
                                                 <td
                                                     style="border: 1px solid #000; padding: 6px; font-size: 11px; background-color: #c0c0c0; text-align: center; font-family: Arial, sans-serif;">
                                                     <form method="POST" action="produce_from_mixture.php" style="margin: 0;">
                                                         <input type="hidden" name="mixture_id" value="<?php echo $row['id']; ?>">
                                                         <input type="hidden" name="design_psi"
-                                                            value="<?php echo $d['concrete_psi']; ?>">
+                                                            value="<?php echo $d['vb_concrete_psi']; ?>">
                                                         <input type="hidden" name="design_days"
-                                                            value="<?php echo $d['curation_days']; ?>">
+                                                            value="<?php echo $d['vb_curation_days']; ?>">
                                                         <input type="hidden" name="design_type"
-                                                            value="<?php echo $d['concrete_type']; ?>">
-                                                        <input type="hidden" name="design_batch" value="<?php echo $d['total']; ?>">
+                                                            value="<?php echo $d['vb_concrete_type']; ?>">
+                                                        <input type="hidden" name="design_batch" value="<?php echo $d['vb_total']; ?>">
                                                         <button type="submit" class="btn-add-produce"
                                                             style="padding: 3px 8px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 10px; font-family: Arial, sans-serif;">ADD</button>
                                                     </form>

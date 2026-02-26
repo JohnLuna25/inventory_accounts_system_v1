@@ -12,29 +12,26 @@ if ($conn->connect_error)
 // Handle Delete action
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete') {
     $id = intval($_POST['id']);
-    $stmt = $conn->prepare("DELETE FROM sorcom_readymix_inventory WHERE id = ?");
+    $stmt = $conn->prepare("DELETE FROM Sorcom_readymix_inventory WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $stmt->close();
 }
 
-// Fetch inventory with Batch from concrete_design_masterlist
+// Fetch inventory
 $sql = "SELECT 
-            i.id,
-            i.date_added,
-            i.design_mix_id,
-            i.curation_days,
-            i.concrete_type,
-            i.stocks_in,
-            i.stocks_out,
-            i.remarks,
-            d.total as batch
-        FROM sorcom_readymix_inventory i
-        LEFT JOIN scd_vb_list d 
-            ON i.design_mix_id = d.concrete_psi 
-            AND i.curation_days = d.curation_days 
-            AND i.concrete_type = d.concrete_type
-        ORDER BY i.date_added DESC, i.id ASC";
+            id,
+            date_added,
+            design_mix_id,
+            batch,
+            stocks_in,
+            stocks_out,
+            remarks,
+            concrete_type,
+            curation_days,
+            current_stock_batch
+        FROM Sorcom_readymix_inventory
+        ORDER BY date_added DESC, id ASC";
 
 $result = $conn->query($sql);
 if (!$result)
@@ -118,29 +115,27 @@ if (!$result)
                 <th>Batch</th>
                 <th>Stocks In</th>
                 <th>Stock Out</th>
-                <th>Current Stock (in batch)</th>
+                <th>Current Stock</th>
                 <th>Remarks</th>
                 <th>Actions</th>
             </tr>
         </thead>
         <tbody>
             <?php if ($result->num_rows > 0): ?>
-                <?php while ($row = $result->fetch_assoc()):
-                    $stocks_in = intval($row['stocks_in']);
-                    $stocks_out = intval($row['stocks_out']);
-                    $batch = floatval($row['batch'] ?? 0);
-                    $current_stock_batch = ($stocks_in - $stocks_out) * $batch;
-                    ?>
+                <?php while ($row = $result->fetch_assoc()): ?>
                     <tr>
-                        <td><?= htmlspecialchars($row['date_added']) ?></td>
-                        <td><?= htmlspecialchars($row['design_mix_id']) ?></td>
-                        <td><?= isset($row['curation_days']) ? intval($row['curation_days']) : '0' ?></td>
-                        <td><?= htmlspecialchars($row['concrete_type']) ?></td>
-                        <td><?= number_format($batch, 1) ?> kgs/m³</td>
-                        <td><?= $stocks_in ?></td>
-                        <td><?= $stocks_out ?></td>
-                        <td><?= number_format($current_stock_batch, 1) ?> kgs/m³</td>
-                        <td><?= htmlspecialchars($row['remarks']) ?></td>
+                        <td><?= htmlspecialchars($row['date_added'] ?? '') ?></td>
+                        <td><?= htmlspecialchars($row['design_mix_id'] ?? '') ?></td>
+                        <td><?= htmlspecialchars($row['curation_days'] ?? '') ?></td>
+                        <td>
+                            <?= htmlspecialchars($row['concrete_type'] ?? '') ?>
+                        <td><?= number_format(floatval($row['batch'] ?? 0), 1) ?> kgs/m³</td>
+                        <td><?= intval($row['stocks_in'] ?? 0) ?></td>
+                        <td><?= intval($row['stocks_out'] ?? 0) ?></td>
+                        <td><?= htmlspecialchars($row['current_stock_batch'] ?? '') ?></td>
+
+
+                        <td><?= htmlspecialchars($row['remarks'] ?? '') ?></td>
                         <td>
                             <!-- EDIT BUTTON -->
                             <a href="ip_editForm.php?id=<?= $row['id'] ?>" class="edit-btn">Edit</a>
@@ -156,7 +151,7 @@ if (!$result)
                 <?php endwhile; ?>
             <?php else: ?>
                 <tr>
-                    <td colspan="10" style="text-align: center;">No inventory records found.</td>
+                    <td colspan="11" style="text-align: center;">No inventory records found.</td>
                 </tr>
             <?php endif; ?>
         </tbody>
