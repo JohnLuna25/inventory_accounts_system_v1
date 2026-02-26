@@ -10,12 +10,12 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 // Get values from form
 $mixture_id = intval($_POST['mixture_id'] ?? 0);
 $design_psi = trim($_POST['design_psi'] ?? '');
-$design_days = intval($_POST['design_days'] ?? 0);
+$design_days = trim($_POST['design_days'] ?? '');  // Changed from intval to trim
 $design_type = trim($_POST['design_type'] ?? '');
 $design_batch = floatval($_POST['design_batch'] ?? 0);
 
 // Validate inputs
-if ($mixture_id <= 0 || empty($design_psi) || $design_days <= 0 || empty($design_type)) {
+if ($mixture_id <= 0 || empty($design_psi) || empty($design_days) || empty($design_type)) {
     die("Invalid input parameters.");
 }
 
@@ -25,8 +25,8 @@ $conn->begin_transaction();
 try {
     // 1. Get the design details from masterlist
     $stmt = $conn->prepare("SELECT * FROM scd_vb_list 
-                           WHERE concrete_psi = ? AND curation_days = ? AND concrete_type = ?");
-    $stmt->bind_param("sis", $design_psi, $design_days, $design_type);
+                       WHERE vb_concrete_psi = ? AND vb_curation_days = ? AND vb_concrete_type = ?");
+    $stmt->bind_param("sss", $design_psi, $design_days, $design_type);
     $stmt->execute();
     $design_result = $stmt->get_result();
     $design = $design_result->fetch_assoc();
@@ -50,15 +50,15 @@ try {
 
     // 3. Check if sufficient stock exists (double-check)
     $required = [
-        'cement' => floatval($design['cement_mix']),
-        'fly_ash' => floatval($design['fly_ash']),
-        'sand' => floatval($design['sand']),
-        '3_4' => floatval($design['three_fourth']),
-        '3_8' => floatval($design['three_eight']),
-        'g1' => floatval($design['G1']),
-        'admix' => floatval($design['admix']),
-        'water' => floatval($design['water']),
-        'air' => floatval($design['air'])
+        'cement' => floatval($design['vb_cement_mix'] ?? 0),
+        'fly_ash' => floatval($design['vb_fly_ash'] ?? 0),
+        'sand' => floatval($design['vb_sand'] ?? 0),
+        '3_4' => floatval($design['vb_three_fourth'] ?? 0),
+        '3_8' => floatval($design['vb_three_eight'] ?? 0),
+        'g1' => floatval($design['vb_G1'] ?? 0),
+        'admix' => floatval($design['vb_admix'] ?? 0),
+        'water' => floatval($design['vb_water'] ?? 0),
+        'air' => floatval($design['vb_air'] ?? 0)
     ];
 
     $available = [
@@ -113,16 +113,26 @@ try {
     $stmt->execute();
     $stmt->close();
 
-    // 5. Insert into ready-mix inventory (1 batch = 0.50 m³)
+    // DEBUG: Check all values before INSERT
+    echo "<pre>";
+    echo "prefill_mixture_id: $prefill_mixture_id\n";
+    echo "design_mix: $design_mix\n";
+    echo "curation_days: $curation_days\n";
+    echo "concrete_type: $concrete_type\n";
+    echo "batch: $batch\n";
+    echo "</pre>";
+    exit;
+
+    // 5. Insert into ready-mix inventory
     $today = date('Y-m-d');
     $stocks_in = 1;
     $stocks_out = 0;
     $remarks = "Produced from Mixture Inventory";
 
     $stmt = $conn->prepare("INSERT INTO sorcom_readymix_inventory 
-                           (date_added, design_mix_id, curation_days, concrete_type, stocks_in, stocks_out, remarks) 
-                           VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssissis", $today, $design_psi, $design_days, $design_type, $stocks_in, $stocks_out, $remarks);
+                       (date_added, design_mix_id, curation_days, concrete_type, batch, stocks_in, stocks_out, remarks) 
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssssdssi", $today, $design_psi, $design_days, $design_type, $design_batch, $stocks_in, $stocks_out, $remarks);  // Changed "ssissdis" to "sssssdssi"
     $stmt->execute();
     $stmt->close();
 

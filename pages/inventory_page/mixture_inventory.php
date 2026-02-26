@@ -272,8 +272,8 @@ while ($d = $designs_result->fetch_assoc()) {
                                                         <input type="hidden" name="design_type"
                                                             value="<?php echo $d['vb_concrete_type']; ?>">
                                                         <input type="hidden" name="design_batch" value="<?php echo $d['vb_total']; ?>">
-                                                        <button type="submit" class="btn-add-produce"
-                                                            style="padding: 3px 8px; background: #4CAF50; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 10px; font-family: Arial, sans-serif;">ADD</button>
+                                                        <a href="ip_addForm.php?psi=<?php echo urlencode($d['vb_concrete_psi']); ?>&days=<?php echo urlencode($d['vb_curation_days']); ?>&type=<?php echo urlencode($d['vb_concrete_type']); ?>&batch=<?php echo urlencode($d['vb_total']); ?>&mixture_id=<?php echo $row['id']; ?>"
+                                                            style="padding: 3px 8px; background: #4CAF50; color: white; text-decoration: none; border-radius: 4px; font-size: 10px; font-family: Arial, sans-serif; display: inline-block;">ADD</a>
                                                     </form>
                                                 </td>
                                             </tr>

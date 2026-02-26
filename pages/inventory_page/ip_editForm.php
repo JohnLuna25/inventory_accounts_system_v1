@@ -178,13 +178,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <!-- Date -->
             <div class="form-row">
                 <label>Date:</label>
-                <input type="date" name="date_added" value="<?= htmlspecialchars($date_added) ?>" required>
+                <input type="date" name="date_added" value="<?= htmlspecialchars($date_added) ?>" required
+                    style="width: 420px; max-width: 420px;">
             </div>
 
             <!-- Design Mix (PSI) -->
             <div class="form-row">
                 <label>Design Mix (PSI):</label>
-                <select name="design_mix" id="design_mix" required onchange="updateDropdowns()">
+                <select name="design_mix" id="design_mix" required onchange="updateDropdowns()"
+                    style="width: 420px; max-width: 420px;">
                     <option value="">-- Select PSI --</option>
                     <?php foreach ($psiOptions as $psi): ?>
                         <option value="<?= htmlspecialchars($psi) ?>" <?= $design_mix === $psi ? 'selected' : '' ?>>
@@ -197,7 +199,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <!-- Curation Days -->
             <div class="form-row">
                 <label>Curation Days:</label>
-                <select name="curation_days" id="curation_days" required onchange="autoFillBatch()">
+                <select name="curation_days" id="curation_days" required onchange="autoFillBatch()"
+                    style="width: 420px; max-width: 420px;">
                     <option value="">-- Select Days --</option>
                     <?php if (!empty($curation_days)): ?>
                         <option value="<?= htmlspecialchars($curation_days) ?>" selected>
@@ -210,7 +213,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <!-- Concrete Type -->
             <div class="form-row">
                 <label>Concrete Type:</label>
-                <select name="concrete_type" id="concrete_type" required onchange="autoFillBatch()">
+                <select name="concrete_type" id="concrete_type" required onchange="autoFillBatch()"
+                    style="width: 420px; max-width: 420px;">
                     <option value="">-- Select --</option>
                     <?php if (!empty($concrete_type)): ?>
                         <option value="<?= htmlspecialchars($concrete_type) ?>" selected>
@@ -224,25 +228,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <div class="form-row">
                 <label>Batch (kgs/m³):</label>
                 <input type="text" name="batch" id="batch" value="<?= htmlspecialchars($currentBatch) ?>" readonly
-                    style="background-color: #e0e0e0;">
+                    style="width: 420px; max-width: 420px;"">
             </div>
 
             <!-- Stocks In -->
-            <div class="form-row">
+            <div class=" form-row">
                 <label>Stocks In:</label>
-                <input type="number" name="stocks_in" value="<?= $stocks_in ?>" min="0">
+                <input type="number" name="stocks_in" value="<?= $stocks_in ?>" min="0"
+                    style="width: 420px; max-width: 420px;">
             </div>
 
             <!-- Stocks Out -->
             <div class="form-row">
                 <label>Stock Out:</label>
-                <input type="number" name="stocks_out" value="<?= $stocks_out ?>" min="0">
+                <input type="number" name="stocks_out" value="<?= $stocks_out ?>" min="0"
+                    style="width: 420px; max-width: 420px;">
             </div>
 
             <!-- Remarks -->
             <div class="form-row">
                 <label>Remarks:</label>
-                <textarea name="remarks" rows="4"><?= htmlspecialchars($remarks) ?></textarea>
+                <textarea name="remarks" rows="4"
+                    style="width: 420px; max-width: 420px;"><?= htmlspecialchars($remarks) ?></textarea>
             </div>
 
             <!-- Buttons -->

@@ -258,7 +258,7 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Employee';
                     <div class="col-12 col-sm-6 col-md-4 d-flex justify-content-center">
                         <button class="btn btn-primary-custom dashboard-btn"
                             onclick="window.location.href='/Inventory-Accounts-System-v1/pages/statement_account_page/sap_accountsManagement.php'">
-                            User Accounts
+                            Sorcom Transaction
                         </button>
                     </div>
 
