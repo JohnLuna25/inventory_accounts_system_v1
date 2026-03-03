@@ -266,7 +266,7 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Employee';
                     <?php if ($role === 'Manager'): ?>
                         <div class="col-12 col-sm-6 col-md-4 d-flex justify-content-center">
                             <button class="btn btn-primary-custom dashboard-btn"
-                                onclick="window.location.href='/Inventory-Accounts-System-v1/pages/reports_management.php'">
+                                onclick="window.location.href='/Inventory-Accounts-System-v1/pages/reports_page/reports_management.php'">
                                 Reports
                             </button>
                         </div>
