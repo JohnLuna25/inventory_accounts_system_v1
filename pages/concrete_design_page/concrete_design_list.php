@@ -4,7 +4,10 @@ include __DIR__ . '/../../FunctionAndDB/db_connect.php';
 include __DIR__ . '/../../FunctionAndDB/Web_Functions.php';
 
 // Fetch all VB data
-$vb_result = $conn->query("SELECT * FROM scd_vb_list ORDER BY vb_concrete_psi ASC");
+$vb_result = $conn->query("SELECT * FROM scd_vb_list ORDER BY sort_order ASC");
+
+// Fetch customized mix data (ADDED HERE)
+$customized_result = $conn->query("SELECT * FROM cdl_customized_mix_list ORDER BY created_at DESC");
 
 // Fetch all SSD data into an array
 $ssd_result = $conn->query("SELECT * FROM scd_ssd_list ORDER BY ssd_cement_mix ASC");
@@ -30,10 +33,15 @@ if (!$ssd_result) {
     echo "SSD Query Error: " . $conn->error;
 }
 
-// Debug: show row counts
-$vb_count = $vb_result ? $vb_result->num_rows : 0;
-$ssd_count = count($ssd_rows);
-echo "VB Rows: $vb_count, SSD Rows: $ssd_count";
+// Check Customized Mix query (ADDED)
+if (!$customized_result) {
+    echo "Customized Mix Query Error: " . $conn->error;
+}
+
+// Debug: show row counts (REMOVED - was showing on page)
+// $vb_count = $vb_result ? $vb_result->num_rows : 0;
+// $ssd_count = count($ssd_rows);
+// echo "VB Rows: $vb_count, SSD Rows: $ssd_count";
 
 
 ?>
@@ -300,7 +308,7 @@ echo "VB Rows: $vb_count, SSD Rows: $ssd_count";
                         <th>Concrete PSI</th>
                         <th>Curation Days</th>
                         <th>Concrete Type</th>
-                        <th>Total</th>
+                        <th>Total ( kgs/m³ )</th>
                         <th>Concrete Price</th>
                         <th>Actions</th>
                     </tr>
@@ -314,9 +322,17 @@ echo "VB Rows: $vb_count, SSD Rows: $ssd_count";
 
                         echo "<tr>";
                         echo "<td>" . ($vb_row['vb_concrete_psi'] ?? '') . "</td>";
-                        echo "<td>" . ($vb_row['vb_curation_days'] ?? '') . "</td>";
+
+                        // Extract only the number from curation_days
+                        $curation = preg_replace('/[^0-9]/', '', $vb_row['vb_curation_days'] ?? '0');
+                        echo "<td>" . $curation . "</td>";
+
                         echo "<td>" . ($vb_row['vb_concrete_type'] ?? '') . "</td>";
-                        echo "<td>" . ($vb_row['vb_total'] ?? '') . "</td>";
+
+                        // Extract numeric value from string (remove units like "kgs/m³")
+                        $total_value = preg_replace('/[^0-9.]/', '', $vb_row['vb_total'] ?? '0');
+                        echo "<td>" . number_format((float) $total_value, 1, '.', ',') . "</td>";
+
                         echo "<td>" . ($vb_row['vb_concrete_price'] ?? '') . "</td>";
                         echo "<td>";
                         echo "<a href='#' class='btn-view' onclick='toggleDropbar($row_index); return false;'>View</a>";
@@ -391,6 +407,119 @@ echo "VB Rows: $vb_count, SSD Rows: $ssd_count";
             </table>
         </div>
 
+    </div>
+
+    <!-- ========== CUSTOMIZED CONCRETE DESIGN SECTION ========== -->
+    <div class="main-content">
+        <div class="page-title-bar">
+            <h2 class="text-center mb-3">Customized Concrete Design</h2>
+            <div class="search-container">
+                <a href="cdl_customizedMix.php" class="btn"
+                    style="background: #0b63c4; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-size: 14px;">+
+                    Add Customized Mix</a>
+            </div>
+        </div>
+
+        <!-- Customized Mix Table -->
+        <!-- Customized Mix Table -->
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Client Name</th>
+                        <th>Concrete PSI</th>
+                        <th>Curation Days</th>
+                        <th>Concrete Type</th>
+                        <th>Experiment Notes</th>
+                        <th>Is Active</th>
+                        <th>Created At</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    $row_index = 0;
+                    while ($customized_row = $customized_result->fetch_assoc()) {
+                        $row_index++;
+
+                        echo "<tr>";
+                        echo "<td>" . htmlspecialchars($customized_row['client_name'] ?? '') . "</td>";
+                        echo "<td>" . htmlspecialchars($customized_row['vb_concrete_psi'] ?? '') . "</td>";
+
+                        // Extract only the number from curation_days
+                        $curation = preg_replace('/[^0-9]/', '', $customized_row['vb_curation_days'] ?? '0');
+                        echo "<td>" . $curation . "</td>";
+
+                        echo "<td>" . htmlspecialchars($customized_row['vb_concrete_type'] ?? '') . "</td>";
+                        echo "<td>" . htmlspecialchars($customized_row['experiment_notes'] ?? '') . "</td>";
+                        echo "<td>" . ($customized_row['is_active'] == 1 ? 'Active' : 'Inactive') . "</td>";
+                        echo "<td>" . htmlspecialchars($customized_row['created_at'] ?? '') . "</td>";
+                        echo "<td>";
+                        echo "<a href='#' class='btn-view' onclick='toggleDropbar($row_index); return false;'>View</a>";
+                        echo "<a href='edit_customized_mix.php?id=" . $customized_row['id'] . "' class='btn-edit'>Edit</a>";
+                        echo "<a href='delete_customized_mix.php?id=" . $customized_row['id'] . "' class='btn-delete' onclick='return confirm(\"Are you sure you want to delete this customized mix?\");'>Delete</a>";
+                        echo "</td>";
+                        echo "</tr>";
+
+                        // Dropbar row (show detailed VB + SSD data)
+                        echo "<tr id='dropbar-$row_index' class='dropbar-row'>";
+                        echo "<td colspan='8'>";
+                        echo "<table class='dropbar-inner'>";
+                        echo "<tr><td></td><td class='ssd-col'>Saturated Surface Dry (SSD)</td><td class='vb-col'>Volume Batch</td></tr>";
+
+                        // Fields to merge (SSD and VB in one cell)
+                        $merged_fields = [
+                            "Cubic Meter" => "cubic_meter",
+                            "Cement Source" => "cement_source",
+                            "Concrete Slump" => "concrete_slump",
+                            "Admix Source" => "admix_source"
+                        ];
+
+                        // Fields that remain separate (SSD left, VB right)
+                        $separate_fields = [
+                            "Cement Mix" => "cement_mix",
+                            "Fly Ash" => "fly_ash",
+                            "3/4\"" => "three_fourth",
+                            "3/8\"" => "three_eight",
+                            "Water" => "water",
+                            "Sand" => "sand",
+                            "G1" => "G1",
+                            "Air" => "air",
+                            "W/C Ratio" => "wc_ratio",
+                            "Admix" => "admix",
+                            "Others" => "others"
+                        ];
+
+                        // Render merged fields first
+                        foreach ($merged_fields as $label => $col) {
+                            $ssd_value = $customized_row['ssd_' . $col] ?? '';
+                            if ($ssd_value == 0)
+                                $ssd_value = '';
+                            $vb_value = $customized_row['vb_' . $col] ?? '';
+                            if ($vb_value == 0)
+                                $vb_value = '';
+                            $combined = trim($ssd_value . ' ' . $vb_value);
+                            echo "<tr><td>$label</td><td colspan='2' class='merged-cell'>$combined</td></tr>";
+                        }
+
+                        // Render separate fields
+                        foreach ($separate_fields as $label => $col) {
+                            $ssd_value = $customized_row['ssd_' . $col] ?? '';
+                            if ($ssd_value == 0)
+                                $ssd_value = '';
+                            $vb_value = $customized_row['vb_' . $col] ?? '';
+                            if ($vb_value == 0)
+                                $vb_value = '';
+                            echo "<tr><td>$label</td><td class='ssd-data'>$ssd_value</td><td class='vb-data'>$vb_value</td></tr>";
+                        }
+                        echo "</table>";
+                        echo "</td>";
+                        echo "</tr>";
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script>

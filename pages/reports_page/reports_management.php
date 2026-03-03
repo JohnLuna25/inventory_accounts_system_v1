@@ -22,7 +22,8 @@ include 'reports_data.php';
     <link rel="stylesheet" href="/Inventory-Accounts-System-v1/assets/bootstrap/css/bootstrap.min.css">
 
     <!-- 4. Custom CSS (Fixed Path) -->
-    <link rel="stylesheet" href="reports_management.css">
+    c
+    <link rel="stylesheet" href="reports_management.css?v=2">
 
     <!-- 5. Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -40,13 +41,52 @@ include 'reports_data.php';
 <body style="background-color: #f5f5f5; font-family: Arial, sans-serif;">
 
     <!-- Spacer for Fixed Header -->
-    <div style="height: 80px;"></div>
+    <div style="height: 20px;"></div>
 
     <!-- Page Header -->
     <div class="container-fluid mt-4">
         <div class="row">
             <div class="col-12">
-                <h2 class="text-center mb-4" style="color: #0b63c4; font-weight: bold;">📊 Sorcom Reports Dashboard</h2>
+                <h2 class="text-center mb-4" style="text-align: center; color: #000000; font-weight: bold;">📊 Sorcom
+                    Reports Dashboard</h2>
+            </div>
+        </div>
+
+        <!-- Color Legend -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card shadow-sm">
+                    <div class="legend-header">
+                        <h5 class="mb-0">🎨 Color Legend</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="legend-box legend-green"></div>
+                                    <span class="legend-text"><strong>Green</strong> = High Stock / Top Sales</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="legend-box legend-yellow"></div>
+                                    <span class="legend-text"><strong>Yellow</strong> = Medium Stock / Medium
+                                        Sales</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex align-items-center mb-2">
+                                    <div class="legend-box legend-red"></div>
+                                    <span class="legend-text"><strong>Red</strong> = Low Stock / Bottom Sales</span>
+                                </div>
+                            </div>
+                        </div>
+                        <small class="legend-note text-muted">
+                            <strong>Note:</strong> Colors are automatically assigned based on stock levels.
+                            Green = Top 33%, Yellow = Middle 33%, Red = Bottom 33%
+                        </small>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -148,7 +188,7 @@ include 'reports_data.php';
         <!-- Auto-refresh Indicator -->
         <div class="row mb-4">
             <div class="col-12 text-center">
-                <small class="text-muted">🔄 Auto-refreshing every 30 seconds...</small>
+                <small class="auto-refresh-indicator">🔄 Auto-refreshing every 30 seconds...</small>
             </div>
         </div>
     </div>

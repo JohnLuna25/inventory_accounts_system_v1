@@ -53,6 +53,7 @@ if (!$result)
             border-collapse: collapse;
             width: 99.5%;
             margin: 15px auto;
+
         }
 
         th,
@@ -63,6 +64,7 @@ if (!$result)
             font-size: 12px;
             white-space: nowrap;
         }
+
 
         th {
             background: #f4f4f4;
@@ -146,53 +148,53 @@ if (!$result)
 </head>
 
 <body>
-
-    <table>
-        <thead>
-            <tr>
-                <th>Date</th>
-                <th>Design Mix</th>
-                <th>Curation Days</th>
-                <th>Concrete Type</th>
-                <th>Batch</th>
-                <th>Stocks In</th>
-                <th>Stock Out</th>
-                <th>Current Stock</th>
-                <th>Remarks</th>
-                <th>Table Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            <?php if ($result->num_rows > 0): ?>
-                <?php while ($row = $result->fetch_assoc()): ?>
-                    <tr>
-                        <td><?= htmlspecialchars($row['date_added'] ?? '') ?></td>
-                        <td><?= htmlspecialchars($row['design_mix_id'] ?? '') ?></td>
-                        <td><?= htmlspecialchars($row['curation_days'] ?? '') ?></td>
-                        <td><?= htmlspecialchars($row['concrete_type'] ?? '') ?></td>
-                        <td><?= number_format(floatval($row['batch'] ?? 0), 1) ?> kgs/m³</td>
-                        <td><?= intval($row['stocks_in'] ?? 0) ?></td>
-                        <td><?= intval($row['stocks_out'] ?? 0) ?></td>
-                        <td><?= number_format(floatval($row['current_stock_batch'] ?? 0), 1) ?> kgs/m³</td>
-                        <td><?= htmlspecialchars($row['remarks'] ?? '') ?></td>
-                        <td>
-                            <a href="ip_editForm.php?id=<?= $row['id'] ?>" class="edit-btn">Edit</a>
-                            <form method="POST" style="display:inline;" onsubmit="return confirm('Are you sure?')">
-                                <input type="hidden" name="id" value="<?= $row['id'] ?>">
-                                <input type="hidden" name="action" value="delete">
-                                <button type="submit" class="delete-btn">Delete</button>
-                            </form>
-                        </td>
-                    </tr>
-                <?php endwhile; ?>
-            <?php else: ?>
+    <div class="table-container">
+        <table>
+            <thead>
                 <tr>
-                    <td colspan="10" style="text-align: center;">No inventory records found.</td>
+                    <th>Date</th>
+                    <th>Design Mix</th>
+                    <th>Curation Days</th>
+                    <th>Concrete Type</th>
+                    <th>Batch</th>
+                    <th>Stocks In</th>
+                    <th>Stock Out</th>
+                    <th>Current Stock</th>
+                    <th>Remarks</th>
+                    <th>Table Actions</th>
                 </tr>
-            <?php endif; ?>
-        </tbody>
-    </table>
-
+            </thead>
+            <tbody>
+                <?php if ($result->num_rows > 0): ?>
+                    <?php while ($row = $result->fetch_assoc()): ?>
+                        <tr>
+                            <td><?= htmlspecialchars($row['date_added'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($row['design_mix_id'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($row['curation_days'] ?? '') ?></td>
+                            <td><?= htmlspecialchars($row['concrete_type'] ?? '') ?></td>
+                            <td><?= number_format(floatval($row['batch'] ?? 0), 1) ?> kgs/m³</td>
+                            <td><?= intval($row['stocks_in'] ?? 0) ?></td>
+                            <td><?= intval($row['stocks_out'] ?? 0) ?></td>
+                            <td><?= number_format(floatval($row['current_stock_batch'] ?? 0), 1) ?> kgs/m³</td>
+                            <td><?= htmlspecialchars($row['remarks'] ?? '') ?></td>
+                            <td>
+                                <a href="ip_editForm.php?id=<?= $row['id'] ?>" class="edit-btn">Edit</a>
+                                <form method="POST" style="display:inline;" onsubmit="return confirm('Are you sure?')">
+                                    <input type="hidden" name="id" value="<?= $row['id'] ?>">
+                                    <input type="hidden" name="action" value="delete">
+                                    <button type="submit" class="delete-btn">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <?php endwhile; ?>
+                <?php else: ?>
+                    <tr>
+                        <td colspan="10" style="text-align: center;">No inventory records found.</td>
+                    </tr>
+                <?php endif; ?>
+            </tbody>
+        </table>
+    </div>
     <?php $conn->close(); ?>
 </body>
 

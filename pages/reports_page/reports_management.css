@@ -86,6 +86,82 @@ body {
   border-radius: 4px;
 }
 
+/* Color Legend Styling */
+/* Color Legend Styling - Ultra Compact */
+.legend-section {
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 8px 12px; /* Reduced from 10px 15px */
+  margin-bottom: 10px; /* Reduced from 15px */
+}
+
+.legend-header h5 {
+  font-size: 14px; /* Reduced from default 16px */
+  margin: 0;
+  font-weight: bold;
+}
+
+.legend-header {
+  background-color: #495057;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px 8px 0 0;
+  font-weight: bold;
+}
+
+.legend-box {
+  display: inline-block;
+  width: 12px; /* Reduced from 15px */
+  height: 12px; /* Reduced from 15px */
+  border-radius: 2px;
+  margin-right: 5px; /* Reduced from 6px */
+}
+
+.legend-green {
+  background-color: #4caf50;
+}
+
+.legend-yellow {
+  background-color: #ffc107;
+}
+
+.legend-red {
+  background-color: #f44336;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 3px; /* Reduced from 5px */
+}
+
+.legend-text {
+  font-size: 12px; /* Reduced from 13px */
+}
+
+.legend-note {
+  font-size: 10px; /* Reduced from 11px */
+  line-height: 1.2;
+  margin-top: 5px;
+}
+
+.legend-color {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  margin-right: 6px;
+}
+
+/* Auto-refresh indicator styling */
+.auto-refresh-indicator {
+  background-color: #a5a5a5; /* Light gray */
+  padding: 5px 15px;
+  border-radius: 5px;
+  display: inline-block;
+  font-size: 13px;
+}
+
 @media print {
   .btn {
     display: none;

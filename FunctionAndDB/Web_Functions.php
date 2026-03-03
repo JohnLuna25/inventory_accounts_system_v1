@@ -25,6 +25,12 @@ function showHeader()
 </div>
 
 <style>
+
+    body, html {
+        overflow-x: hidden; /* Prevents horizontal scrollbar */
+        margin: 0;
+        padding: 0;
+    }
     .main-header {
         background-color: #0d6efd;
         padding: 8px 15px;
@@ -34,24 +40,31 @@ function showHeader()
         left: 0;
         z-index: 1000;
         box-sizing: border-box;
+        overflow: hidden; /* Prevents horizontal scroll */
     }
 
     .header-grid {
-        display: grid;
-        grid-template-columns: auto 1fr auto;
+        display: flex;
+        justify-content: space-between;
         align-items: center;
-        gap: 15px;
         max-width: 1200px;
-        margin: 0 auto;
+        margin: 0 auto; /* Centers the grid */
+        padding: 0 15px; /* Adds padding to prevent edge touching */
+    }
+
+    .header-left,
+    .header-center,
+    .header-right {
+        flex: 0 0 auto;
+    }
+
+    .header-center {
+        text-align: center;
     }
 
     .home-icon {
         height: 28px;
         cursor: pointer;
-    }
-
-    .header-center {
-        text-align: center;
     }
 
     .header-title {
@@ -83,8 +96,7 @@ function showHeader()
 
     @media (max-width: 768px) {
         .header-grid {
-            grid-template-columns: auto 1fr auto;
-            gap: 10px;
+            padding: 0 10px;
         }
 
         .home-icon {
@@ -110,7 +122,7 @@ function showHeader()
         }
 
         .header-grid {
-            grid-template-columns: 1fr;
+            flex-direction: column;
             gap: 5px;
         }
 
@@ -120,15 +132,10 @@ function showHeader()
 
         .header-left {
             order: 2;
-            position: absolute;
-            right: 10px;
-            top: 50%;
-            transform: translateY(-50%);
         }
 
         .header-right {
             order: 3;
-            text-align: center;
         }
 
         .home-icon {
@@ -145,20 +152,6 @@ function showHeader()
 
         .clock-text {
             font-size: 10px;
-        }
-    }
-
-    @media (max-width: 400px) {
-        .header-title {
-            font-size: 11px;
-        }
-
-        .header-subtitle {
-            font-size: 7px;
-        }
-
-        .clock-text {
-            font-size: 9px;
         }
     }
 </style>
