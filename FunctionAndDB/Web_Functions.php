@@ -221,37 +221,36 @@ function fetchInventoryRows()
 
 
 <script>
+    // Only run if #demo element exists
+    if (document.getElementById("demo")) {
+        var iSorcom = 0;
+        var iIAMS = 0;
 
-    var iSorcom = 0;
-    var iIAMS = 0;
+        var txtSorcom = 'SORCOM READY-MIX CONCRETE';
+        var txtIAMS = 'Inventory and Accounts Management System';
 
-    var txtSorcom = 'SORCOM READY-MIX CONCRETE';
-    var txtIAMS = 'Inventory and Accounts Management System';
+        var speedTitle = 80;
+        var speedSubtitle = 80;
 
-    var speedTitle = 80;
-    var speedSubtitle = 80;
-
-    function sorcomWriter() {
-        if (iSorcom < txtSorcom.length) {
-            window.onload = sorcomWriter; // ❌ remove this
-            document.getElementById("demo").innerHTML += txtSorcom.charAt(iSorcom);
-            iSorcom++;
-            setTimeout(sorcomWriter, speedTitle);
-        } else {
-            document.getElementById("demo").innerHTML += "<br>";
-            setTimeout(iamsWriter, 500);
+        function sorcomWriter() {
+            if (iSorcom < txtSorcom.length) {
+                document.getElementById("demo").innerHTML += txtSorcom.charAt(iSorcom);
+                iSorcom++;
+                setTimeout(sorcomWriter, speedTitle);
+            } else {
+                document.getElementById("demo").innerHTML += "<br>";
+                setTimeout(iamsWriter, 500);
+            }
         }
-    }
 
-    function iamsWriter() {
-        if (iIAMS < txtIAMS.length) {
-            document.getElementById("demo").innerHTML += txtIAMS.charAt(iIAMS);
-            iIAMS++;
-            setTimeout(iamsWriter, speedSubtitle);
+        function iamsWriter() {
+            if (iIAMS < txtIAMS.length) {
+                document.getElementById("demo").innerHTML += txtIAMS.charAt(iIAMS);
+                iIAMS++;
+                setTimeout(iamsWriter, speedSubtitle);
+            }
         }
+
+        sorcomWriter();
     }
-
-    sorcomWriter();
-
-
 </script>

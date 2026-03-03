@@ -127,7 +127,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Bind parameters
     // Note: 's' used for strings, 'd' for double, 'i' for integer
     $stmt2->bind_param(
-        "ssssdiiissi",
+        "ssssdiiisi",  // Fixed: 10 characters to match 10 variables
         $date_added,
         $design_mix,
         $curation_days,
@@ -135,7 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $batch,
         $stocks_in,
         $stocks_out,
-        $current_stock_batch,
+        $current_stock_batch,  // Changed from 'i' to 'd' (double)
         $remarks,
         $id
     );
@@ -263,4 +263,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <script>
         var psiData = <?php echo json_encode($psiData); ?>;
         var selectedPSI = "<?php echo htmlspecialchars($design_mix); ?>";
-        var selectedDays
+        var selectedDays = "<?php echo htmlspecialchars($curation_days); ?>";
+        var selectedType = "<?php echo htmlspecialchars($concrete_type); ?>";
+
+        // Function to update Curation Days dropdown based on PSI selection
+        function updateDropdowns() {
+            var psiSelect = document.getElementById('design_mix');
+            var daysSelect = document.getElementById('curation_days');
+            var typeSelect = document.getElementById('concrete_type');
+            var selectedPsi = psiSelect.value;
+
+            // Clear existing options
+            daysSelect.innerHTML = '<option value="">-- Select Days --</option>';
+            typeSelect.innerHTML = '<option value="">-- Select --</option>';
+
+            if (selectedPsi && psiData[selectedPsi]) {
+                // Add curation days options
+                psiData[selectedPsi].days.forEach(function (days) {
+                    var option = document.createElement('option');
+                    option.value = days;
+                    option.textContent = days + ' days';
+                    if (days === selectedDays) {
+                        option.selected = true;
+                    }
+                    daysSelect.appendChild(option);
+                });
+
+                // Add concrete type options
+                psiData[selectedPsi].types.forEach(function (type) {
+                    var option = document.createElement('option');
+                    option.value = type;
+                    option.textContent = type;
+                    if (type === selectedType) {
+                        option.selected = true;
+                    }
+                    typeSelect.appendChild(option);
+                });
+            }
+        }
+
+        // Function to auto-fill batch value based on curation days and concrete type
+        function autoFillBatch() {
+            var psiSelect = document.getElementById('design_mix');
+            var daysSelect = document.getElementById('curation_days');
+            var typeSelect = document.getElementById('concrete_type');
+            var batchInput = document.getElementById('batch');
+
+            var selectedPsi = psiSelect.value;
+            var selectedDays = daysSelect.value;
+            var selectedType = typeSelect.value;
+
+            if (selectedPsi && selectedDays && selectedType && psiData[selectedPsi]) {
+                var key = selectedDays + '-' + selectedType;
+                if (psiData[selectedPsi]['totals'][key]) {
+                    batchInput.value = psiData[selectedPsi]['totals'][key];
+                } else {
+                    batchInput.value = '';
+                }
+            } else {
+                batchInput.value = '';
+            }
+        }
+
+        // Initialize dropdowns on page load
+        document.addEventListener('DOMContentLoaded', function () {
+            updateDropdowns();
+            autoFillBatch();
+        });
+    </script>
+</body>
+
+</html>

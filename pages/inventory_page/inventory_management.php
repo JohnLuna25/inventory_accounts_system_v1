@@ -1,13 +1,11 @@
 <?php
-// Include necessary files
+ob_start();
 require_once __DIR__ . '/../../FunctionAndDB/db_connect.php';
 require_once __DIR__ . '/../../FunctionAndDB/Web_Functions.php';
 include_once __DIR__ . '/ip_postHandler.php';
 
-// Initialize error message
 $error_message = "";
 
-// --- Handle POST edit BEFORE ANY OUTPUT ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_id'])) {
     $edit_id = intval($_POST['update_id']);
     $date_added = trim($_POST['date_added'] ?? date('Y-m-d'));
@@ -18,7 +16,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_id'])) {
     $stocks_out = intval($_POST['stocks_out'] ?? 0);
     $remarks = trim($_POST['remarks'] ?? '');
 
-    // Basic validation
     if (empty($date_added) || empty($design_mix) || empty($concrete_type)) {
         $error_message = "Please fill in all required fields.";
     } else {
@@ -40,7 +37,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_id'])) {
     }
 }
 
-// Close DB connection if not needed further
 $conn->close();
 ?>
 
@@ -100,21 +96,15 @@ $conn->close();
 </head>
 
 <body>
-
     <h2>Ready-Mix Inventory</h2>
-
     <?php if ($error_message): ?>
         <p class="error"><?php echo htmlspecialchars($error_message); ?></p>
     <?php endif; ?>
-
     <div class="inventory-controls">
         <a href="ip_addForm.php" class="add-inventory-btn">+ Add Inventory</a>
         <a href="mixture_inventory.php" class="open-mixture-btn">Open Mixture Inventory</a>
     </div>
-
-    <!-- TABLE DISPLAY -->
     <?php include __DIR__ . '/ip_tableDisplay.php'; ?>
-
 </body>
 
 </html>
