@@ -212,7 +212,7 @@ if (!$customized_result) {
 
         @media (max-width:576px) {
             .main-content {
-                padding-top: 200px;
+                padding-top: 95px;
             }
 
             .page-title-bar {

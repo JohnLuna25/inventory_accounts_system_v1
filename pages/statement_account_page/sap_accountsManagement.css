@@ -169,7 +169,8 @@ tr:hover {
 
 @media (max-width: 768px) {
   .main-content {
-    padding-top: 200px;
+    padding-top: 95px;
+    padding-bottom: 95px;
   }
 
   .page-title-bar {

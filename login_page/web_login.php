@@ -156,81 +156,98 @@ if (isset($_SESSION['override_employee_id'])) {
         /* Mobile */
         @media (max-width: 768px) {
             body {
-                align-items: flex-start;
-                padding-top: 20px;
+                align-items: flex-start !important;
+                padding-top: 20px !important;
             }
 
             #clock {
-                position: relative;
-                top: auto;
-                left: auto;
-                text-align: center;
-                margin-bottom: 20px;
+                position: fixed !important;
+                text-align: left !important;
             }
 
             fieldset {
-                flex-direction: column;
-                padding: 20px;
-                border: none;
-                background: transparent;
-                width: 100%;
-                max-width: 100%;
+                flex-direction: column !important;
+                padding: 20px !important;
+                border: none !important;
+                background: transparent !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                align-items: center !important;
+                justify-content: center !important;
             }
 
             .title-section {
-                text-align: center;
-                padding-left: 0;
-                padding-right: 0;
-                margin-bottom: 30px;
-                flex: none;
+                position: relative !important;
+                text-align: center !important;
+                margin-top: 100px !important;
+                margin-bottom: 30px !important;
+                max-width: 100% !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+                width: 100% !important;
+                display: block !important;
+                padding-left: 0 !important;
             }
 
             .title-section h1 {
-                font-size: 36px;
-                margin-top: 0;
-                margin-bottom: 10px;
+                font-size: 22px !important;
+                /* ✅ Changed from 36px to 28px */
+                margin-top: 0 !important;
+                margin-bottom: 10px !important;
+                display: block !important;
+                text-align: center !important;
+                white-space: normal !important;
+                /* ✅ Allows text to wrap */
             }
 
             .title-section h2 {
-                font-size: 20px;
-                margin-top: 0;
+                font-size: 18px !important;
+                /* ✅ Changed from 20px to 18px */
+                margin-top: 0 !important;
+                margin-bottom: 50px !important;
+                display: block !important;
+                text-align: center !important;
+                white-space: normal !important;
+                /* ✅ Allows text to wrap */
             }
 
             .login-section {
-                justify-content: center;
-                padding-right: 0;
-                flex: none;
+                justify-content: center !important;
+                padding-right: 0 !important;
+                flex: none !important;
+                width: 100% !important;
+                display: flex !important;
             }
 
             form {
-                width: 100%;
-                max-width: 340px;
-                padding: 30px;
-                border-radius: 30px;
+                width: 100% !important;
+                max-width: 340px !important;
+                padding: 30px !important;
+                border-radius: 30px !important;
             }
 
             input[type="text"],
             input[type="password"] {
-                width: 100%;
-                margin-bottom: 25px;
+                width: 100% !important;
+                margin-bottom: 25px !important;
             }
 
             .form-buttons {
-                flex-direction: column;
-                gap: 10px;
+                flex-direction: column !important;
+                gap: 10px !important;
             }
 
             input[type="submit"],
             input[type="button"] {
-                width: 100%;
-                padding: 12px;
+                width: 100% !important;
+                padding: 12px !important;
             }
         }
 
         /* Small Mobile */
         @media (max-width: 480px) {
             .title-section h1 {
-                font-size: 28px;
+                font-size: 20px;
             }
 
             .title-section h2 {

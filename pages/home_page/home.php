@@ -171,7 +171,7 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Employee';
             }
 
             .main-content {
-                padding-top: 200px;
+                padding-top: 140px;
                 padding-bottom: 70px;
             }
 
@@ -187,7 +187,12 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Employee';
 
         @media (max-width: 400px) {
             .main-content {
-                padding-top: 220px;
+                padding-top: 140px;
+            }
+
+            .welcome-message {
+                font-size: 1rem;
+                padding-bottom: 0px;
             }
 
             .dashboard-btn {
@@ -258,7 +263,7 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Employee';
                     <div class="col-12 col-sm-6 col-md-4 d-flex justify-content-center">
                         <button class="btn btn-primary-custom dashboard-btn"
                             onclick="window.location.href='/Inventory-Accounts-System-v1/pages/statement_account_page/sap_accountsManagement.php'">
-                            Sorcom Transaction
+                            Transaction Orders
                         </button>
                     </div>
 
