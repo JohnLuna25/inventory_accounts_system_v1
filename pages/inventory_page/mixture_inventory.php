@@ -20,293 +20,276 @@ while ($d = $designs_result->fetch_assoc()) {
 <head>
     <meta charset="UTF-8">
     <title>SORCOM Mixture Inventory</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="stylesheet" href="../inventory_page/mixture_inventory.css">
     <?php showHeader(); ?>
 
     <style>
         body {
             font-family: Arial, sans-serif;
+            background: #BFC3AA;
+            margin: 0;
+            padding: 0;
+            padding-bottom: 60px;
         }
 
-        .suggestion-bar {
-            display: none;
-            background: #5f5e5e;
-            border: 1px solid #ddd;
-            padding: 10px;
-            margin: 5px 0 15px 0;
-            font-family: Arial, sans-serif;
-
+        .main-content {
+            padding-top: 70px;
         }
 
-        .suggestion-bar.show {
-            display: block;
+        .page-title-bar {
+            background: white;
+            margin: 15px;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .suggestion-table {
+        .search-container {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .search-container a {
+            padding: 10px 20px;
+            background: #0b63c4;
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .table-container {
+            background: rgb(197, 197, 197);
+            margin: 15px;
+            padding: 15px;
+            border-radius: 15px;
+            box-shadow: 0 2px 4px rgba(161, 11, 11, 0.1);
+            overflow-x: auto;
+        }
+
+        table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
-            font-family: Arial, sans-serif;
-            color: #000000;
+            min-width: 900px;
+            background: #e2e2e2;
         }
 
-        .suggestion-table th,
-        .suggestion-table td {
-            border: 1px solid #000000;
-            padding: 6px;
-            text-align: center;
-            font-size: 11px;
-            font-family: Arial, sans-serif;
-            background-color: #c0c0c0;
-        }
-
-        .suggestion-table th {
-            background: #332e2e;
-            font-family: Arial, sans-serif;
-        }
-
-        .btn-add-produce {
-            padding: 3px 8px;
-            background: #4CAF50;
+        th {
+            background: #0b63c4;
             color: white;
+            padding: 12px 8px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        td {
+            border: 1px solid #000;
+            padding: 10px 8px;
+            text-align: center;
+            font-size: 13px;
+        }
+
+        /* VIEW PANEL */
+        .view-panel {
+            display: none;
+            background: #f3f3f3;
+            padding: 12px;
+        }
+
+        .view-box {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #363636;
+            margin-top: 8px;
+        }
+
+        .btn {
+            padding: 5px 10px;
             border: none;
             border-radius: 4px;
             cursor: pointer;
-            font-size: 10px;
-            font-family: Arial, sans-serif;
+            font-size: 11px;
         }
 
-        .btn-add-produce:hover {
-            background: #388E3C;
+        .btn-view {
+            background: #28a745;
+            color: white;
         }
 
-        .no-suggestion {
-            color: #000000;
-            font-style: italic;
-            padding: 10px;
-            font-family: Arial, sans-serif;
+        .btn-edit {
+            background: #fd7e14;
+            color: white;
+        }
+
+        .btn-del {
+            background: #dc3545;
+            color: white;
         }
     </style>
 </head>
 
-<body style="font-family: Arial, sans-serif;">
+<body>
 
-    <h2 style="text-align: center; margin-top: 57px; color: black; font-family: Arial, sans-serif;">Mixture Inventory
-    </h2>
+    <div class="main-content">
 
-    <div style="text-align: right; width: 97%; margin: 10px auto; overflow: hidden;">
-        <a href="addMixture_inventory.php"
-            style="padding: 10px 15px; background-color: #0b63c4; color: white; text-decoration: none; font-weight: bold; border-radius: 4px; display: inline-block; float: right; margin-left: 7px; font-family: Arial, sans-serif;">+
-            Add Mixture</a>
-        <button onclick="window.location.href='../inventory_page/inventory_management.php'"
-            style="padding: 10px 15px; background-color: #0b63c4; color: white; font-weight: bold; border-radius: 4px; display: inline-block; float: right; margin-right: 7px; cursor: pointer; border: none; font-family: Arial, sans-serif; font-size: 13px;">←
-            Back to Ready-Mix</button>
+        <!-- HEADER -->
+        <div class="page-title-bar">
+            <h2 style="text-align:center; margin:0; font-weight:300;">Mixture Inventory</h2>
+
+            <div class="search-container">
+                <a href="addMixture_inventory.php">+ Add Mixture</a>
+                <a href="../inventory_page/inventory_management.php">← Back</a>
+            </div>
+        </div>
+
+        <!-- TABLE -->
+        <div class="table-container">
+
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Cement</th>
+                    <th>Fly Ash</th>
+                    <th>Sand</th>
+                    <th>3/4</th>
+                    <th>3/8</th>
+                    <th>G1</th>
+                    <th>Admix</th>
+                    <th>Water</th>
+                    <th>Air</th>
+                    <th>Others</th>
+                    <th>Total</th>
+                    <th>Actions</th>
+                </tr>
+
+                <?php while ($row = $result->fetch_assoc()): ?>
+
+                    <tr>
+                        <td><?= $row['date_added'] ?></td>
+                        <td><?= $row['cement'] ?></td>
+                        <td><?= $row['fly_ash'] ?></td>
+                        <td><?= $row['sand'] ?></td>
+                        <td><?= $row['3_4'] ?></td>
+                        <td><?= $row['3_8'] ?></td>
+                        <td><?= $row['g1'] ?></td>
+                        <td><?= $row['admix'] ?></td>
+                        <td><?= $row['water'] ?></td>
+                        <td><?= $row['air'] ?></td>
+                        <td><?= $row['others'] ?></td>
+                        <td><?= $row['total'] ?> kgs/m³</td>
+
+                        <td>
+                            <button class="btn btn-view" onclick="toggleView(<?= $row['id'] ?>)">View</button>
+                            <button class="btn btn-edit"
+                                onclick="window.location.href='editMixture_Inventory.php?id=<?= $row['id'] ?>'">Edit</button>
+                            <button class="btn btn-del"
+                                onclick="if(confirm('Delete?')) window.location.href='deleteMixture_Inventory.php?id=<?= $row['id'] ?>'">Delete</button>
+                        </td>
+                    </tr>
+
+                    <!-- VIEW ROW -->
+                    <tr id="view-<?= $row['id'] ?>" class="view-panel">
+                        <td colspan="13">
+
+                            <div class="view-box">
+                                <strong>Available Designs (Based on Current Stock):</strong><br><br>
+
+                                <?php
+                                $stock = [
+                                    'cement' => floatval($row['cement']),
+                                    'fly_ash' => floatval($row['fly_ash']),
+                                    'sand' => floatval($row['sand']),
+                                    '3_4' => floatval($row['3_4']),
+                                    '3_8' => floatval($row['3_8']),
+                                    'g1' => floatval($row['g1']),
+                                    'admix' => floatval($row['admix']),
+                                    'water' => floatval($row['water']),
+                                    'air' => floatval($row['air'])
+                                ];
+
+                                $available_designs = [];
+
+                                foreach ($all_designs as $d) {
+
+                                    $can_produce =
+                                        $stock['cement'] >= floatval($d['vb_cement_mix']) &&
+                                        $stock['fly_ash'] >= floatval($d['vb_fly_ash']) &&
+                                        $stock['sand'] >= floatval($d['vb_sand']) &&
+                                        $stock['3_4'] >= floatval($d['vb_three_fourth']) &&
+                                        $stock['3_8'] >= floatval($d['vb_three_eight']) &&
+                                        $stock['g1'] >= floatval($d['vb_G1']) &&
+                                        $stock['admix'] >= floatval($d['vb_admix']) &&
+                                        $stock['water'] >= floatval($d['vb_water']) &&
+                                        $stock['air'] >= floatval($d['vb_air']);
+
+                                    if ($can_produce) {
+                                        $available_designs[] = $d;
+                                    }
+                                }
+
+                                if (count($available_designs) > 0):
+                                    ?>
+
+                                    <table class="suggestion-table"
+                                        style="width:100%; border-collapse:collapse; margin-top:10px;">
+                                        <thead>
+                                            <tr style="background:#0b63c4; color:white;">
+                                                <th>PSI</th>
+                                                <th>Curation Days</th>
+                                                <th>Type</th>
+                                                <th>Batch (kgs/m³)</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+
+                                        <tbody>
+                                            <?php foreach ($available_designs as $d): ?>
+                                                <tr>
+                                                    <td><?= $d['vb_concrete_psi'] ?></td>
+                                                    <td><?= $d['vb_curation_days'] ?></td>
+                                                    <td><?= $d['vb_concrete_type'] ?></td>
+                                                    <td><?= $d['vb_total'] ?> kgs/m³</td>
+
+                                                    <td>
+                                                        <a href="ip_addForm.php?psi=<?= urlencode($d['vb_concrete_psi']) ?>
+                    &days=<?= urlencode($d['vb_curation_days']) ?>
+                    &type=<?= urlencode($d['vb_concrete_type']) ?>
+                    &batch=<?= urlencode($d['vb_total']) ?>
+                    &mixture_id=<?= $row['id'] ?>"
+                                                            style="padding:3px 8px; background:#4CAF50; color:white; text-decoration:none; border-radius:4px; font-size:10px;">
+                                                            ADD
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            <?php endforeach; ?>
+                                        </tbody>
+                                    </table>
+
+                                <?php else: ?>
+
+                                    <p style="text-align:center; font-style:italic;">
+                                        No producible designs for current stock
+                                    </p>
+
+                                <?php endif; ?>
+                            </div>
+
+                        </td>
+                    </tr>
+
+                <?php endwhile; ?>
+
+            </table>
+
+        </div>
     </div>
 
-    <table
-        style="border-collapse: collapse; width: 99%; margin: 20px auto; background: #fff; border: 1px solid #ccc; font-family: Arial, sans-serif;">
-        <tr style="background: #0b63c4; color: #fff; font-family: Arial, sans-serif;">
-
-            <th style="border: 1px solid #ccc; padding: 8px; font-family: Arial, sans-serif;">Date</th>
-            <th style="border: 1px solid #ccc; padding: 8px; font-family: Arial, sans-serif;">Cement</th>
-            <th style="border: 1px solid #ccc; padding: 8px; font-family: Arial, sans-serif;">Fly Ash</th>
-            <th style="border: 1px solid #ccc; padding: 8px; font-family: Arial, sans-serif;">Sand</th>
-            <th style="border: 1px solid #ccc; padding: 8px; font-family: Arial, sans-serif;">3/4</th>
-            <th style="border: 1px solid #ccc; padding: 8px; font-family: Arial, sans-serif;">3/8</th>
-            <th style="border: 1px solid #ccc; padding: 8px; font-family: Arial, sans-serif;">G1</th>
-            <th style="border: 1px solid #ccc; padding: 8px; font-family: Arial, sans-serif;">Admix</th>
-            <th style="border: 1px solid #ccc; padding: 8px; font-family: Arial, sans-serif;">Water</th>
-            <th style="border: 1px solid #ccc; padding: 8px; font-family: Arial, sans-serif;">Air</th>
-            <th style="border: 1px solid #ccc; padding: 8px; font-family: Arial, sans-serif;">Others</th>
-            <th style="border: 1px solid #ccc; padding: 8px; font-family: Arial, sans-serif;">Total</th>
-            <th style="border: 1px solid #ccc; padding: 8px; font-family: Arial, sans-serif;">Actions</th>
-        </tr>
-
-        <?php if ($result->num_rows > 0): ?>
-            <?php while ($row = $result->fetch_assoc()): ?>
-                <tr style="font-family: Arial, sans-serif;">
-
-                    <td style="border: 1px solid #ccc; padding: 8px; text-align: center; font-family: Arial, sans-serif;">
-                        <?php echo $row['date_added']; ?>
-                    </td>
-                    <td style="border: 1px solid #ccc; padding: 8px; text-align: center; font-family: Arial, sans-serif;">
-                        <?php echo $row['cement']; ?>
-                    </td>
-                    <td style="border: 1px solid #ccc; padding: 8px; text-align: center; font-family: Arial, sans-serif;">
-                        <?php echo $row['fly_ash']; ?>
-                    </td>
-                    <td style="border: 1px solid #ccc; padding: 8px; text-align: center; font-family: Arial, sans-serif;">
-                        <?php echo $row['sand']; ?>
-                    </td>
-                    <td style="border: 1px solid #ccc; padding: 8px; text-align: center; font-family: Arial, sans-serif;">
-                        <?php echo $row['3_4']; ?>
-                    </td>
-                    <td style="border: 1px solid #ccc; padding: 8px; text-align: center; font-family: Arial, sans-serif;">
-                        <?php echo $row['3_8']; ?>
-                    </td>
-                    <td style="border: 1px solid #ccc; padding: 8px; text-align: center; font-family: Arial, sans-serif;">
-                        <?php echo $row['g1']; ?>
-                    </td>
-                    <td style="border: 1px solid #ccc; padding: 8px; text-align: center; font-family: Arial, sans-serif;">
-                        <?php echo $row['admix']; ?>
-                    </td>
-                    <td style="border: 1px solid #ccc; padding: 8px; text-align: center; font-family: Arial, sans-serif;">
-                        <?php echo $row['water']; ?>
-                    </td>
-                    <td style="border: 1px solid #ccc; padding: 8px; text-align: center; font-family: Arial, sans-serif;">
-                        <?php echo $row['air']; ?>
-                    </td>
-                    <td style="border: 1px solid #ccc; padding: 8px; text-align: center; font-family: Arial, sans-serif;">
-                        <?php echo $row['others']; ?>
-                    </td>
-                    <td style="border: 1px solid #ccc; padding: 8px; text-align: center; font-family: Arial, sans-serif;">
-                        <?php echo $row['total'] . ' kgs/m³'; ?>
-                    </td>
-
-                    <td style="border: 1px solid #ccc; padding: 8px; text-align: center; font-family: Arial, sans-serif;">
-                        <div style="display: flex; justify-content: center; gap: 5px;">
-                            <button type="button"
-                                style="background-color: #28a745; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-family: Arial, sans-serif;"
-                                onclick="toggleSuggestion(<?php echo $row['id']; ?>)">View</button>
-                            <button type="button"
-                                style="background-color: #fd7e14; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-family: Arial, sans-serif;"
-                                onclick="window.location.href='editMixture_Inventory.php?id=<?php echo $row['id']; ?>'">Edit</button>
-                            <button type="button"
-                                style="background-color: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-size: 11px; font-family: Arial, sans-serif;"
-                                onclick="if(confirm('Are you sure?')) { window.location.href='deleteMixture_Inventory.php?id=<?php echo $row['id']; ?>'; }">Delete</button>
-                        </div>
-                    </td>
-                </tr>
-
-                <!-- SUGGESTION BAR ROW -->
-                <tr>
-                    <td colspan="14" style="padding: 0; background: #f5f5f5;">
-                        <div id="suggestion-<?php echo $row['id']; ?>" class="suggestion-bar">
-                            <strong
-                                style="display: block; margin-bottom: 10px; color: #ffffff; text-align: center; font-family: Arial, sans-serif;">Available
-                                Designs (Based on Current Stock):</strong>
-
-                            <?php
-                            $stock = [
-                                'cement' => floatval($row['cement']),
-                                'fly_ash' => floatval($row['fly_ash']),
-                                'sand' => floatval($row['sand']),
-                                '3_4' => floatval($row['3_4']),
-                                '3_8' => floatval($row['3_8']),
-                                'g1' => floatval($row['g1']),
-                                'admix' => floatval($row['admix']),
-                                'water' => floatval($row['water']),
-                                'air' => floatval($row['air'])
-                            ];
-
-                            $available_designs = [];
-                            foreach ($all_designs as $design) {
-                                $can_produce = (
-                                    $stock['cement'] >= floatval($design['vb_cement_mix'] ?? 0) &&
-                                    $stock['fly_ash'] >= floatval($design['vb_fly_ash'] ?? 0) &&
-                                    $stock['sand'] >= floatval($design['vb_sand'] ?? 0) &&
-                                    $stock['3_4'] >= floatval($design['vb_three_fourth'] ?? 0) &&
-                                    $stock['3_8'] >= floatval($design['vb_three_eight'] ?? 0) &&
-                                    $stock['g1'] >= floatval($design['vb_G1'] ?? 0) &&
-                                    $stock['admix'] >= floatval($design['vb_admix'] ?? 0) &&
-                                    $stock['water'] >= floatval($design['vb_water'] ?? 0) &&
-                                    $stock['air'] >= floatval($design['vb_air'] ?? 0)
-                                );
-
-                                if ($can_produce) {
-                                    $available_designs[] = $design;
-                                }
-                            }
-
-                            if (count($available_designs) > 0):
-                                ?>
-                                <table class="suggestion-table"
-                                    style="width: 100%; border-collapse: collapse; background: #fff; font-family: Arial, sans-serif;">
-                                    <thead>
-                                        <tr style="background: #0b63c4; color: #fff; font-family: Arial, sans-serif;">
-                                            <th
-                                                style="border: 1px solid #000; padding: 6px; font-size: 11px; font-family: Arial, sans-serif;">
-                                                PSI</th>
-                                            <th
-                                                style="border: 1px solid #000; padding: 6px; font-size: 11px; font-family: Arial, sans-serif;">
-                                                Curation Days</th>
-                                            <th
-                                                style="border: 1px solid #000; padding: 6px; font-size: 11px; font-family: Arial, sans-serif;">
-                                                Type</th>
-                                            <th
-                                                style="border: 1px solid #000; padding: 6px; font-size: 11px; font-family: Arial, sans-serif;">
-                                                Batch (kgs/m³)</th>
-                                            <th
-                                                style="border: 1px solid #000; padding: 6px; font-size: 11px; font-family: Arial, sans-serif;">
-                                                Action</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php foreach ($available_designs as $d): ?>
-                                            <tr>
-                                                <td
-                                                    style="border: 1px solid #000; padding: 6px; font-size: 11px; background-color: #c0c0c0; text-align: center; font-family: Arial, sans-serif;">
-                                                    <?php echo $d['vb_concrete_psi']; ?>
-                                                </td>
-                                                <td
-                                                    style="border: 1px solid #000; padding: 6px; font-size: 11px; background-color: #c0c0c0; text-align: center; font-family: Arial, sans-serif;">
-                                                    <?php echo $d['vb_curation_days']; ?>
-                                                </td>
-                                                <td
-                                                    style="border: 1px solid #000; padding: 6px; font-size: 11px; background-color: #c0c0c0; text-align: center; font-family: Arial, sans-serif;">
-                                                    <?php echo $d['vb_concrete_type']; ?>
-                                                </td>
-                                                <td
-                                                    style="border: 1px solid #000; padding: 6px; font-size: 11px; background-color: #c0c0c0; text-align: center; font-family: Arial, sans-serif;">
-                                                    <?php echo $d['vb_total']; ?>
-                                                </td>
-                                                <td
-                                                    style="border: 1px solid #000; padding: 6px; font-size: 11px; background-color: #c0c0c0; text-align: center; font-family: Arial, sans-serif;">
-                                                    <form method="POST" action="produce_from_mixture.php" style="margin: 0;">
-                                                        <input type="hidden" name="mixture_id" value="<?php echo $row['id']; ?>">
-                                                        <input type="hidden" name="design_psi"
-                                                            value="<?php echo $d['vb_concrete_psi']; ?>">
-                                                        <input type="hidden" name="design_days"
-                                                            value="<?php echo $d['vb_curation_days']; ?>">
-                                                        <input type="hidden" name="design_type"
-                                                            value="<?php echo $d['vb_concrete_type']; ?>">
-                                                        <input type="hidden" name="design_batch" value="<?php echo $d['vb_total']; ?>">
-                                                        <a href="ip_addForm.php?psi=<?php echo urlencode($d['vb_concrete_psi']); ?>&days=<?php echo urlencode($d['vb_curation_days']); ?>&type=<?php echo urlencode($d['vb_concrete_type']); ?>&batch=<?php echo urlencode($d['vb_total']); ?>&mixture_id=<?php echo $row['id']; ?>"
-                                                            style="padding: 3px 8px; background: #4CAF50; color: white; text-decoration: none; border-radius: 4px; font-size: 10px; font-family: Arial, sans-serif; display: inline-block;">ADD</a>
-                                                    </form>
-                                                </td>
-                                            </tr>
-                                        <?php endforeach; ?>
-                                    </tbody>
-                                </table>
-                            <?php else: ?>
-                                <p class="no-suggestion"
-                                    style="color: #000000; font-style: italic; padding: 10px; font-family: Arial, sans-serif; text-align: center;">
-                                    No
-                                    designs can be produced with current stock!</p>
-                            <?php endif; ?>
-                        </div>
-                    </td>
-                </tr>
-            <?php endwhile; ?>
-        <?php else: ?>
-            <tr>
-                <td colspan="14"
-                    style="border: 1px solid #ccc; padding: 8px; text-align: center; font-family: Arial, sans-serif;">No
-                    data found.</td>
-            </tr>
-        <?php endif; ?>
-    </table>
-
     <script>
-        function toggleSuggestion(id) {
-            var element = document.getElementById('suggestion-' + id);
-            if (element.style.display === 'none' || element.style.display === '') {
-                element.style.display = 'block';
-            } else {
-                element.style.display = 'none';
-            }
+        function toggleView(id) {
+            let row = document.getElementById('view-' + id);
+            row.style.display = (row.style.display === 'table-row') ? 'none' : 'table-row';
         }
     </script>
 
