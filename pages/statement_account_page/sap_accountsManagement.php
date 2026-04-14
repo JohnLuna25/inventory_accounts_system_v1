@@ -65,6 +65,7 @@ $result = $conn->query($sql);
                         <th>Curation Days</th>
                         <th>Concrete Type</th>
                         <th>Cubic Meters</th>
+                        <th>Concrete Price</th>
                         <th>Status</th>
                         <th>Actions</th>
                     </tr>
@@ -85,6 +86,9 @@ $result = $conn->query($sql);
                                 </td>
                                 <td>
                                     <?= htmlspecialchars($row['cubic_meters']) ?>
+                                </td>
+                                <td>
+                                    ₱<?= number_format($row['sap_concrete_price'] ?? 0, 2) ?>
                                 </td>
                                 <td class="order-status">
                                     <?php

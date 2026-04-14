@@ -70,10 +70,10 @@ sort($psiOptions);
 // --- Load existing data if editing ---
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
-    $stmt = $conn->prepare("SELECT sap_id, order_date, delivery_date, customer_name, full_address, concrete_psi, curation_days, concrete_type, cubic_meters, order_status FROM statement_of_account WHERE sap_id=?");
+    $stmt = $conn->prepare("SELECT sap_id, order_date, delivery_date, customer_name, full_address, concrete_psi, curation_days, concrete_type, cubic_meters, sap_concrete_price, order_status FROM statement_of_account WHERE sap_id=?");
     $stmt->bind_param("s", $id);
     $stmt->execute();
-    $stmt->bind_result($sap_id, $order_date, $delivery_date, $customer_name, $full_address, $concrete_psi, $curation_days, $concrete_type, $cubic_meters, $order_status);
+    $stmt->bind_result($sap_id, $order_date, $delivery_date, $customer_name, $full_address, $concrete_psi, $curation_days, $concrete_type, $cubic_meters, $sap_concrete_price, $order_status);
     $stmt->fetch();
     $stmt->close();
 }
@@ -88,24 +88,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $curation_days = $_POST['curation_days'] ?? '';
     $concrete_type = $_POST['concrete_type'] ?? '';
     $cubic_meters = floatval($_POST['cubic_meters'] ?? 0);
+    $sap_concrete_price = $_POST['sap_concrete_price'];
     $order_status = $_POST['order_status'] ?? '';
 
     if (!empty($_POST['edit_id'])) {
         // Update existing order
         $id = $_POST['edit_id'];
         $stmt = $conn->prepare("UPDATE statement_of_account 
-            SET order_date=?, delivery_date=?, customer_name=?, full_address=?, concrete_psi=?, curation_days=?, concrete_type=?, cubic_meters=?, order_status=? 
-            WHERE sap_id=?");
-        $stmt->bind_param("ssssssssss", $order_date, $delivery_date, $customer_name, $full_address, $concrete_psi, $curation_days, $concrete_type, $cubic_meters, $order_status, $id);
+    SET order_date=?, delivery_date=?, customer_name=?, full_address=?, concrete_psi=?, curation_days=?, concrete_type=?, cubic_meters=?, sap_concrete_price=?, order_status=? 
+    WHERE sap_id=?");
+
+        $stmt->bind_param(
+            "sssssssssss",
+            $order_date,
+            $delivery_date,
+            $customer_name,
+            $full_address,
+            $concrete_psi,
+            $curation_days,
+            $concrete_type,
+            $cubic_meters,
+            $sap_concrete_price,
+            $order_status,
+            $id
+        );
     } else {
         // Generate unique sap_id for new order
         $sap_id = generateUniqueSapId($conn);
 
         // Insert new order with sap_id
         $stmt = $conn->prepare("INSERT INTO statement_of_account 
-            (sap_id, order_date, delivery_date, customer_name, full_address, concrete_psi, curation_days, concrete_type, cubic_meters, order_status) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("ssssssssss", $sap_id, $order_date, $delivery_date, $customer_name, $full_address, $concrete_psi, $curation_days, $concrete_type, $cubic_meters, $order_status);
+    (sap_id, order_date, delivery_date, customer_name, full_address, concrete_psi, curation_days, concrete_type, cubic_meters, sap_concrete_price, order_status) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+        $stmt->bind_param(
+            "sssssssssss",
+            $sap_id,
+            $order_date,
+            $delivery_date,
+            $customer_name,
+            $full_address,
+            $concrete_psi,
+            $curation_days,
+            $concrete_type,
+            $cubic_meters,
+            $sap_concrete_price,
+            $order_status
+        );
     }
 
     if ($stmt->execute()) {
@@ -348,6 +377,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <label for="cubic_meters">Cubic Meters:</label>
                     <input type="number" id="cubic_meters" name="cubic_meters" min="0" step="0.1"
                         placeholder="Enter quantity" required value="<?= htmlspecialchars($cubic_meters) ?>">
+                </div>
+
+                <div class="form-row">
+                    <label for="sap_concrete_price">Concrete Price:</label>
+                    <input type="number" id="sap_concrete_price" name="sap_concrete_price" step="0.01"
+                        value="<?= htmlspecialchars($sap_concrete_price ?? '') ?>">
                 </div>
 
                 <div class="form-row">
