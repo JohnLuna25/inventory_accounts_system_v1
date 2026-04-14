@@ -6,8 +6,19 @@ function showHeader()
     <div class="header-grid">
         <!-- Left: Home Button -->
         <div class="header-left">
-            <a href="/Inventory-Accounts-System-v1/pages/home_page/home.php">
-                <img src="/Inventory-Accounts-System-v1/assets/images/home_button.png" alt="Home" class="home-icon">
+            <a href="/Inventory-Accounts-System-v1/pages/home_page/home.php"
+            style="
+                    color: yellow;
+                    font-size: 12px;
+                    font-weight: bold;
+                    text-decoration: none;
+                    background: transparent;
+                    border: 2px solid yellow;
+                    padding: 4px 10px;
+                    border-radius: 20px;
+                    display: inline-block;
+            ">
+                Go to Home
             </a>
         </div>
 
