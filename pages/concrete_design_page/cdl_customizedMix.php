@@ -6,45 +6,45 @@ include __DIR__ . '/../../FunctionAndDB/Web_Functions.php';
 // Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // VB Fields
-    $vb_concrete_psi = $_POST['vb_concrete_psi'] ?? '';
-    $vb_cubic_meter = $_POST['vb_cubic_meter'] ?? '';
-    $vb_curation_days = $_POST['vb_curation_days'] ?? '';
-    $vb_concrete_type = $_POST['vb_concrete_type'] ?? '';
-    $vb_concrete_slump = $_POST['vb_concrete_slump'] ?? '';
-    $vb_wc_ratio = $_POST['vb_wc_ratio'] ?? '';
-    $vb_cement_source = $_POST['vb_cement_source'] ?? '';
-    $vb_admix_source = $_POST['vb_admix_source'] ?? '';
-    $vb_cement_mix = $_POST['vb_cement_mix'] ?? '';
-    $vb_fly_ash = $_POST['vb_fly_ash'] ?? '';
-    $vb_sand = $_POST['vb_sand'] ?? '';
-    $vb_three_eight = $_POST['vb_three_eight'] ?? '';
-    $vb_three_fourth = $_POST['vb_three_fourth'] ?? '';
-    $vb_G1 = $_POST['vb_G1'] ?? '';
-    $vb_admix = $_POST['vb_admix'] ?? '';
-    $vb_water = $_POST['vb_water'] ?? '';
-    $vb_air = $_POST['vb_air'] ?? '';
-    $vb_others = $_POST['vb_others'] ?? '';
-    $vb_total = $_POST['vb_total'] ?? '';
-    $concrete_price = $_POST['concrete_price'] ?? '';
+    $cdl_vb_concrete_psi = $_POST['vb_concrete_psi'] ?? '';
+    $cdl_vb_cubic_meter = $_POST['vb_cubic_meter'] ?? '';
+    $cdl_vb_curation_days = $_POST['vb_curation_days'] ?? '';
+    $cdl_vb_concrete_type = $_POST['vb_concrete_type'] ?? '';
+    $cdl_vb_concrete_slump = $_POST['vb_concrete_slump'] ?? '';
+    $cdl_vb_wc_ratio = $_POST['vb_wc_ratio'] ?? '';
+    $cdl_vb_cement_source = $_POST['vb_cement_source'] ?? '';
+    $cdl_vb_admix_source = $_POST['vb_admix_source'] ?? '';
+    $cdl_vb_cement_mix = $_POST['vb_cement_mix'] ?? '';
+    $cdl_vb_fly_ash = $_POST['vb_fly_ash'] ?? '';
+    $cdl_vb_sand = $_POST['vb_sand'] ?? '';
+    $cdl_vb_three_eight = $_POST['vb_three_eight'] ?? '';
+    $cdl_vb_three_fourth = $_POST['vb_three_fourth'] ?? '';
+    $cdl_vb_G1 = $_POST['vb_G1'] ?? '';
+    $cdl_vb_admix = $_POST['vb_admix'] ?? '';
+    $cdl_vb_water = $_POST['vb_water'] ?? '';
+    $cdl_vb_air = $_POST['vb_air'] ?? '';
+    $cdl_vb_others = $_POST['vb_others'] ?? '';
+    $cdl_vb_total = $_POST['vb_total'] ?? '';
+    $cdl_concrete_price = $_POST['concrete_price'] ?? '';
 
     // SSD Fields
-    $ssd_cement_mix = $_POST['ssd_cement_mix'] ?? '';
-    $ssd_fly_ash = $_POST['ssd_fly_ash'] ?? '';
-    $ssd_sand = $_POST['ssd_sand'] ?? '';
-    $ssd_three_eight = $_POST['ssd_three_eight'] ?? '';
-    $ssd_three_fourth = $_POST['ssd_three_fourth'] ?? '';
-    $ssd_G1 = $_POST['ssd_G1'] ?? '';
-    $ssd_admix = $_POST['ssd_admix'] ?? '';
-    $ssd_water = $_POST['ssd_water'] ?? '';
-    $ssd_air = $_POST['ssd_air'] ?? '';
-    $ssd_others = $_POST['ssd_others'] ?? '';
+    $cdl_ssd_cement_mix = $_POST['ssd_cement_mix'] ?? '';
+    $cdl_ssd_fly_ash = $_POST['ssd_fly_ash'] ?? '';
+    $cdl_ssd_sand = $_POST['ssd_sand'] ?? '';
+    $cdl_ssd_three_eight = $_POST['ssd_three_eight'] ?? '';
+    $cdl_ssd_three_fourth = $_POST['ssd_three_fourth'] ?? '';
+    $cdl_ssd_G1 = $_POST['ssd_G1'] ?? '';
+    $cdl_ssd_admix = $_POST['ssd_admix'] ?? '';
+    $cdl_ssd_water = $_POST['ssd_water'] ?? '';
+    $cdl_ssd_air = $_POST['ssd_air'] ?? '';
+    $cdl_ssd_others = $_POST['ssd_others'] ?? '';
 
     // Client/Experiment Fields
-    $client_name = $_POST['client_name'] ?? '';
-    $client_contact = $_POST['client_contact'] ?? '';
-    $experiment_notes = $_POST['experiment_notes'] ?? '';
-    $customization_notes = $_POST['customization_notes'] ?? '';
-    $is_active = $_POST['is_active'] ?? 1;
+    $cdl_client_name = $_POST['client_name'] ?? '';
+    $cdl_client_contact = $_POST['client_contact'] ?? '';
+    $cdl_experiment_notes = $_POST['experiment_notes'] ?? '';
+    $cdl_customization_notes = $_POST['customization_notes'] ?? '';
+    $cdl_is_active = $_POST['is_active'] ?? 1;
 
     // System Fields
     $created_by = $_SESSION['username'] ?? 'admin';
@@ -56,22 +56,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Insert into database
     $insert = "INSERT INTO cdl_customized_mix_list (
-        vb_concrete_psi, vb_cubic_meter, vb_curation_days, vb_concrete_type, vb_concrete_slump,
-        vb_wc_ratio, vb_cement_source, vb_admix_source, vb_cement_mix, vb_fly_ash,
-        vb_sand, vb_three_eight, vb_three_fourth, vb_G1, vb_admix, vb_water,
-        vb_air, vb_others, vb_total, concrete_price,
-        ssd_cement_mix, ssd_fly_ash, ssd_sand, ssd_three_eight, ssd_three_fourth,
-        ssd_G1, ssd_admix, ssd_water, ssd_air, ssd_others,
-        client_name, client_contact, experiment_notes, customization_notes, is_active,
+        cdl_vb_concrete_psi, cdl_vb_cubic_meter, cdl_vb_curation_days, cdl_vb_concrete_type, cdl_vb_concrete_slump,
+        cdl_vb_wc_ratio, cdl_vb_cement_source, cdl_vb_admix_source, cdl_vb_cement_mix, cdl_vb_fly_ash,
+        cdl_vb_sand, cdl_vb_three_eight, cdl_vb_three_fourth, cdl_vb_G1, cdl_vb_admix, cdl_vb_water,
+        cdl_vb_air, cdl_vb_others, cdl_vb_total, cdl_concrete_price,
+        cdl_ssd_cement_mix, cdl_ssd_fly_ash, cdl_ssd_sand, cdl_ssd_three_eight, cdl_ssd_three_fourth,
+        cdl_ssd_G1, cdl_ssd_admix, cdl_ssd_water, cdl_ssd_air, cdl_ssd_others,
+        cdl_client_name, cdl_client_contact, cdl_experiment_notes, cdl_customization_notes, cdl_is_active,
         created_by, created_at, updated_at
     ) VALUES (
-        '" . $escape($vb_concrete_psi) . "', '" . $escape($vb_cubic_meter) . "', '" . $escape($vb_curation_days) . "', '" . $escape($vb_concrete_type) . "', '" . $escape($vb_concrete_slump) . "',
-        '" . $escape($vb_wc_ratio) . "', '" . $escape($vb_cement_source) . "', '" . $escape($vb_admix_source) . "', '" . $escape($vb_cement_mix) . "', '" . $escape($vb_fly_ash) . "',
-        '" . $escape($vb_sand) . "', '" . $escape($vb_three_eight) . "', '" . $escape($vb_three_fourth) . "', '" . $escape($vb_G1) . "', '" . $escape($vb_admix) . "', '" . $escape($vb_water) . "',
-        '" . $escape($vb_air) . "', '" . $escape($vb_others) . "', '" . $escape($vb_total) . "', '" . $escape($concrete_price) . "',
-        '" . $escape($ssd_cement_mix) . "', '" . $escape($ssd_fly_ash) . "', '" . $escape($ssd_sand) . "', '" . $escape($ssd_three_eight) . "', '" . $escape($ssd_three_fourth) . "',
-        '" . $escape($ssd_G1) . "', '" . $escape($ssd_admix) . "', '" . $escape($ssd_water) . "', '" . $escape($ssd_air) . "', '" . $escape($ssd_others) . "',
-        '" . $escape($client_name) . "', '" . $escape($client_contact) . "', '" . $escape($experiment_notes) . "', '" . $escape($customization_notes) . "', '" . $escape($is_active) . "',
+        '" . $escape($cdl_vb_concrete_psi) . "', '" . $escape($cdl_vb_cubic_meter) . "', '" . $escape($cdl_vb_curation_days) . "', '" . $escape($cdl_vb_concrete_type) . "', '" . $escape($cdl_vb_concrete_slump) . "',
+        '" . $escape($cdl_vb_wc_ratio) . "', '" . $escape($cdl_vb_cement_source) . "', '" . $escape($cdl_vb_admix_source) . "', '" . $escape($cdl_vb_cement_mix) . "', '" . $escape($cdl_vb_fly_ash) . "',
+        '" . $escape($cdl_vb_sand) . "', '" . $escape($cdl_vb_three_eight) . "', '" . $escape($cdl_vb_three_fourth) . "', '" . $escape($cdl_vb_G1) . "', '" . $escape($cdl_vb_admix) . "', '" . $escape($cdl_vb_water) . "',
+        '" . $escape($cdl_vb_air) . "', '" . $escape($cdl_vb_others) . "', '" . $escape($cdl_vb_total) . "', '" . $escape($cdl_concrete_price) . "',
+        '" . $escape($cdl_ssd_cement_mix) . "', '" . $escape($cdl_ssd_fly_ash) . "', '" . $escape($cdl_ssd_sand) . "', '" . $escape($cdl_ssd_three_eight) . "', '" . $escape($cdl_ssd_three_fourth) . "',
+        '" . $escape($cdl_ssd_G1) . "', '" . $escape($cdl_ssd_admix) . "', '" . $escape($cdl_ssd_water) . "', '" . $escape($cdl_ssd_air) . "', '" . $escape($cdl_ssd_others) . "',
+        '" . $escape($cdl_client_name) . "', '" . $escape($cdl_client_contact) . "', '" . $escape($cdl_experiment_notes) . "', '" . $escape($cdl_customization_notes) . "', '" . $escape($cdl_is_active) . "',
         '" . $escape($created_by) . "', NOW(), NOW()
     )";
 

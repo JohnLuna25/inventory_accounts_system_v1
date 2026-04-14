@@ -182,6 +182,7 @@ $conn->close();
 
             .page-title-bar {
                 background: white;
+                height: 90px;
                 margin: 15px;
                 padding: 20px;
                 border-radius: 15px;
@@ -198,7 +199,10 @@ $conn->close();
             }
 
             .search-container {
-                flex-direction: column;
+                flex-direction: row;
+                position: absolute;
+                margin-left: -70px;
+                margin: 0 auto;
             }
 
             .search-container input,
@@ -220,7 +224,7 @@ $conn->close();
             .btn-view,
             .btn-edit {
                 padding: 5px 8px;
-                font-size: 11px;
+                font-size: 11px
             }
         }
     </style>

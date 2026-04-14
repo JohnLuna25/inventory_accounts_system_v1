@@ -263,7 +263,7 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Employee';
                     <div class="col-12 col-sm-6 col-md-4 d-flex justify-content-center">
                         <button class="btn btn-primary-custom dashboard-btn"
                             onclick="window.location.href='/Inventory-Accounts-System-v1/pages/statement_account_page/sap_accountsManagement.php'">
-                            Transaction Orders
+                            Transaction Records
                         </button>
                     </div>
 
@@ -277,22 +277,16 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Employee';
                         </div>
                     <?php endif; ?>
 
-                    <!-- Add Manager: Manager only -->
-                    <?php if ($role === 'Manager'): ?>
-                        <div class="col-12 col-sm-6 col-md-4 d-flex justify-content-center">
-                            <button class="btn btn-primary-custom dashboard-btn"
-                                onclick="window.location.href='/Inventory-Accounts-System-v1/pages/add_manager_page/add_manager.php'">
-                                Add Manager
-                            </button>
-                        </div>
 
-                        <div class="col-12 col-sm-6 col-md-4 d-flex justify-content-center">
-                            <button class="btn btn-primary-custom dashboard-btn"
-                                onclick="window.location.href='/Inventory-Accounts-System-v1/pages/manage_employee_accounts/mea.php'">
-                                Manage Employee Accounts
-                            </button>
-                        </div>
-                    <?php endif; ?>
+
+
+
+
+
+
+
+
+
 
                     <!-- Logout -->
                     <div class="col-12 col-sm-6 col-md-4 d-flex justify-content-center">

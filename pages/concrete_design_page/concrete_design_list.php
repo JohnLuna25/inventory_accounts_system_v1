@@ -155,6 +155,22 @@ if (!$customized_result) {
             display: inline-block;
         }
 
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 4px;
+            text-decoration: none;
+            font-size: 12px;
+            display: inline-block;
+            margin-left: 4px;
+        }
+
+        .btn-delete:hover {
+            background: #c82333;
+            color: white;
+        }
+
         .dropbar-row {
             display: none;
             background: #f9f9f9;
@@ -421,7 +437,6 @@ if (!$customized_result) {
         </div>
 
         <!-- Customized Mix Table -->
-        <!-- Customized Mix Table -->
         <div class="table-container">
             <table>
                 <thead>
@@ -438,31 +453,32 @@ if (!$customized_result) {
                 </thead>
                 <tbody>
                     <?php
-                    $row_index = 0;
+                    // 👈 NEW: Separate index for CUSTOMIZED table only
+                    $customized_row_index = 0;
                     while ($customized_row = $customized_result->fetch_assoc()) {
-                        $row_index++;
-
+                        $customized_row_index++;  // 👈 Use custom index
+                    
                         echo "<tr>";
-                        echo "<td>" . htmlspecialchars($customized_row['client_name'] ?? '') . "</td>";
-                        echo "<td>" . htmlspecialchars($customized_row['vb_concrete_psi'] ?? '') . "</td>";
+                        echo "<td>" . htmlspecialchars($customized_row['cdl_client_name'] ?? '') . "</td>";
+                        echo "<td>" . htmlspecialchars($customized_row['cdl_vb_concrete_psi'] ?? '') . "</td>";
 
                         // Extract only the number from curation_days
-                        $curation = preg_replace('/[^0-9]/', '', $customized_row['vb_curation_days'] ?? '0');
+                        $curation = preg_replace('/[^0-9]/', '', $customized_row['cdl_vb_curation_days'] ?? '0');
                         echo "<td>" . $curation . "</td>";
 
-                        echo "<td>" . htmlspecialchars($customized_row['vb_concrete_type'] ?? '') . "</td>";
-                        echo "<td>" . htmlspecialchars($customized_row['experiment_notes'] ?? '') . "</td>";
-                        echo "<td>" . ($customized_row['is_active'] == 1 ? 'Active' : 'Inactive') . "</td>";
-                        echo "<td>" . htmlspecialchars($customized_row['created_at'] ?? '') . "</td>";
+                        echo "<td>" . htmlspecialchars($customized_row['cdl_vb_concrete_type'] ?? '') . "</td>";
+                        echo "<td>" . htmlspecialchars($customized_row['cdl_experiment_notes'] ?? '') . "</td>";
+                        echo "<td>" . ($customized_row['cdl_is_active'] == 1 ? 'Active' : 'Inactive') . "</td>";
+                        echo "<td>" . date('M j, Y', strtotime($customized_row['created_at'] ?? '')) . "</td>";
                         echo "<td>";
-                        echo "<a href='#' class='btn-view' onclick='toggleDropbar($row_index); return false;'>View</a>";
+                        echo "<a href='#' class='btn-view' onclick='toggleCustomizedDropbar($customized_row_index); return false;'>View</a>";
                         echo "<a href='edit_customized_mix.php?id=" . $customized_row['id'] . "' class='btn-edit'>Edit</a>";
                         echo "<a href='delete_customized_mix.php?id=" . $customized_row['id'] . "' class='btn-delete' onclick='return confirm(\"Are you sure you want to delete this customized mix?\");'>Delete</a>";
                         echo "</td>";
                         echo "</tr>";
 
-                        // Dropbar row (show detailed VB + SSD data)
-                        echo "<tr id='dropbar-$row_index' class='dropbar-row'>";
+                        // 👈 NEW: Use custom ID prefix
+                        echo "<tr id='customized-dropbar-$customized_row_index' class='dropbar-row'>";
                         echo "<td colspan='8'>";
                         echo "<table class='dropbar-inner'>";
                         echo "<tr><td></td><td class='ssd-col'>Saturated Surface Dry (SSD)</td><td class='vb-col'>Volume Batch</td></tr>";
@@ -492,10 +508,10 @@ if (!$customized_result) {
 
                         // Render merged fields first
                         foreach ($merged_fields as $label => $col) {
-                            $ssd_value = $customized_row['ssd_' . $col] ?? '';
+                            $ssd_value = $customized_row['cdl_ssd_' . $col] ?? '';
                             if ($ssd_value == 0)
                                 $ssd_value = '';
-                            $vb_value = $customized_row['vb_' . $col] ?? '';
+                            $vb_value = $customized_row['cdl_vb_' . $col] ?? '';
                             if ($vb_value == 0)
                                 $vb_value = '';
                             $combined = trim($ssd_value . ' ' . $vb_value);
@@ -504,10 +520,10 @@ if (!$customized_result) {
 
                         // Render separate fields
                         foreach ($separate_fields as $label => $col) {
-                            $ssd_value = $customized_row['ssd_' . $col] ?? '';
+                            $ssd_value = $customized_row['cdl_ssd_' . $col] ?? '';
                             if ($ssd_value == 0)
                                 $ssd_value = '';
-                            $vb_value = $customized_row['vb_' . $col] ?? '';
+                            $vb_value = $customized_row['cdl_vb_' . $col] ?? '';
                             if ($vb_value == 0)
                                 $vb_value = '';
                             echo "<tr><td>$label</td><td class='ssd-data'>$ssd_value</td><td class='vb-data'>$vb_value</td></tr>";
@@ -523,8 +539,15 @@ if (!$customized_result) {
     </div>
 
     <script>
+        // Separate functions for each table
         function toggleDropbar(index) {
             var row = document.getElementById('dropbar-' + index);
+            if (!row) return;
+            row.style.display = (row.style.display === 'table-row') ? 'none' : 'table-row';
+        }
+
+        function toggleCustomizedDropbar(index) {
+            var row = document.getElementById('customized-dropbar-' + index);
             if (!row) return;
             row.style.display = (row.style.display === 'table-row') ? 'none' : 'table-row';
         }
