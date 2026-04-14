@@ -204,7 +204,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     <option value="">-- Select Days --</option>
                     <?php if (!empty($curation_days)): ?>
                         <option value="<?= htmlspecialchars($curation_days) ?>" selected>
-                            <?= htmlspecialchars($curation_days) ?> days
+                            <?= htmlspecialchars($curation_days) ?>
                         </option>
                     <?php endif; ?>
                 </select>

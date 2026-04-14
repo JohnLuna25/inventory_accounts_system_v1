@@ -224,7 +224,7 @@ $conn->close();
             .btn-view,
             .btn-edit {
                 padding: 5px 8px;
-                font-size: 11px
+                font-size: 11px;
             }
         }
     </style>

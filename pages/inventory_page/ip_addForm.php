@@ -56,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $date_added = $_POST['date_added'] ?? date('Y-m-d');
     $design_mix = $_POST['design_mix'] ?? '';
-    $curation_days = $_POST['curation_days'] ?? '';
+    $curation_days = (int) str_replace(' days', '', $_POST['curation_days']);
     $concrete_type = $_POST['concrete_type'] ?? '';
     $batch = floatval($_POST['batch'] ?? 0);
     $stocks_in = intval($_POST['stocks_in'] ?? 0);
@@ -293,7 +293,7 @@ $conn->close();
                 days.forEach(function (day) {
                     var option = document.createElement('option');
                     option.value = day;
-                    option.textContent = day + (day.toString().includes('days') ? '' : ' days');
+                    option.textContent = day + ' days';
                     curationSelect.appendChild(option);
                 });
 
