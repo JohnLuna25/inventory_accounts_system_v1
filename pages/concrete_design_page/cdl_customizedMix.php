@@ -1,19 +1,18 @@
 <?php
-// Include DB connection and functions
 include __DIR__ . '/../../FunctionAndDB/db_connect.php';
 include __DIR__ . '/../../FunctionAndDB/Web_Functions.php';
 
-// Handle form submission
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // VB Fields
-    $cdl_vb_concrete_psi = $_POST['vb_concrete_psi'] ?? '';
-    $cdl_vb_cubic_meter = $_POST['vb_cubic_meter'] ?? '';
-    $cdl_vb_curation_days = $_POST['vb_curation_days'] ?? '';
-    $cdl_vb_concrete_type = $_POST['vb_concrete_type'] ?? '';
+
+    $cdl_vb_concrete_psi = ($_POST['vb_concrete_psi'] === 'others' ? ($_POST['vb_concrete_psi_others'] ?? '') : $_POST['vb_concrete_psi']) ?? '';
+    $cdl_vb_cubic_meter = ($_POST['vb_cubic_meter'] === 'others' ? ($_POST['vb_cubic_meter_others'] ?? '') : $_POST['vb_cubic_meter']) ?? '';
+    $cdl_vb_curation_days = ($_POST['vb_curation_days'] === 'others' ? ($_POST['vb_curation_days_others'] ?? '') : $_POST['vb_curation_days']) ?? '';
+    $cdl_vb_concrete_type = ($_POST['vb_concrete_type'] === 'others' ? ($_POST['vb_concrete_type_others'] ?? '') : $_POST['vb_concrete_type']) ?? '';
     $cdl_vb_concrete_slump = $_POST['vb_concrete_slump'] ?? '';
     $cdl_vb_wc_ratio = $_POST['vb_wc_ratio'] ?? '';
-    $cdl_vb_cement_source = $_POST['vb_cement_source'] ?? '';
-    $cdl_vb_admix_source = $_POST['vb_admix_source'] ?? '';
+    $cdl_vb_cement_source = ($_POST['vb_cement_source'] === 'others' ? ($_POST['vb_cement_source_others'] ?? '') : $_POST['vb_cement_source']) ?? '';
+    $cdl_vb_admix_source = ($_POST['vb_admix_source'] === 'others' ? ($_POST['vb_admix_source_others'] ?? '') : $_POST['vb_admix_source']) ?? '';
+
     $cdl_vb_cement_mix = $_POST['vb_cement_mix'] ?? '';
     $cdl_vb_fly_ash = $_POST['vb_fly_ash'] ?? '';
     $cdl_vb_sand = $_POST['vb_sand'] ?? '';
@@ -27,7 +26,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cdl_vb_total = $_POST['vb_total'] ?? '';
     $cdl_concrete_price = $_POST['concrete_price'] ?? '';
 
-    // SSD Fields
     $cdl_ssd_cement_mix = $_POST['ssd_cement_mix'] ?? '';
     $cdl_ssd_fly_ash = $_POST['ssd_fly_ash'] ?? '';
     $cdl_ssd_sand = $_POST['ssd_sand'] ?? '';
@@ -39,22 +37,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cdl_ssd_air = $_POST['ssd_air'] ?? '';
     $cdl_ssd_others = $_POST['ssd_others'] ?? '';
 
-    // Client/Experiment Fields
     $cdl_client_name = $_POST['client_name'] ?? '';
     $cdl_client_contact = $_POST['client_contact'] ?? '';
     $cdl_experiment_notes = $_POST['experiment_notes'] ?? '';
     $cdl_customization_notes = $_POST['customization_notes'] ?? '';
     $cdl_is_active = $_POST['is_active'] ?? 1;
 
-    // System Fields
     $created_by = $_SESSION['username'] ?? 'admin';
 
-    // Escape values for SQL safety
     $escape = function ($value) use ($conn) {
         return $conn->real_escape_string($value ?? '');
     };
 
-    // Insert into database
     $insert = "INSERT INTO cdl_customized_mix_list (
         cdl_vb_concrete_psi, cdl_vb_cubic_meter, cdl_vb_curation_days, cdl_vb_concrete_type, cdl_vb_concrete_slump,
         cdl_vb_wc_ratio, cdl_vb_cement_source, cdl_vb_admix_source, cdl_vb_cement_mix, cdl_vb_fly_ash,
@@ -76,7 +70,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     )";
 
     if ($conn->query($insert)) {
-        $success_message = "Customized Mix added successfully!";
+        $_SESSION['success_message'] = "Customized Mix added successfully!";
+        header("Location: /Inventory-Accounts-System-v1/pages/concrete_design_page/concrete_design_list.php");
+        exit();
     } else {
         $error_message = "Error adding customized mix: " . $conn->error;
     }
@@ -90,83 +86,44 @@ $conn->close();
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Add Customized Mix</title>
     <link rel="stylesheet" href="/Inventory-Accounts-System-v1/assets/bootstrap/css/bootstrap.min.css">
     <?php showHeader() ?>
 
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: Arial;
             background: #BFC3AA;
             margin: 0;
-            padding: 0;
             padding-bottom: 60px;
         }
 
-        .main-content {
-            padding-top: 70px;
-        }
-
         .form-container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 20px auto;
             background: white;
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .form-container h2 {
+        .form-grid {
+            margin-top: 100px;
+            margin-left: 30px;
+            margin-right: 30px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .form-grid h2 {
+            grid-column: 1 / -1;
             text-align: center;
-            margin-bottom: 25px;
+            margin-bottom: 10px;
+
+            background: #ffffff;
             color: #333;
-        }
-
-        .section-title {
-            background: #0b63c4;
-            color: white;
-            padding: 10px 15px;
-            margin: 20px 0 15px 0;
-            border-radius: 5px;
-            font-size: 16px;
-            font-weight: bold;
-        }
-
-        .section-title.ssd {
-            background: #4CAF50;
-        }
-
-        .form-row {
-            display: flex;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
-            align-items: center;
-        }
-
-        .form-row label {
-            width: 180px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .form-row input,
-        .form-row textarea,
-        .form-row select {
-            flex: 1;
-            min-width: 200px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-
-        .form-row input.vb-field {
-            border-left: 4px solid #0b63c4;
-        }
-
-        .form-row input.ssd-field {
-            border-left: 4px solid #4CAF50;
+            padding: 17px;
+            border-radius: 8px;
         }
 
         .form-buttons {
@@ -178,7 +135,7 @@ $conn->close();
 
         .btn-submit {
             padding: 12px 30px;
-            background: #0b63c4;
+            background: #28a745;
             color: white;
             border: none;
             border-radius: 5px;
@@ -187,9 +144,12 @@ $conn->close();
         }
 
         .btn-submit:hover {
-            background: #0e4a8b;
+            background: #218838;
         }
 
+
+
+        /* ❌ CANCEL BUTTON (RED) */
         .btn-cancel {
             padding: 12px 30px;
             background: #6c757d;
@@ -203,293 +163,270 @@ $conn->close();
             background: #5a6268;
         }
 
-        .success-message {
-            background: #d4edda;
-            color: #155724;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
+        @media (max-width: 1100px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
         }
 
-        .error-message {
-            background: #f8d7da;
-            color: #721c24;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
+        .form-card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            background: #fff;
         }
 
-        .btn-delete {
-            background: #dc3545;
+        .section-title {
+            background: #0b63c4;
             color: white;
-            padding: 6px 12px;
-            text-decoration: none;
-            border-radius: 4px;
-            font-size: 12px;
-            display: inline-block;
-            margin-left: 5px;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 15px;
         }
 
-        .btn-delete:hover {
-            background: #c82333;
+        .section-title.ssd {
+            background: #4CAF50;
         }
 
-        @media (max-width: 576px) {
-            .form-row {
-                flex-direction: column;
-                align-items: flex-start;
-            }
+        /* KEEP YOUR ORIGINAL FORM STYLE */
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            margin-bottom: 12px;
+            align-items: center;
+        }
 
-            .form-row label {
-                width: 100%;
-                margin-bottom: 5px;
-            }
+        .form-row label {
+            width: 160px;
+            font-weight: bold;
+        }
 
-            .form-row input,
-            .form-row textarea,
-            .form-row select {
-                width: 100%;
-            }
+        .form-row input,
+        .form-row select,
+        .form-row textarea {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
 
-            .form-buttons {
-                flex-direction: column;
-            }
+        .vb-field {
+            border-left: 4px solid #0b63c4;
+        }
 
-            .btn-submit,
-            .btn-cancel {
-                width: 100%;
-                text-align: center;
-            }
+        .ssd-field {
+            border-left: 4px solid #4CAF50;
+        }
+
+        .form-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
         }
     </style>
 </head>
 
 <body>
 
-    <div class="main-content">
-        <div class="form-container">
+    <form id="addForm" method="POST">
+
+        <div class="form-grid">
             <h2>Add Customized Concrete Mix</h2>
 
-            <?php if (isset($success_message)): ?>
-                <div class="success-message"><?php echo $success_message; ?></div>
-            <?php endif; ?>
-
-            <?php if (isset($error_message)): ?>
-                <div class="error-message"><?php echo $error_message; ?></div>
-            <?php endif; ?>
-
-            <form method="POST">
-
-                <!-- VB Section -->
+            <!-- ================= VB CARD ================= -->
+            <div class="form-card">
                 <div class="section-title">Volume Batch (VB)</div>
 
                 <div class="form-row">
-                    <label>Concrete PSI:</label>
-                    <input type="text" name="vb_concrete_psi" class="vb-field" required>
-                </div>
-
-                <div class="form-row">
                     <label>Cubic Meter:</label>
-                    <input type="text" name="vb_cubic_meter" class="vb-field" required>
-                </div>
-
-                <div class="form-row">
-                    <label>Curation Days:</label>
-                    <input type="text" name="vb_curation_days" class="vb-field" required>
-                </div>
-
-                <div class="form-row">
-                    <label>Concrete Type:</label>
-                    <input type="text" name="vb_concrete_type" class="vb-field" required>
+                    <select name="vb_cubic_meter" class="vb-field">
+                        <option value="3/4">3/4</option>
+                    </select>
                 </div>
 
                 <div class="form-row">
                     <label>Concrete Slump:</label>
-                    <input type="text" name="vb_concrete_slump" class="vb-field">
+                    <input name="vb_concrete_slump" class="vb-field" placeholder='6" - 8"'>
                 </div>
 
                 <div class="form-row">
                     <label>W/C Ratio:</label>
-                    <input type="text" name="vb_wc_ratio" class="vb-field">
+                    <input name="vb_wc_ratio" class="vb-field" placeholder="0.00">
                 </div>
 
                 <div class="form-row">
                     <label>Cement Source:</label>
-                    <input type="text" name="vb_cement_source" class="vb-field">
+                    <select name="vb_cement_source" class="vb-field">
+                        <option value="Portland">Portland</option>
+                    </select>
                 </div>
 
                 <div class="form-row">
                     <label>Admix Source:</label>
-                    <input type="text" name="vb_admix_source" class="vb-field">
+                    <select name="vb_admix_source" class="vb-field">
+                        <option value="Proem">Proem</option>
+                    </select>
                 </div>
 
                 <div class="form-row">
                     <label>Cement Mix:</label>
-                    <input type="text" name="vb_cement_mix" class="vb-field">
+                    <input name="vb_cement_mix" class="vb-field" placeholder="29.00 kgs/0.50 m³">
                 </div>
 
                 <div class="form-row">
                     <label>Fly Ash:</label>
-                    <input type="text" name="vb_fly_ash" class="vb-field">
+                    <input name="vb_fly_ash" class="vb-field" placeholder="3.00">
                 </div>
 
                 <div class="form-row">
                     <label>Sand:</label>
-                    <input type="text" name="vb_sand" class="vb-field">
+                    <input name="vb_sand" class="vb-field" placeholder="36.60 kgs/0.50 m³">
                 </div>
 
                 <div class="form-row">
-                    <label>3/8":</label>
-                    <input type="text" name="vb_three_eight" class="vb-field">
+                    <label>3/8\":</label>
+                    <input name="vb_three_eight" class="vb-field" placeholder="42.55">
                 </div>
 
                 <div class="form-row">
-                    <label>3/4":</label>
-                    <input type="text" name="vb_three_fourth" class="vb-field">
+                    <label>3/4\":</label>
+                    <input name="vb_three_fourth" class="vb-field" placeholder="42.55 kgs/0.50 m³">
                 </div>
 
                 <div class="form-row">
                     <label>G1:</label>
-                    <input type="text" name="vb_G1" class="vb-field">
+                    <input name="vb_G1" class="vb-field">
                 </div>
 
                 <div class="form-row">
                     <label>Admix:</label>
-                    <input type="text" name="vb_admix" class="vb-field">
+                    <input name="vb_admix" class="vb-field" placeholder="0.29 ltr">
                 </div>
 
                 <div class="form-row">
                     <label>Water:</label>
-                    <input type="text" name="vb_water" class="vb-field">
+                    <input name="vb_water" class="vb-field" placeholder="9.00 ltr">
                 </div>
 
                 <div class="form-row">
                     <label>Air:</label>
-                    <input type="text" name="vb_air" class="vb-field">
+                    <input name="vb_air" class="vb-field" placeholder="0.001 m³">
                 </div>
 
                 <div class="form-row">
                     <label>Others:</label>
-                    <input type="text" name="vb_others" class="vb-field">
+                    <input name="vb_others" class="vb-field">
                 </div>
 
                 <div class="form-row">
                     <label>Total:</label>
-                    <input type="text" name="vb_total" class="vb-field">
+                    <input name="vb_total" class="vb-field" placeholder="2348.8 kgs/m³">
                 </div>
 
                 <div class="form-row">
                     <label>Concrete Price:</label>
-                    <input type="text" name="concrete_price" class="vb-field">
+                    <input name="concrete_price" class="vb-field">
                 </div>
+            </div>
 
-                <!-- SSD Section -->
+            <!-- ================= SSD CARD ================= -->
+            <div class="form-card">
                 <div class="section-title ssd">Saturated Surface Dry (SSD)</div>
 
                 <div class="form-row">
                     <label>Cement Mix:</label>
-                    <input type="text" name="ssd_cement_mix" class="ssd-field">
+                    <input name="ssd_cement_mix" class="ssd-field" placeholder="580.00">
                 </div>
 
                 <div class="form-row">
                     <label>Fly Ash:</label>
-                    <input type="text" name="ssd_fly_ash" class="ssd-field">
+                    <input name="ssd_fly_ash" class="ssd-field" placeholder="3/4">
                 </div>
 
                 <div class="form-row">
                     <label>Sand:</label>
-                    <input type="text" name="ssd_sand" class="ssd-field">
+                    <input name="ssd_sand" class="ssd-field" placeholder="732.00">
                 </div>
 
                 <div class="form-row">
-                    <label>3/8":</label>
-                    <input type="text" name="ssd_three_eight" class="ssd-field">
+                    <label>3/8\":</label>
+                    <input name="ssd_three_eight" class="ssd-field">
                 </div>
 
                 <div class="form-row">
-                    <label>3/4":</label>
-                    <input type="text" name="ssd_three_fourth" class="ssd-field">
+                    <label>3/4\":</label>
+                    <input name="ssd_three_fourth" class="ssd-field" placeholder="851.00">
                 </div>
 
                 <div class="form-row">
                     <label>G1:</label>
-                    <input type="text" name="ssd_G1" class="ssd-field">
+                    <input name="ssd_G1" class="ssd-field">
                 </div>
 
                 <div class="form-row">
                     <label>Admix:</label>
-                    <input type="text" name="ssd_admix" class="ssd-field">
+                    <input name="ssd_admix" class="ssd-field" placeholder="5.80">
                 </div>
 
                 <div class="form-row">
                     <label>Water:</label>
-                    <input type="text" name="ssd_water" class="ssd-field">
+                    <input name="ssd_water" class="ssd-field" placeholder="180.00">
                 </div>
 
                 <div class="form-row">
                     <label>Air:</label>
-                    <input type="text" name="ssd_air" class="ssd-field">
+                    <input name="ssd_air" class="ssd-field">
                 </div>
 
                 <div class="form-row">
                     <label>Others:</label>
-                    <input type="text" name="ssd_others" class="ssd-field">
+                    <input name="ssd_others" class="ssd-field">
                 </div>
+            </div>
 
-                <!-- Client/Experiment Fields -->
+            <!-- ================= CLIENT CARD ================= -->
+            <div class="form-card">
                 <div class="section-title">Client & Experiment Info</div>
 
                 <div class="form-row">
                     <label>Client Name:</label>
-                    <input type="text" name="client_name" class="vb-field">
+                    <input name="client_name" class="vb-field">
                 </div>
 
                 <div class="form-row">
                     <label>Client Contact:</label>
-                    <input type="text" name="client_contact" class="vb-field">
+                    <input name="client_contact" class="vb-field">
                 </div>
 
                 <div class="form-row">
                     <label>Experiment Notes:</label>
-                    <textarea name="experiment_notes" rows="3"
-                        style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px;"></textarea>
+                    <textarea name="experiment_notes" class="vb-field"></textarea>
                 </div>
 
                 <div class="form-row">
                     <label>Customization Notes:</label>
-                    <textarea name="customization_notes" rows="3"
-                        style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; font-size: 14px;"></textarea>
+                    <textarea name="customization_notes" class="vb-field"></textarea>
                 </div>
 
                 <div class="form-row">
                     <label>Is Active:</label>
-                    <select name="is_active">
-                        <option value="1" selected>Active</option>
+                    <select name="is_active" class="vb-field">
+                        <option value="1">Active</option>
                         <option value="0">Inactive</option>
                     </select>
                 </div>
+            </div>
 
-                <!-- Hidden System Fields -->
-                <input type="hidden" name="created_by" value="<?php echo $_SESSION['username'] ?? 'admin'; ?>">
-
-                <!-- Form Buttons -->
-                <div class="form-buttons">
-                    <button type="submit" class="btn-submit">Save Customized Mix</button>
-                    <a href="concrete_design_list.php" class="btn-cancel">Cancel</a>
-                </div>
-            </form>
         </div>
-    </div>
 
-    <script src="/Inventory-Accounts-System-v1/assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+        <!-- BUTTONS -->
+        <div class="form-buttons">
+            <button class="btn-submit" type="submit">Save Customized Mix</button>
+            <a href="concrete_design_list.php" class="btn-cancel">Cancel</a>
+        </div>
 
-    <script>
-        function toggleDropbar(index) {
-            var row = document.getElementById('dropbar-' + index);
-            if (!row) return;
-            row.style.display = (row.style.display === 'table-row') ? 'none' : 'table-row';
-        }
-    </script>
+    </form>
 
 </body>
 

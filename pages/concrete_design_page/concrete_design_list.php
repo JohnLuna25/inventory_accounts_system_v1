@@ -448,6 +448,7 @@ if (!$customized_result) {
                         <th>Experiment Notes</th>
                         <th>Is Active</th>
                         <th>Created At</th>
+                        <th>Concrete Price</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -470,6 +471,7 @@ if (!$customized_result) {
                         echo "<td>" . htmlspecialchars($customized_row['cdl_experiment_notes'] ?? '') . "</td>";
                         echo "<td>" . ($customized_row['cdl_is_active'] == 1 ? 'Active' : 'Inactive') . "</td>";
                         echo "<td>" . date('M j, Y', strtotime($customized_row['created_at'] ?? '')) . "</td>";
+                        echo "<td>" . htmlspecialchars($customized_row['cdl_concrete_price'] ?? '') . "</td>";
                         echo "<td>";
                         echo "<a href='#' class='btn-view' onclick='toggleCustomizedDropbar($customized_row_index); return false;'>View</a>";
                         echo "<a href='edit_customized_mix.php?id=" . $customized_row['id'] . "' class='btn-edit'>Edit</a>";

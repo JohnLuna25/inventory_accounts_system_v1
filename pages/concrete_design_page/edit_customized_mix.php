@@ -2,20 +2,12 @@
 include __DIR__ . '/../../FunctionAndDB/db_connect.php';
 include __DIR__ . '/../../FunctionAndDB/Web_Functions.php';
 
-/** @var mysqli $conn */
-
-// Safety check
-if (!isset($conn)) {
-    die("Database connection not established.");
-}
-
 $mix_id = intval($_GET['id'] ?? 0);
 
 if ($mix_id <= 0) {
     die("No customized mix selected.");
 }
 
-// Fetch data
 $result = $conn->query("SELECT * FROM cdl_customized_mix_list WHERE id = $mix_id");
 
 if (!$result || $result->num_rows == 0) {
@@ -26,86 +18,45 @@ $data = $result->fetch_assoc();
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $escape = function ($val) use ($conn) {
-        return $conn->real_escape_string($val ?? '');
+    $escape = function ($v) use ($conn) {
+        return $conn->real_escape_string($v ?? '');
     };
 
-    $vb_concrete_psi = $_POST['vb_concrete_psi'] ?? '';
-    $vb_cubic_meter = $_POST['vb_cubic_meter'] ?? '';
-    $vb_curation_days = $_POST['vb_curation_days'] ?? '';
-    $vb_concrete_type = $_POST['vb_concrete_type'] ?? '';
-    $vb_concrete_slump = $_POST['vb_concrete_slump'] ?? '';
-    $vb_wc_ratio = $_POST['vb_wc_ratio'] ?? '';
-    $vb_cement_source = $_POST['vb_cement_source'] ?? '';
-    $vb_admix_source = $_POST['vb_admix_source'] ?? '';
-    $vb_cement_mix = $_POST['vb_cement_mix'] ?? '';
-    $vb_fly_ash = $_POST['vb_fly_ash'] ?? '';
-    $vb_sand = $_POST['vb_sand'] ?? '';
-    $vb_three_eight = $_POST['vb_three_eight'] ?? '';
-    $vb_three_fourth = $_POST['vb_three_fourth'] ?? '';
-    $vb_G1 = $_POST['vb_G1'] ?? '';
-    $vb_admix = $_POST['vb_admix'] ?? '';
-    $vb_water = $_POST['vb_water'] ?? '';
-    $vb_air = $_POST['vb_air'] ?? '';
-    $vb_others = $_POST['vb_others'] ?? '';
-    $vb_total = $_POST['vb_total'] ?? '';
-    $concrete_price = $_POST['concrete_price'] ?? '';
-
-    $ssd_cement_mix = $_POST['ssd_cement_mix'] ?? '';
-    $ssd_fly_ash = $_POST['ssd_fly_ash'] ?? '';
-    $ssd_sand = $_POST['ssd_sand'] ?? '';
-    $ssd_three_eight = $_POST['ssd_three_eight'] ?? '';
-    $ssd_three_fourth = $_POST['ssd_three_fourth'] ?? '';
-    $ssd_G1 = $_POST['ssd_G1'] ?? '';
-    $ssd_admix = $_POST['ssd_admix'] ?? '';
-    $ssd_water = $_POST['ssd_water'] ?? '';
-    $ssd_air = $_POST['ssd_air'] ?? '';
-    $ssd_others = $_POST['ssd_others'] ?? '';
-
-    $client_name = $_POST['client_name'] ?? '';
-    $client_contact = $_POST['client_contact'] ?? '';
-    $experiment_notes = $_POST['experiment_notes'] ?? '';
-    $customization_notes = $_POST['customization_notes'] ?? '';
-    $is_active = $_POST['is_active'] ?? 1;
-
     $update = "UPDATE cdl_customized_mix_list SET
-        cdl_vb_concrete_psi='" . $escape($vb_concrete_psi) . "',
-        cdl_vb_cubic_meter='" . $escape($vb_cubic_meter) . "',
-        cdl_vb_curation_days='" . $escape($vb_curation_days) . "',
-        cdl_vb_concrete_type='" . $escape($vb_concrete_type) . "',
-        cdl_vb_concrete_slump='" . $escape($vb_concrete_slump) . "',
-        cdl_vb_wc_ratio='" . $escape($vb_wc_ratio) . "',
-        cdl_vb_cement_source='" . $escape($vb_cement_source) . "',
-        cdl_vb_admix_source='" . $escape($vb_admix_source) . "',
-        cdl_vb_cement_mix='" . $escape($vb_cement_mix) . "',
-        cdl_vb_fly_ash='" . $escape($vb_fly_ash) . "',
-        cdl_vb_sand='" . $escape($vb_sand) . "',
-        cdl_vb_three_eight='" . $escape($vb_three_eight) . "',
-        cdl_vb_three_fourth='" . $escape($vb_three_fourth) . "',
-        cdl_vb_G1='" . $escape($vb_G1) . "',
-        cdl_vb_admix='" . $escape($vb_admix) . "',
-        cdl_vb_water='" . $escape($vb_water) . "',
-        cdl_vb_air='" . $escape($vb_air) . "',
-        cdl_vb_others='" . $escape($vb_others) . "',
-        cdl_vb_total='" . $escape($vb_total) . "',
-        cdl_concrete_price='" . $escape($concrete_price) . "',
+        cdl_vb_cubic_meter='" . $escape($_POST['vb_cubic_meter']) . "',
+        cdl_vb_concrete_slump='" . $escape($_POST['vb_concrete_slump']) . "',
+        cdl_vb_wc_ratio='" . $escape($_POST['vb_wc_ratio']) . "',
+        cdl_vb_cement_source='" . $escape($_POST['vb_cement_source']) . "',
+        cdl_vb_admix_source='" . $escape($_POST['vb_admix_source']) . "',
+        cdl_vb_cement_mix='" . $escape($_POST['vb_cement_mix']) . "',
+        cdl_vb_fly_ash='" . $escape($_POST['vb_fly_ash']) . "',
+        cdl_vb_sand='" . $escape($_POST['vb_sand']) . "',
+        cdl_vb_three_eight='" . $escape($_POST['vb_three_eight']) . "',
+        cdl_vb_three_fourth='" . $escape($_POST['vb_three_fourth']) . "',
+        cdl_vb_G1='" . $escape($_POST['vb_G1']) . "',
+        cdl_vb_admix='" . $escape($_POST['vb_admix']) . "',
+        cdl_vb_water='" . $escape($_POST['vb_water']) . "',
+        cdl_vb_air='" . $escape($_POST['vb_air']) . "',
+        cdl_vb_others='" . $escape($_POST['vb_others']) . "',
+        cdl_vb_total='" . $escape($_POST['vb_total']) . "',
+        cdl_concrete_price='" . $escape($_POST['concrete_price']) . "',
 
-        cdl_ssd_cement_mix='" . $escape($ssd_cement_mix) . "',
-        cdl_ssd_fly_ash='" . $escape($ssd_fly_ash) . "',
-        cdl_ssd_sand='" . $escape($ssd_sand) . "',
-        cdl_ssd_three_eight='" . $escape($ssd_three_eight) . "',
-        cdl_ssd_three_fourth='" . $escape($ssd_three_fourth) . "',
-        cdl_ssd_G1='" . $escape($ssd_G1) . "',
-        cdl_ssd_admix='" . $escape($ssd_admix) . "',
-        cdl_ssd_water='" . $escape($ssd_water) . "',
-        cdl_ssd_air='" . $escape($ssd_air) . "',
-        cdl_ssd_others='" . $escape($ssd_others) . "',
+        cdl_ssd_cement_mix='" . $escape($_POST['ssd_cement_mix']) . "',
+        cdl_ssd_fly_ash='" . $escape($_POST['ssd_fly_ash']) . "',
+        cdl_ssd_sand='" . $escape($_POST['ssd_sand']) . "',
+        cdl_ssd_three_eight='" . $escape($_POST['ssd_three_eight']) . "',
+        cdl_ssd_three_fourth='" . $escape($_POST['ssd_three_fourth']) . "',
+        cdl_ssd_G1='" . $escape($_POST['ssd_G1']) . "',
+        cdl_ssd_admix='" . $escape($_POST['ssd_admix']) . "',
+        cdl_ssd_water='" . $escape($_POST['ssd_water']) . "',
+        cdl_ssd_air='" . $escape($_POST['ssd_air']) . "',
+        cdl_ssd_others='" . $escape($_POST['ssd_others']) . "',
 
-        cdl_client_name='" . $escape($client_name) . "',
-        cdl_client_contact='" . $escape($client_contact) . "',
-        cdl_experiment_notes='" . $escape($experiment_notes) . "',
-        cdl_customization_notes='" . $escape($customization_notes) . "',
-        cdl_is_active='" . $escape($is_active) . "',
+        cdl_client_name='" . $escape($_POST['client_name']) . "',
+        cdl_client_contact='" . $escape($_POST['client_contact']) . "',
+        cdl_experiment_notes='" . $escape($_POST['experiment_notes']) . "',
+        cdl_customization_notes='" . $escape($_POST['customization_notes']) . "',
+        cdl_is_active='" . $escape($_POST['is_active']) . "',
         updated_at=NOW()
 
         WHERE id=$mix_id";
@@ -114,37 +65,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location: concrete_design_list.php");
         exit;
     } else {
-        echo "<script>alert('Error: {$conn->error}');</script>";
+        echo "Error: " . $conn->error;
     }
 }
-
-// Close connection at the very end
-$conn->close();
 ?>
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
     <meta charset="UTF-8">
     <title>Edit Customized Mix</title>
-    <link rel="stylesheet" href="/Inventory-Accounts-System-v1/assets/bootstrap/css/bootstrap.min.css">
-    <?php showHeader(); ?>
+
+    <?php showHeader() ?>
 
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: Arial;
             background: #BFC3AA;
+            margin: 0;
             padding-bottom: 60px;
         }
 
-        .form-container {
-            max-width: 900px;
-            margin: 20px auto;
-            background: white;
-            padding: 30px;
+        .form-grid {
+            margin-top: 100px;
+            margin-left: 30px;
+            margin-right: 30px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .form-grid h2 {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-top: 5px;
+            margin-bottom: 10px;
+
+            background: #ffffff;
+            color: #333;
+            padding: 25px;
+            border-radius: 8px;
+        }
+
+        .form-card {
+            border: 1px solid #ddd;
             border-radius: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            background: #fff;
         }
 
         .section-title {
@@ -152,7 +120,7 @@ $conn->close();
             color: white;
             padding: 10px;
             border-radius: 5px;
-            margin: 20px 0 15px;
+            margin-bottom: 15px;
         }
 
         .section-title.ssd {
@@ -161,98 +129,256 @@ $conn->close();
 
         .form-row {
             display: flex;
-            margin-bottom: 15px;
+            margin-bottom: 12px;
+            align-items: center;
         }
 
         .form-row label {
-            width: 180px;
+            width: 160px;
             font-weight: bold;
         }
 
         .form-row input,
-        textarea,
-        select {
+        .form-row select,
+        .form-row textarea {
             flex: 1;
-            padding: 10px;
+            padding: 8px;
             border: 1px solid #ccc;
             border-radius: 5px;
+        }
+
+        .vb-field {
+            border-left: 4px solid #0b63c4;
+        }
+
+        .ssd-field {
+            border-left: 4px solid #4CAF50;
+        }
+
+        .form-buttons {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .btn-submit {
+            background: #28a745;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 8px;
+            border: none;
+        }
+
+        .btn-cancel {
+            background: #dc3545;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 8px;
+            text-decoration: none;
         }
     </style>
 </head>
 
 <body>
 
-    <div class="main-content" style="padding-top:140px;">
-        <div class="form-container">
+    <form method="POST">
 
-            <h2>Edit Customized Mix</h2>
+        <div class="form-grid">
 
-            <form method="POST">
+            <h2>Edit Customized Concrete Mix</h2>
 
+            <!-- VB -->
+            <!-- ================= VB CARD ================= -->
+            <div class="form-card">
                 <div class="section-title">Volume Batch (VB)</div>
 
                 <div class="form-row">
-                    <label>Concrete PSI:</label>
-                    <input type="text" name="vb_concrete_psi" value="<?= $data['cdl_vb_concrete_psi'] ?>">
-                </div>
-
-                <div class="form-row">
                     <label>Cubic Meter:</label>
-                    <input type="text" name="vb_cubic_meter" value="<?= $data['cdl_vb_cubic_meter'] ?>">
+                    <input name="vb_cubic_meter" class="vb-field" value="<?= $data['cdl_vb_cubic_meter'] ?>">
                 </div>
 
                 <div class="form-row">
-                    <label>Curation Days:</label>
-                    <input type="text" name="vb_curation_days" value="<?= $data['cdl_vb_curation_days'] ?>">
+                    <label>Concrete Slump:</label>
+                    <input name="vb_concrete_slump" class="vb-field" value="<?= $data['cdl_vb_concrete_slump'] ?>"
+                        placeholder='6" - 8"'>
                 </div>
 
                 <div class="form-row">
-                    <label>Concrete Type:</label>
-                    <input type="text" name="vb_concrete_type" value="<?= $data['cdl_vb_concrete_type'] ?>">
+                    <label>W/C Ratio:</label>
+                    <input name="vb_wc_ratio" class="vb-field" value="<?= $data['cdl_vb_wc_ratio'] ?>">
                 </div>
 
                 <div class="form-row">
-                    <label>Concrete Price:</label>
-                    <input type="text" name="concrete_price" value="<?= $data['cdl_concrete_price'] ?>">
+                    <label>Cement Source:</label>
+                    <input name="vb_cement_source" class="vb-field" value="<?= $data['cdl_vb_cement_source'] ?>">
                 </div>
 
-                <div class="section-title ssd">SSD</div>
+                <div class="form-row">
+                    <label>Admix Source:</label>
+                    <input name="vb_admix_source" class="vb-field" value="<?= $data['cdl_vb_admix_source'] ?>">
+                </div>
 
                 <div class="form-row">
                     <label>Cement Mix:</label>
-                    <input type="text" name="ssd_cement_mix" value="<?= $data['cdl_ssd_cement_mix'] ?>">
+                    <input name="vb_cement_mix" class="vb-field" value="<?= $data['cdl_vb_cement_mix'] ?>">
                 </div>
 
                 <div class="form-row">
                     <label>Fly Ash:</label>
-                    <input type="text" name="ssd_fly_ash" value="<?= $data['cdl_ssd_fly_ash'] ?>">
+                    <input name="vb_fly_ash" class="vb-field" value="<?= $data['cdl_vb_fly_ash'] ?>">
                 </div>
 
-                <div class="section-title">Client Info</div>
+                <div class="form-row">
+                    <label>Sand:</label>
+                    <input name="vb_sand" class="vb-field" value="<?= $data['cdl_vb_sand'] ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>3/8\":</label>
+                    <input name="vb_three_eight" class="vb-field" value="<?= $data['cdl_vb_three_eight'] ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>3/4\":</label>
+                    <input name="vb_three_fourth" class="vb-field" value="<?= $data['cdl_vb_three_fourth'] ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>G1:</label>
+                    <input name="vb_G1" class="vb-field" value="<?= $data['cdl_vb_G1'] ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>Admix:</label>
+                    <input name="vb_admix" class="vb-field" value="<?= $data['cdl_vb_admix'] ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>Water:</label>
+                    <input name="vb_water" class="vb-field" value="<?= $data['cdl_vb_water'] ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>Air:</label>
+                    <input name="vb_air" class="vb-field" value="<?= $data['cdl_vb_air'] ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>Others:</label>
+                    <input name="vb_others" class="vb-field" value="<?= $data['cdl_vb_others'] ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>Total:</label>
+                    <input name="vb_total" class="vb-field" value="<?= $data['cdl_vb_total'] ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>Concrete Price:</label>
+                    <input name="concrete_price" class="vb-field" value="<?= $data['cdl_concrete_price'] ?>">
+                </div>
+            </div>
+
+            <!-- ================= SSD CARD ================= -->
+            <div class="form-card">
+                <div class="section-title ssd">Saturated Surface Dry (SSD)</div>
+
+                <div class="form-row">
+                    <label>Cement Mix:</label>
+                    <input name="ssd_cement_mix" class="ssd-field" value="<?= $data['cdl_ssd_cement_mix'] ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>Fly Ash:</label>
+                    <input name="ssd_fly_ash" class="ssd-field" value="<?= $data['cdl_ssd_fly_ash'] ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>Sand:</label>
+                    <input name="ssd_sand" class="ssd-field" value="<?= $data['cdl_ssd_sand'] ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>3/8\":</label>
+                    <input name="ssd_three_eight" class="ssd-field" value="<?= $data['cdl_ssd_three_eight'] ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>3/4\":</label>
+                    <input name="ssd_three_fourth" class="ssd-field" value="<?= $data['cdl_ssd_three_fourth'] ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>G1:</label>
+                    <input name="ssd_G1" class="ssd-field" value="<?= $data['cdl_ssd_G1'] ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>Admix:</label>
+                    <input name="ssd_admix" class="ssd-field" value="<?= $data['cdl_ssd_admix'] ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>Water:</label>
+                    <input name="ssd_water" class="ssd-field" value="<?= $data['cdl_ssd_water'] ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>Air:</label>
+                    <input name="ssd_air" class="ssd-field" value="<?= $data['cdl_ssd_air'] ?>">
+                </div>
+
+                <div class="form-row">
+                    <label>Others:</label>
+                    <input name="ssd_others" class="ssd-field" value="<?= $data['cdl_ssd_others'] ?>">
+                </div>
+            </div>
+
+            <!-- ================= CLIENT CARD ================= -->
+            <div class="form-card">
+                <div class="section-title">Client & Experiment Info</div>
 
                 <div class="form-row">
                     <label>Client Name:</label>
-                    <input type="text" name="client_name" value="<?= $data['cdl_client_name'] ?>">
+                    <input name="client_name" class="vb-field" value="<?= $data['cdl_client_name'] ?>">
                 </div>
 
                 <div class="form-row">
                     <label>Client Contact:</label>
-                    <input type="text" name="client_contact" value="<?= $data['cdl_client_contact'] ?>">
+                    <input name="client_contact" class="vb-field" value="<?= $data['cdl_client_contact'] ?>">
                 </div>
 
                 <div class="form-row">
-                    <label>Notes:</label>
-                    <textarea name="experiment_notes"><?= $data['cdl_experiment_notes'] ?></textarea>
+                    <label>Experiment Notes:</label>
+                    <textarea name="experiment_notes" class="vb-field"><?= $data['cdl_experiment_notes'] ?></textarea>
                 </div>
 
-                <div class="form-buttons">
-                    <button class="btn-submit">Save Changes</button>
-                    <a href="concrete_design_list.php" class="btn-cancel">Cancel</a>
+                <div class="form-row">
+                    <label>Customization Notes:</label>
+                    <textarea name="customization_notes"
+                        class="vb-field"><?= $data['cdl_customization_notes'] ?></textarea>
                 </div>
 
-            </form>
+                <div class="form-row">
+                    <label>Is Active:</label>
+                    <select name="is_active" class="vb-field">
+                        <option value="1" <?= ($data['cdl_is_active'] == 1) ? 'selected' : '' ?>>Active</option>
+                        <option value="0" <?= ($data['cdl_is_active'] == 0) ? 'selected' : '' ?>>Inactive</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- BUTTONS -->
+            <div class="form-buttons">
+                <button class="btn-submit" type="submit">Save Changes</button>
+                <a class="btn-cancel" href="concrete_design_list.php">Cancel</a>
+            </div>
+
         </div>
-    </div>
+
+    </form>
 
 </body>
 
