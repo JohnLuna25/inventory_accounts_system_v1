@@ -46,14 +46,26 @@ $result = $conn->query($sql);
         <div class="page-title-bar">
             <h2>Concrete Orders</h2>
             <div class="button-container">
-                <a href="sap_accountsForm.php" class="btn btn-primary">+ Add Order</a>
-                <a href="sap_finishedOrders.php" class="btn btn-primary">Show Finished Orders</a>
+
+                <!-- LEFT SIDE -->
+                <div class="left-buttons">
+                    <a href="sap_accountsForm.php" class="btn btn-primary">+ Add Order</a>
+                    <a href="sap_finishedOrders.php" class="btn btn-primary">Show Finished Orders</a>
+                </div>
+
+                <!-- RIGHT SIDE -->
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="Search orders...">
+                    <button onclick="filterOrders()" class="btn btn-primary">Search</button>
+                </div>
+
             </div>
+
         </div>
 
         <!-- Banner for Table -->
         <div class="table-container">
-            <table>
+            <table id="ordersTable">
                 <thead>
                     <tr>
                         <th>Order ID</th>
@@ -115,6 +127,38 @@ $result = $conn->query($sql);
         </div>
 
     </div>
+
+    <script>
+
+        document.getElementById("searchInput").addEventListener("keyup", function (event) {
+            if (event.key === "Enter") {
+                filterOrders();
+            }
+        });
+
+        function filterOrders() {
+            let input = document.getElementById("searchInput");
+            let filter = input.value.toLowerCase();
+            let table = document.getElementById("ordersTable");
+            let tr = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < tr.length; i++) {
+                let tds = tr[i].getElementsByTagName("td");
+                let found = false;
+
+                for (let j = 0; j < tds.length; j++) {
+                    let txtValue = tds[j].textContent || tds[j].innerText;
+
+                    if (txtValue.toLowerCase().includes(filter)) {
+                        found = true;
+                        break;
+                    }
+                }
+
+                tr[i].style.display = found ? "" : "none";
+            }
+        }
+    </script>
 
 </body>
 

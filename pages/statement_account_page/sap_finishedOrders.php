@@ -41,7 +41,7 @@ $doneOrders = getDoneOrders($conn);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finished Orders</title>
+    <title>Transaction History</title>
     <link rel="stylesheet" href="/Inventory-Accounts-System-v1/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="sap_accountsManagement.css">
 
@@ -54,6 +54,49 @@ $doneOrders = getDoneOrders($conn);
             padding: 10px;
             letter-spacing: 1px;
         }
+
+        .page-title-bar {
+            background: white;
+            margin: 15px 10px;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-title-bar h2 {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #333;
+            font-weight: 300;
+        }
+
+        .search-container {
+            display: flex;
+            justify-content: flex-end;
+            /* 👉 pushes everything to the RIGHT */
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        #searchInput {
+            width: 400px;
+            /* 👉 fixed width = actually noticeable */
+            padding: 10px;
+            border-radius: 20px;
+            border: 1px solid #ccc;
+        }
+
+        #searchInput:focus {
+            outline: none;
+            border-color: #007bff;
+        }
+
+        .search-container button {
+            padding: 10px 15px;
+            border-radius: 20px;
+        }
     </style>
 </head>
 
@@ -62,14 +105,18 @@ $doneOrders = getDoneOrders($conn);
     <div class="main-content">
 
         <div class="page-title-bar">
-            <h2>Finished Orders</h2>
+            <h2>Transaction History</h2>
             <div class="button-container">
                 <a href="sap_accountsManagement.php" class="btn btn-primary">← Back to Orders</a>
+                <div class="search-container">
+                    <input type="text" id="searchInput" placeholder="Search orders...">
+                    <button onclick="filterOrders()" class="btn btn-primary">Search</button>
+                </div>
             </div>
         </div>
 
         <div class="table-container">
-            <table>
+            <table id="ordersTable">
                 <thead>
                     <tr>
                         <th>Order ID</th>
@@ -126,6 +173,49 @@ $doneOrders = getDoneOrders($conn);
         </div>
 
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            const input = document.getElementById("searchInput");
+
+            input.addEventListener("keyup", function (event) {
+                if (event.key === "Enter") {
+                    filterOrders();
+                }
+            });
+
+            window.filterOrders = function () {
+                let filter = input.value.toLowerCase();
+                let table = document.getElementById("ordersTable");
+                let tr = table.getElementsByTagName("tr");
+
+                for (let i = 1; i < tr.length; i++) {
+
+                    // Skip month separators
+                    if (tr[i].classList.contains("month-separator")) {
+                        tr[i].style.display = "";
+                        continue;
+                    }
+
+                    let tds = tr[i].getElementsByTagName("td");
+                    let found = false;
+
+                    for (let j = 0; j < tds.length; j++) {
+                        let txtValue = tds[j].textContent || tds[j].innerText;
+
+                        if (txtValue.toLowerCase().includes(filter)) {
+                            found = true;
+                            break;
+                        }
+                    }
+
+                    tr[i].style.display = found ? "" : "none";
+                }
+            };
+
+        });
+    </script>
 
 </body>
 

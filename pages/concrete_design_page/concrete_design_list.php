@@ -481,7 +481,7 @@ if (!$customized_result) {
 
                         // 👈 NEW: Use custom ID prefix
                         echo "<tr id='customized-dropbar-$customized_row_index' class='dropbar-row'>";
-                        echo "<td colspan='8'>";
+                        echo "<td colspan='9'>";
                         echo "<table class='dropbar-inner'>";
                         echo "<tr><td></td><td class='ssd-col'>Saturated Surface Dry (SSD)</td><td class='vb-col'>Volume Batch</td></tr>";
 

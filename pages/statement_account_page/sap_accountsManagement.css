@@ -29,6 +29,38 @@ body {
   font-weight: 300;
 }
 
+.left-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* RIGHT SIDE SEARCH */
+.search-container {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
+}
+
+#searchInput {
+  width: 400px;
+  /* 👉 fixed width = actually noticeable */
+  padding: 10px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+}
+
+#searchInput:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.search-container button {
+  padding: 10px 15px;
+  border-radius: 20px;
+}
+
 .button-container {
   display: flex;
   justify-content: space-between;
