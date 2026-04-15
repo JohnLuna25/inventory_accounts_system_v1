@@ -160,15 +160,31 @@ $result = $conn->query($sql);
     </div>
 
     <script>
+        let searchTimeout;
+
+        // Real-time search while typing (debounced)
+        document.getElementById("searchInput").addEventListener("input", function () {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(filterOrders, 300);
+
+            // Show all when input is empty
+            if (!this.value.trim()) {
+                clearTimeout(searchTimeout);
+                showAllOrders();
+            }
+        });
+
+        // Enter key support
         document.getElementById("searchInput").addEventListener("keyup", function (event) {
             if (event.key === "Enter") {
+                clearTimeout(searchTimeout);
                 filterOrders();
             }
         });
 
         function filterOrders() {
             let input = document.getElementById("searchInput");
-            let filter = input.value.toLowerCase();
+            let filter = input.value.toLowerCase().trim();
             let table = document.getElementById("ordersTable");
             let tr = table.getElementsByTagName("tr");
 
@@ -176,8 +192,14 @@ $result = $conn->query($sql);
                 let tds = tr[i].getElementsByTagName("td");
                 let found = false;
 
+                // Skip/hide dropbar rows during search
+                if (tds.length === 1 && tds[0].colSpan === 8) {
+                    tr[i].style.display = "none";
+                    continue;
+                }
+
                 for (let j = 0; j < tds.length; j++) {
-                    let txtValue = tds[j].textContent || tds[j].innerText;
+                    let txtValue = tds[j].textContent || tds[j].innerText || tds[j].innerHTML;
                     if (txtValue.toLowerCase().includes(filter)) {
                         found = true;
                         break;
@@ -187,8 +209,19 @@ $result = $conn->query($sql);
             }
         }
 
+        function showAllOrders() {
+            let table = document.getElementById("ordersTable");
+            let tr = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < tr.length; i++) {
+                tr[i].style.display = "";
+            }
+        }
+
         function toggleDropbar(rowIndex) {
             const dropbar = document.getElementById('dropbar-' + rowIndex);
+            if (!dropbar) return;
+
             const isVisible = dropbar.classList.contains('show');
             document.querySelectorAll('.dropbar-row.show').forEach(row => row.classList.remove('show'));
             if (!isVisible) dropbar.classList.add('show');

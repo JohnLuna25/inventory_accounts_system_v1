@@ -16,12 +16,7 @@ while ($row = $ssd_result->fetch_assoc()) {
     $ssd_rows[] = $row;
 }
 
-// Handle search query (search VB only)
-$search = isset($_GET['search']) ? trim($_GET['search']) : '';
-if ($search !== "") {
-    $search = htmlspecialchars($search);
-    $vb_result = $conn->query("SELECT * FROM scd_vb_list WHERE vb_concrete_psi LIKE '%$search%' OR vb_curation_days LIKE '%$search%' OR vb_concrete_type LIKE '%$search%' ORDER BY vb_concrete_psi ASC");
-}
+
 
 // Check VB query
 if (!$vb_result) {
@@ -311,10 +306,10 @@ if (!$customized_result) {
 
         <div class="page-title-bar">
             <h2 class="text-center mb-3">Concrete Design Masterlist</h2>
-            <form method="get" class="search-container">
-                <input type="text" name="search" placeholder="Search PSI, Days, Type..." value="<?php echo $search; ?>">
-                <button type="submit">Search</button>
-            </form>
+            <div class="search-container">
+                <input type="text" id="vbSearchInput" placeholder="   Search PSI, Days, Type... (VB Table)">
+                <button onclick="filterVBTable()" class="btn btn-primary" style="padding: 10px 20px;">Search</button>
+            </div>
         </div>
 
         <div class="table-container">
@@ -433,6 +428,10 @@ if (!$customized_result) {
                 <a href="cdl_customizedMix.php" class="btn"
                     style="background: #0b63c4; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-size: 14px;">+
                     Add Customized Mix</a>
+                <input type="text" id="customizedSearchInput"
+                    placeholder="🔍 Search Client, PSI, Notes... (Custom Table)">
+                <button onclick="filterCustomizedTable()" class="btn btn-primary"
+                    style="padding: 10px 20px;">Search</button>
             </div>
         </div>
 
@@ -541,7 +540,117 @@ if (!$customized_result) {
     </div>
 
     <script>
-        // Separate functions for each table
+        // 🔥 DEBOUNCED REAL-TIME SEARCH FOR VB TABLE
+        let vbSearchTimeout;
+        const vbSearchInput = document.getElementById("vbSearchInput");
+
+        vbSearchInput.addEventListener("input", function () {
+            clearTimeout(vbSearchTimeout);
+            vbSearchTimeout = setTimeout(filterVBTable, 300);
+
+            if (!this.value.trim()) {
+                showAllVBTable();
+            }
+        });
+
+        vbSearchInput.addEventListener("keyup", function (event) {
+            if (event.key === "Enter") {
+                clearTimeout(vbSearchTimeout);
+                filterVBTable();
+            }
+        });
+
+        // 🔥 DEBOUNCED REAL-TIME SEARCH FOR CUSTOMIZED TABLE
+        let customizedSearchTimeout;
+        const customizedSearchInput = document.getElementById("customizedSearchInput");
+
+        customizedSearchInput.addEventListener("input", function () {
+            clearTimeout(customizedSearchTimeout);
+            customizedSearchTimeout = setTimeout(filterCustomizedTable, 300);
+
+            if (!this.value.trim()) {
+                showAllCustomizedTable();
+            }
+        });
+
+        customizedSearchInput.addEventListener("keyup", function (event) {
+            if (event.key === "Enter") {
+                clearTimeout(customizedSearchTimeout);
+                filterCustomizedTable();
+            }
+        });
+
+        function filterVBTable() {
+            const input = vbSearchInput;
+            const filter = input.value.toLowerCase().trim();
+            const table = document.querySelector(".table-container table"); // First table
+            const tr = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < tr.length; i++) {
+                const tds = tr[i].getElementsByTagName("td");
+                let found = false;
+
+                // Skip dropbar rows
+                if (tds.length === 1 && tds[0].colSpan === 6) {
+                    tr[i].style.display = "none";
+                    continue;
+                }
+
+                for (let j = 0; j < tds.length; j++) {
+                    const txtValue = tds[j].textContent || tds[j].innerText;
+                    if (txtValue.toLowerCase().includes(filter)) {
+                        found = true;
+                        break;
+                    }
+                }
+                tr[i].style.display = found ? "" : "none";
+            }
+        }
+
+        function filterCustomizedTable() {
+            const input = customizedSearchInput;
+            const filter = input.value.toLowerCase().trim();
+            const table = document.querySelectorAll(".table-container table")[1]; // Second table
+            const tr = table.getElementsByTagName("tr");
+
+            for (let i = 1; i < tr.length; i++) {
+                const tds = tr[i].getElementsByTagName("td");
+                let found = false;
+
+                // Skip dropbar rows
+                if (tds.length === 1 && tds[0].colSpan === 9) {
+                    tr[i].style.display = "none";
+                    continue;
+                }
+
+                for (let j = 0; j < tds.length; j++) {
+                    const txtValue = tds[j].textContent || tds[j].innerText;
+                    if (txtValue.toLowerCase().includes(filter)) {
+                        found = true;
+                        break;
+                    }
+                }
+                tr[i].style.display = found ? "" : "none";
+            }
+        }
+
+        function showAllVBTable() {
+            const table = document.querySelector(".table-container table");
+            const tr = table.getElementsByTagName("tr");
+            for (let i = 1; i < tr.length; i++) {
+                tr[i].style.display = "";
+            }
+        }
+
+        function showAllCustomizedTable() {
+            const table = document.querySelectorAll(".table-container table")[1];
+            const tr = table.getElementsByTagName("tr");
+            for (let i = 1; i < tr.length; i++) {
+                tr[i].style.display = "";
+            }
+        }
+
+        // Original toggle functions
         function toggleDropbar(index) {
             var row = document.getElementById('dropbar-' + index);
             if (!row) return;
@@ -554,6 +663,7 @@ if (!$customized_result) {
             row.style.display = (row.style.display === 'table-row') ? 'none' : 'table-row';
         }
     </script>
+
 
 </body>
 
