@@ -2,16 +2,40 @@
 include __DIR__ . '/../../FunctionAndDB/db_connect.php';
 include __DIR__ . '/../../FunctionAndDB/Web_Functions.php';
 
+session_start();
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
-    $cdl_vb_concrete_psi = ($_POST['vb_concrete_psi'] === 'others' ? ($_POST['vb_concrete_psi_others'] ?? '') : $_POST['vb_concrete_psi']) ?? '';
-    $cdl_vb_cubic_meter = ($_POST['vb_cubic_meter'] === 'others' ? ($_POST['vb_cubic_meter_others'] ?? '') : $_POST['vb_cubic_meter']) ?? '';
-    $cdl_vb_curation_days = ($_POST['vb_curation_days'] === 'others' ? ($_POST['vb_curation_days_others'] ?? '') : $_POST['vb_curation_days']) ?? '';
-    $cdl_vb_concrete_type = ($_POST['vb_concrete_type'] === 'others' ? ($_POST['vb_concrete_type_others'] ?? '') : $_POST['vb_concrete_type']) ?? '';
+    // ================= CLIENT & EXPERIMENT INFO =================
+
+    $cdl_vb_concrete_psi = (($_POST['concrete_psi'] ?? '') === 'others')
+        ? ($_POST['concrete_psi_other'] ?? '')
+        : ($_POST['concrete_psi'] ?? '');
+
+    $cdl_vb_cubic_meter = (($_POST['vb_cubic_meter'] ?? '') === 'others')
+        ? ($_POST['vb_cubic_meter_other'] ?? '')
+        : ($_POST['vb_cubic_meter'] ?? '');
+
+    $cdl_vb_curation_days = (($_POST['curation_days'] ?? '') === 'others')
+        ? ($_POST['curation_days_other'] ?? '')
+        : ($_POST['curation_days'] ?? '');
+
+    $cdl_vb_concrete_type = (($_POST['concrete_type'] ?? '') === 'others')
+        ? ($_POST['concrete_type_other'] ?? '')
+        : ($_POST['concrete_type'] ?? '');
+
     $cdl_vb_concrete_slump = $_POST['vb_concrete_slump'] ?? '';
     $cdl_vb_wc_ratio = $_POST['vb_wc_ratio'] ?? '';
-    $cdl_vb_cement_source = ($_POST['vb_cement_source'] === 'others' ? ($_POST['vb_cement_source_others'] ?? '') : $_POST['vb_cement_source']) ?? '';
-    $cdl_vb_admix_source = ($_POST['vb_admix_source'] === 'others' ? ($_POST['vb_admix_source_others'] ?? '') : $_POST['vb_admix_source']) ?? '';
+
+    $cdl_vb_cement_source = (($_POST['vb_cement_source'] ?? '') === 'others')
+        ? ($_POST['vb_cement_source_other'] ?? '')
+        : ($_POST['vb_cement_source'] ?? '');
+
+    $cdl_vb_admix_source = (($_POST['vb_admix_source'] ?? '') === 'others')
+        ? ($_POST['vb_admix_source_other'] ?? '')
+        : ($_POST['vb_admix_source'] ?? '');
+
+    // ================= VB =================
 
     $cdl_vb_cement_mix = $_POST['vb_cement_mix'] ?? '';
     $cdl_vb_fly_ash = $_POST['vb_fly_ash'] ?? '';
@@ -26,6 +50,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cdl_vb_total = $_POST['vb_total'] ?? '';
     $cdl_concrete_price = $_POST['concrete_price'] ?? '';
 
+    // ================= SSD =================
+
     $cdl_ssd_cement_mix = $_POST['ssd_cement_mix'] ?? '';
     $cdl_ssd_fly_ash = $_POST['ssd_fly_ash'] ?? '';
     $cdl_ssd_sand = $_POST['ssd_sand'] ?? '';
@@ -37,6 +63,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cdl_ssd_air = $_POST['ssd_air'] ?? '';
     $cdl_ssd_others = $_POST['ssd_others'] ?? '';
 
+    // ================= CLIENT =================
+
     $cdl_client_name = $_POST['client_name'] ?? '';
     $cdl_client_contact = $_POST['client_contact'] ?? '';
     $cdl_experiment_notes = $_POST['experiment_notes'] ?? '';
@@ -45,9 +73,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $created_by = $_SESSION['username'] ?? 'admin';
 
+    // ================= ESCAPE =================
+
     $escape = function ($value) use ($conn) {
         return $conn->real_escape_string($value ?? '');
     };
+
+    // ================= INSERT =================
 
     $insert = "INSERT INTO cdl_customized_mix_list (
         cdl_vb_concrete_psi, cdl_vb_cubic_meter, cdl_vb_curation_days, cdl_vb_concrete_type, cdl_vb_concrete_slump,
@@ -59,15 +91,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         cdl_client_name, cdl_client_contact, cdl_experiment_notes, cdl_customization_notes, cdl_is_active,
         created_by, created_at, updated_at
     ) VALUES (
-        '" . $escape($cdl_vb_concrete_psi) . "', '" . $escape($cdl_vb_cubic_meter) . "', '" . $escape($cdl_vb_curation_days) . "', '" . $escape($cdl_vb_concrete_type) . "', '" . $escape($cdl_vb_concrete_slump) . "',
-        '" . $escape($cdl_vb_wc_ratio) . "', '" . $escape($cdl_vb_cement_source) . "', '" . $escape($cdl_vb_admix_source) . "', '" . $escape($cdl_vb_cement_mix) . "', '" . $escape($cdl_vb_fly_ash) . "',
-        '" . $escape($cdl_vb_sand) . "', '" . $escape($cdl_vb_three_eight) . "', '" . $escape($cdl_vb_three_fourth) . "', '" . $escape($cdl_vb_G1) . "', '" . $escape($cdl_vb_admix) . "', '" . $escape($cdl_vb_water) . "',
-        '" . $escape($cdl_vb_air) . "', '" . $escape($cdl_vb_others) . "', '" . $escape($cdl_vb_total) . "', '" . $escape($cdl_concrete_price) . "',
-        '" . $escape($cdl_ssd_cement_mix) . "', '" . $escape($cdl_ssd_fly_ash) . "', '" . $escape($cdl_ssd_sand) . "', '" . $escape($cdl_ssd_three_eight) . "', '" . $escape($cdl_ssd_three_fourth) . "',
-        '" . $escape($cdl_ssd_G1) . "', '" . $escape($cdl_ssd_admix) . "', '" . $escape($cdl_ssd_water) . "', '" . $escape($cdl_ssd_air) . "', '" . $escape($cdl_ssd_others) . "',
-        '" . $escape($cdl_client_name) . "', '" . $escape($cdl_client_contact) . "', '" . $escape($cdl_experiment_notes) . "', '" . $escape($cdl_customization_notes) . "', '" . $escape($cdl_is_active) . "',
-        '" . $escape($created_by) . "', NOW(), NOW()
+        '" . $escape($cdl_vb_concrete_psi) . "',
+        '" . $escape($cdl_vb_cubic_meter) . "',
+        '" . $escape($cdl_vb_curation_days) . "',
+        '" . $escape($cdl_vb_concrete_type) . "',
+        '" . $escape($cdl_vb_concrete_slump) . "',
+        '" . $escape($cdl_vb_wc_ratio) . "',
+        '" . $escape($cdl_vb_cement_source) . "',
+        '" . $escape($cdl_vb_admix_source) . "',
+        '" . $escape($cdl_vb_cement_mix) . "',
+        '" . $escape($cdl_vb_fly_ash) . "',
+        '" . $escape($cdl_vb_sand) . "',
+        '" . $escape($cdl_vb_three_eight) . "',
+        '" . $escape($cdl_vb_three_fourth) . "',
+        '" . $escape($cdl_vb_G1) . "',
+        '" . $escape($cdl_vb_admix) . "',
+        '" . $escape($cdl_vb_water) . "',
+        '" . $escape($cdl_vb_air) . "',
+        '" . $escape($cdl_vb_others) . "',
+        '" . $escape($cdl_vb_total) . "',
+        '" . $escape($cdl_concrete_price) . "',
+        '" . $escape($cdl_ssd_cement_mix) . "',
+        '" . $escape($cdl_ssd_fly_ash) . "',
+        '" . $escape($cdl_ssd_sand) . "',
+        '" . $escape($cdl_ssd_three_eight) . "',
+        '" . $escape($cdl_ssd_three_fourth) . "',
+        '" . $escape($cdl_ssd_G1) . "',
+        '" . $escape($cdl_ssd_admix) . "',
+        '" . $escape($cdl_ssd_water) . "',
+        '" . $escape($cdl_ssd_air) . "',
+        '" . $escape($cdl_ssd_others) . "',
+        '" . $escape($cdl_client_name) . "',
+        '" . $escape($cdl_client_contact) . "',
+        '" . $escape($cdl_experiment_notes) . "',
+        '" . $escape($cdl_customization_notes) . "',
+        '" . $escape($cdl_is_active) . "',
+        '" . $escape($created_by) . "',
+        NOW(),
+        NOW()
     )";
+
+    // ================= EXECUTE =================
 
     if ($conn->query($insert)) {
         $_SESSION['success_message'] = "Customized Mix added successfully!";
@@ -141,6 +205,7 @@ $conn->close();
             align-items: left;
             gap: 10px;
             margin: 10px 0 20px 0;
+            margin-bottom: -5px;
         }
 
         .btn-submit {
@@ -250,72 +315,119 @@ $conn->close();
             <div class="form-card">
                 <div class="section-title">Client & Experiment Info</div>
 
+                <!-- Cubic Meter -->
                 <div class="form-row">
                     <label>Cubic Meter:</label>
-                    <select name="vb_cubic_meter" class="vb-field">
+                    <select name="vb_cubic_meter" class="vb-field" id="cubicMeterSelect">
                         <option value="3/4">3/4</option>
+                        <option value="others">Others</option>
                     </select>
+                    <input type="text" name="vb_cubic_meter_other" id="cubicMeterOther" class="vb-field"
+                        placeholder="Enter cubic meter" style="display:none; margin-top:5px;">
                 </div>
 
+                <!-- Concrete Slump (unchanged input) -->
                 <div class="form-row">
                     <label>Concrete Slump:</label>
                     <input name="vb_concrete_slump" class="vb-field" placeholder='6" - 8"'>
                 </div>
 
+                <!-- W/C Ratio -->
                 <div class="form-row">
                     <label>W/C Ratio:</label>
                     <input name="vb_wc_ratio" class="vb-field" placeholder="0.00">
                 </div>
 
+                <!-- Cement Source -->
                 <div class="form-row">
                     <label>Cement Source:</label>
-                    <select name="vb_cement_source" class="vb-field">
+                    <select name="vb_cement_source" class="vb-field" id="cementSourceSelect">
                         <option value="Portland">Portland</option>
+                        <option value="others">Others</option>
                     </select>
+                    <input type="text" name="vb_cement_source_other" id="cementSourceOther" class="vb-field"
+                        style="display:none; margin-top:5px;">
                 </div>
 
+                <!-- Admix Source -->
                 <div class="form-row">
                     <label>Admix Source:</label>
-                    <select name="vb_admix_source" class="vb-field">
+                    <select name="vb_admix_source" class="vb-field" id="admixSourceSelect">
                         <option value="Proem">Proem</option>
+                        <option value="others">Others</option>
                     </select>
+                    <input type="text" name="vb_admix_source_other" id="admixSourceOther" class="vb-field"
+                        style="display:none; margin-top:5px;">
                 </div>
 
+                <!-- Concrete PSI -->
                 <div class="form-row">
                     <label>Concrete PSI:</label>
-                    <input type="text" name="concrete_psi" class="form-control">
+                    <select name="concrete_psi" class="form-control" id="psiSelect">
+                        <option value="1500">1500</option>
+                        <option value="3000">3000</option>
+                        <option value="3500">3500</option>
+                        <option value="4000">4000</option>
+                        <option value="4500">4500</option>
+                        <option value="5000">5000</option>
+                        <option value="6000">6000</option>
+                        <option value="others">Others</option>
+                    </select>
+                    <input type="text" name="concrete_psi_other" id="psiOther" class="form-control"
+                        style="display:none; margin-top:5px;">
                 </div>
 
+                <!-- Curing Days -->
                 <div class="form-row">
-                    <label>Curation Days:</label>
-                    <input type="number" name="curation_days" class="form-control">
+                    <label>Curing Days:</label>
+                    <select name="curation_days" class="form-control" id="curingDaysSelect">
+                        <option value="7">7</option>
+                        <option value="14">14</option>
+                        <option value="21">21</option>
+                        <option value="others">Others</option>
+                    </select>
+                    <input type="text" name="curation_days_other" id="curingDaysOther" class="form-control"
+                        style="display:none; margin-top:5px;">
                 </div>
 
+                <!-- Concrete Type -->
                 <div class="form-row">
                     <label>Concrete Type:</label>
-                    <input type="text" name="concrete_type" class="form-control">
+                    <select name="concrete_type" class="form-control" id="concreteTypeSelect">
+                        <option value="Ordinary">Ordinary</option>
+                        <option value="Pumpcrete Design">Pumpcrete Design</option>
+                        <option value="Tremie">Tremie</option>
+                        <option value="others">Others</option>
+                    </select>
+                    <input type="text" name="concrete_type_other" id="concreteTypeOther" class="form-control"
+                        style="display:none; margin-top:5px;">
                 </div>
 
+                <!-- Client Name -->
                 <div class="form-row">
                     <label>Client Name:</label>
                     <input name="client_name" class="vb-field">
                 </div>
 
+                <!-- Client Contact -->
                 <div class="form-row">
                     <label>Client Contact:</label>
                     <input name="client_contact" class="vb-field">
                 </div>
 
+                <!-- Experiment Notes -->
                 <div class="form-row">
                     <label>Experiment Notes:</label>
                     <textarea name="experiment_notes" class="vb-field"></textarea>
                 </div>
 
+                <!-- Customization Notes -->
                 <div class="form-row">
                     <label>Customization Notes:</label>
                     <textarea name="customization_notes" class="vb-field"></textarea>
                 </div>
 
+                <!-- Is Active -->
                 <div class="form-row">
                     <label>Is Active:</label>
                     <select name="is_active" class="vb-field">
@@ -324,6 +436,7 @@ $conn->close();
                     </select>
                 </div>
 
+                <!-- Concrete Price -->
                 <div class="form-row">
                     <label>Concrete Price:</label>
                     <input name="concrete_price" class="vb-field">
@@ -462,6 +575,33 @@ $conn->close();
 
 
     </form>
+
+    <!-- ================= JS HANDLER ================= -->
+    <script>
+        function handleOthers(selectId, inputId) {
+            const select = document.getElementById(selectId);
+            const input = document.getElementById(inputId);
+
+            select.addEventListener("change", function () {
+                if (this.value === "others") {
+                    input.style.display = "block";
+                    input.required = true;
+                } else {
+                    input.style.display = "none";
+                    input.required = false;
+                    input.value = "";
+                }
+            });
+        }
+
+        // Attach all fields
+        handleOthers("cubicMeterSelect", "cubicMeterOther");
+        handleOthers("cementSourceSelect", "cementSourceOther");
+        handleOthers("admixSourceSelect", "admixSourceOther");
+        handleOthers("psiSelect", "psiOther");
+        handleOthers("curingDaysSelect", "curingDaysOther");
+        handleOthers("concreteTypeSelect", "concreteTypeOther");
+    </script>
 
 </body>
 
