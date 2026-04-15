@@ -60,7 +60,6 @@ $result = $conn->query($sql);
                 </div>
 
             </div>
-
         </div>
 
         <!-- Banner for Table -->
@@ -73,10 +72,6 @@ $result = $conn->query($sql);
                         <th>Delivery Date</th>
                         <th>Customer Name</th>
                         <th>Address</th>
-                        <th>Concrete Design</th>
-                        <th>Curation Days</th>
-                        <th>Concrete Type</th>
-                        <th>Cubic Meters</th>
                         <th>Concrete Price</th>
                         <th>Status</th>
                         <th>Actions</th>
@@ -84,24 +79,33 @@ $result = $conn->query($sql);
                 </thead>
                 <tbody>
                     <?php if ($result && $result->num_rows > 0): ?>
+                        <?php $row_index = 0; ?>
                         <?php while ($row = $result->fetch_assoc()): ?>
+                            <?php $row_index++; ?>
+
+                            <?php
+                            // ✅ ADDRESS CALCULATION FIRST (BEFORE HTML)
+                            $raw_address = $row['full_address'] ?? '';
+                            $clean_address = preg_replace('/^\s*[,|\s]+|^\s*House\s*\/\s*Block\s*\/\s*Lot\s*[:\s]*\s*/i', '', trim($raw_address));
+                            $clean_address = ltrim($clean_address, ', |');
+                            $clean_address = rtrim($clean_address, ', |');
+                            $parts = array_filter(array_map('trim', explode(' || ', $clean_address)));
+                            $final_address = !empty($parts) ? implode(', ', $parts) : 'No address';
+                            ?>
+
+                            <!-- Main Row (8 columns) -->
                             <tr>
                                 <td><?= htmlspecialchars($row['sap_id'] ?? 'N/A') ?></td>
                                 <td><?= htmlspecialchars($row['order_date']) ?></td>
                                 <td><?= htmlspecialchars($row['delivery_date']) ?></td>
                                 <td><?= htmlspecialchars($row['customer_name']) ?></td>
-                                <td><?= htmlspecialchars($row['full_address']) ?></td>
-                                <td><?= htmlspecialchars($row['concrete_psi'] ?? 'N/A') ?></td>
-                                <td><?= htmlspecialchars($row['curation_days'] ?? 'N/A') ?></td>
-                                <td>
-                                    <?= htmlspecialchars($row['concrete_type']) ?>
+
+                                <!-- ✅ FIXED ADDRESS CELL -->
+                                <td class="address-cell" data-full-address="<?= htmlspecialchars($final_address) ?>">
+                                    <?= htmlspecialchars($final_address) ?>
                                 </td>
-                                <td>
-                                    <?= htmlspecialchars($row['cubic_meters']) ?>
-                                </td>
-                                <td>
-                                    ₱<?= number_format($row['sap_concrete_price'] ?? 0, 2) ?>
-                                </td>
+
+                                <td>₱<?= number_format($row['sap_concrete_price'] ?? 0, 2) ?></td>
                                 <td class="order-status">
                                     <?php
                                     $status = strtolower($row['order_status']);
@@ -110,16 +114,43 @@ $result = $conn->query($sql);
                                     <span class="<?= $statusClass ?>"><?= htmlspecialchars($row['order_status']) ?></span>
                                 </td>
                                 <td>
+                                    <a href="#" class="btn btn-view"
+                                        onclick="toggleDropbar(<?= $row_index ?>); return false;">View</a>
                                     <a href="sap_accountsForm.php?id=<?= urlencode($row['sap_id']) ?>"
-                                        class="btn btn-view">Edit</a>
+                                        class="btn btn-edit">Edit</a>
                                     <a href="sap_accountsManagement.php?delete=<?= urlencode($row['sap_id']) ?>"
                                         class="btn btn-delete" onclick="return confirm('Delete this order?')">Delete</a>
                                 </td>
                             </tr>
+
+                            <!-- Dropbar Row (2x4 grid) -->
+                            <tr id="dropbar-<?= $row_index ?>" class="dropbar-row">
+                                <td colspan="8">
+                                    <table class="dropbar-inner">
+                                        <!-- ROW 1: HEADERS -->
+                                        <tr>
+                                            <td class="dropbar-header">Concrete Design</td>
+                                            <td class="dropbar-header">Curation Days</td>
+                                            <td class="dropbar-header">Concrete Type</td>
+                                            <td class="dropbar-header">Cubic Meters</td>
+                                        </tr>
+                                        <!-- ROW 2: DETAILS -->
+                                        <tr>
+                                            <td class="dropbar-detail"><?= htmlspecialchars($row['concrete_psi'] ?? 'N/A') ?>
+                                            </td>
+                                            <td class="dropbar-detail"><?= htmlspecialchars($row['curation_days'] ?? 'N/A') ?>
+                                            </td>
+                                            <td class="dropbar-detail"><?= htmlspecialchars($row['concrete_type']) ?></td>
+                                            <td class="dropbar-detail"><?= htmlspecialchars($row['cubic_meters']) ?></td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+
                         <?php endwhile; ?>
                     <?php else: ?>
                         <tr>
-                            <td colspan="11" class="no-orders">No records of Current Orders yet</td>
+                            <td colspan="8" class="no-orders">No records of Current Orders yet</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
@@ -129,7 +160,6 @@ $result = $conn->query($sql);
     </div>
 
     <script>
-
         document.getElementById("searchInput").addEventListener("keyup", function (event) {
             if (event.key === "Enter") {
                 filterOrders();
@@ -148,15 +178,20 @@ $result = $conn->query($sql);
 
                 for (let j = 0; j < tds.length; j++) {
                     let txtValue = tds[j].textContent || tds[j].innerText;
-
                     if (txtValue.toLowerCase().includes(filter)) {
                         found = true;
                         break;
                     }
                 }
-
                 tr[i].style.display = found ? "" : "none";
             }
+        }
+
+        function toggleDropbar(rowIndex) {
+            const dropbar = document.getElementById('dropbar-' + rowIndex);
+            const isVisible = dropbar.classList.contains('show');
+            document.querySelectorAll('.dropbar-row.show').forEach(row => row.classList.remove('show'));
+            if (!isVisible) dropbar.classList.add('show');
         }
     </script>
 

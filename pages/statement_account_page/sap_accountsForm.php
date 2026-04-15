@@ -17,17 +17,34 @@ function generateUniqueSapId($conn)
     return $sap_id;
 }
 
-// --- Initialize variables ---
-$order_date = $delivery_date = $customer_name = $full_address = $concrete_psi = $curation_days = $concrete_type = $order_status = "";
+// --- Initialize variables for NEW orders ---
+$today = date('Y-m-d');
+$order_date = $today;
+$delivery_date = "";
+$last_name = "";
+$first_name = "";
+$middle_name = "";
+$suffix = "";
+$house_block = "";
+$street = "";
+$barangay = "";
+$city = "";
+$province = "";
+$region = "";
+$full_address = "";
+$concrete_psi = "";
+$curation_days = "";
+$concrete_type = "";
+$order_status = "";
 $cubic_meters = 0;
-$error_message = "";
 $sap_id = "";
+$sap_concrete_price = "";
+$error_message = "";
 
 // --- Status labels mapping ---
 $statusLabels = [
     'Pending' => 'Pending',
-    'In Progress' => 'In Progress',
-    'Delivered' => 'Delivered',
+    'In Transit' => 'In Progress',
     'Done' => 'Done'
 ];
 
@@ -76,65 +93,77 @@ if (isset($_GET['id'])) {
     $stmt->bind_result($sap_id, $order_date, $delivery_date, $customer_name, $full_address, $concrete_psi, $curation_days, $concrete_type, $cubic_meters, $sap_concrete_price, $order_status);
     $stmt->fetch();
     $stmt->close();
+
+    // Split full name into components for editing
+    if ($customer_name) {
+        $name_parts = preg_split('/\s+/', trim($customer_name), 4);
+        $last_name = $name_parts[0] ?? '';
+        $first_name = $name_parts[1] ?? '';
+        $middle_name = $name_parts[2] ?? '';
+        $suffix = $name_parts[3] ?? '';
+    }
+
+    // 🐛 FIX #1: ROBUST ADDRESS SPLITTING
+    if ($full_address) {
+        $address_parts = preg_split('/\s*\|\|\s*/', trim($full_address));
+
+        // House/Block/Street (first part before first ||) - SPLIT BY COMMA
+        if (!empty($address_parts[0])) {
+            $house_street_parts = preg_split('/\s*,\s*/', trim($address_parts[0]), 2);
+            $house_block = trim($house_street_parts[0] ?? '');
+            $street = !empty($house_street_parts[1]) ? trim($house_street_parts[1]) : trim($address_parts[0]);
+        }
+
+        $barangay = trim($address_parts[1] ?? '');
+        $city = trim($address_parts[2] ?? '');
+        $province = trim($address_parts[3] ?? '');
+        $region = trim($address_parts[4] ?? '');
+    }
+} else {
+    // NEW ORDER: Auto-set today's date
+    $order_date = date('Y-m-d');
 }
 
 // --- Handle form submission ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $order_date = $_POST['order_date'] ?? '';
     $delivery_date = $_POST['delivery_date'] ?? '';
-    $customer_name = $_POST['customer_name'] ?? '';
-    $full_address = $_POST['full_address'] ?? '';
+    $last_name = $_POST['last_name'] ?? '';
+    $first_name = $_POST['first_name'] ?? '';
+    $middle_name = $_POST['middle_name'] ?? '';
+    $suffix = $_POST['suffix'] ?? '';
+    $customer_name = trim("{$last_name} {$first_name} {$middle_name} {$suffix}");
+    $customer_name = preg_replace('/\s+/', ' ', $customer_name);
+
+    // Handle address fields
+    $house_block = $_POST['house_block'] ?? '';
+    $street = $_POST['street'] ?? '';
+    $barangay = $_POST['barangay'] ?? '';
+    $city = $_POST['city'] ?? '';
+    $province = $_POST['province'] ?? '';
+    $region = $_POST['region'] ?? '';
+    $full_address = trim("{$house_block}, {$street} || {$barangay} || {$city} || {$province} || {$region}");
+    $full_address = preg_replace('/\s+/', ' ', $full_address);
+
     $concrete_psi = $_POST['concrete_psi'] ?? '';
     $curation_days = $_POST['curation_days'] ?? '';
     $concrete_type = $_POST['concrete_type'] ?? '';
     $cubic_meters = floatval($_POST['cubic_meters'] ?? 0);
-    $sap_concrete_price = $_POST['sap_concrete_price'];
+    $sap_concrete_price = $_POST['sap_concrete_price'] ?? '';
     $order_status = $_POST['order_status'] ?? '';
 
     if (!empty($_POST['edit_id'])) {
-        // Update existing order
         $id = $_POST['edit_id'];
         $stmt = $conn->prepare("UPDATE statement_of_account 
-    SET order_date=?, delivery_date=?, customer_name=?, full_address=?, concrete_psi=?, curation_days=?, concrete_type=?, cubic_meters=?, sap_concrete_price=?, order_status=? 
-    WHERE sap_id=?");
-
-        $stmt->bind_param(
-            "sssssssssss",
-            $order_date,
-            $delivery_date,
-            $customer_name,
-            $full_address,
-            $concrete_psi,
-            $curation_days,
-            $concrete_type,
-            $cubic_meters,
-            $sap_concrete_price,
-            $order_status,
-            $id
-        );
+            SET order_date=?, delivery_date=?, customer_name=?, full_address=?, concrete_psi=?, curation_days=?, concrete_type=?, cubic_meters=?, sap_concrete_price=?, order_status=? 
+            WHERE sap_id=?");
+        $stmt->bind_param("sssssssssss", $order_date, $delivery_date, $customer_name, $full_address, $concrete_psi, $curation_days, $concrete_type, $cubic_meters, $sap_concrete_price, $order_status, $id);
     } else {
-        // Generate unique sap_id for new order
         $sap_id = generateUniqueSapId($conn);
-
-        // Insert new order with sap_id
         $stmt = $conn->prepare("INSERT INTO statement_of_account 
-    (sap_id, order_date, delivery_date, customer_name, full_address, concrete_psi, curation_days, concrete_type, cubic_meters, sap_concrete_price, order_status) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-
-        $stmt->bind_param(
-            "sssssssssss",
-            $sap_id,
-            $order_date,
-            $delivery_date,
-            $customer_name,
-            $full_address,
-            $concrete_psi,
-            $curation_days,
-            $concrete_type,
-            $cubic_meters,
-            $sap_concrete_price,
-            $order_status
-        );
+            (sap_id, order_date, delivery_date, customer_name, full_address, concrete_psi, curation_days, concrete_type, cubic_meters, sap_concrete_price, order_status) 
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sssssssssss", $sap_id, $order_date, $delivery_date, $customer_name, $full_address, $concrete_psi, $curation_days, $concrete_type, $cubic_meters, $sap_concrete_price, $order_status);
     }
 
     if ($stmt->execute()) {
@@ -143,6 +172,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     } else {
         $error_message = "Error saving order: " . $stmt->error;
+        $stmt->close();
     }
 }
 ?>
@@ -155,246 +185,184 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Concrete Order Form</title>
     <link rel="stylesheet" href="/Inventory-Accounts-System-v1/assets/bootstrap/css/bootstrap.min.css">
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #BFC3AA;
-            margin: 0;
-            padding: 0;
-            padding-bottom: 60px;
-        }
-
-        .main-content {
-            padding-top: 70px;
-        }
-
-        .form-container {
-            background: white;
-            margin: 15px;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .form-container h2 {
-            text-align: center;
-            margin-bottom: 25px;
-            color: #333;
-            font-weight: 300;
-        }
-
-        .form-row {
-            display: flex;
-            flex-wrap: wrap;
-            margin-bottom: 15px;
-            align-items: center;
-        }
-
-        .form-row label {
-            width: 150px;
-            font-weight: bold;
-            color: #333;
-        }
-
-        .form-row input,
-        .form-row select {
-            flex: 1;
-            min-width: 200px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-
-        .form-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 25px;
-        }
-
-        .btn-submit {
-            padding: 12px 30px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        .btn-submit:hover {
-            background: #45a049;
-        }
-
-        .btn-cancel {
-            padding: 12px 30px;
-            background: #f44336;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-
-        .btn-cancel:hover {
-            background: #d32f2f;
-        }
-
-        .error-message {
-            color: red;
-            text-align: center;
-            margin-bottom: 15px;
-        }
-
-        @media (max-width: 576px) {
-            .main-content {
-                padding-top: 200px;
-            }
-
-            .form-container {
-                margin: 10px;
-                padding: 20px;
-            }
-
-            .form-row {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .form-row label {
-                width: 100%;
-                margin-bottom: 5px;
-            }
-
-            .form-row input,
-            .form-row select {
-                width: 100%;
-            }
-
-            .form-buttons {
-                flex-direction: column;
-            }
-
-            .btn-submit,
-            .btn-cancel {
-                width: 100%;
-                text-align: center;
-            }
-
-
-        }
-    </style>
+    <link rel="stylesheet" href="sap_accountsForm.css">
 </head>
 
 <body>
-
     <div class="main-content">
         <div class="form-container">
-            <h2>Concrete Order Form</h2>
+            <div class="form-header">
+                <h2>🏗️ Concrete Order</h2>
+            </div>
 
             <?php if (!empty($error_message)): ?>
-                <p class="error-message"><?= htmlspecialchars($error_message) ?></p>
+                <div class="error-message"><?= htmlspecialchars($error_message) ?></div>
             <?php endif; ?>
 
             <form method="POST" id="concreteForm">
                 <?php if (isset($_GET['id'])): ?>
-                    <div class="form-row">
-                        <label>Order ID:</label>
-                        <input type="text" value="<?= htmlspecialchars($sap_id ?? '') ?>" readonly
-                            style="background-color: #f5f5f5;">
+                    <div class="form-group readonly-field">
+                        <label>Order ID</label>
+                        <input type="text" value="<?= htmlspecialchars($sap_id ?? '') ?>" readonly>
                     </div>
                 <?php endif; ?>
 
-                <div class="form-row">
-                    <label for="order_date">Date of Order:</label>
-                    <input type="date" id="order_date" name="order_date" required
-                        value="<?= htmlspecialchars($order_date) ?>">
+                <!-- SECTION 1: DATES -->
+                <div class="form-section">
+                    <h3>Date of Order</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Date of Order</label>
+                            <input type="date" id="order_date" name="order_date" required
+                                value="<?= htmlspecialchars($order_date) ?>">
+                        </div>
+                        <div class="form-group">
+                            <label>Date of Delivery</label>
+                            <input type="date" id="delivery_date" name="delivery_date" required
+                                value="<?= htmlspecialchars($delivery_date) ?>">
+                        </div>
+                    </div>
                 </div>
 
-                <div class="form-row">
-                    <label for="delivery_date">Delivery Date:</label>
-                    <input type="date" id="delivery_date" name="delivery_date" required
-                        value="<?= htmlspecialchars($delivery_date) ?>">
-                </div>
+                <!-- SECTION 2: PERSONAL DETAILS -->
+                <div class="form-section">
+                    <h3>Personal Details</h3>
+                    <div class="name-grid">
+                        <div class="form-group">
+                            <label>Last Name <span style="color: #f44336;">*</span></label>
+                            <input type="text" id="last_name" name="last_name" required
+                                value="<?= htmlspecialchars($last_name) ?>">
+                        </div>
+                        <div class="form-group">
+                            <label>First Name <span style="color: #f44336;">*</span></label>
+                            <input type="text" id="first_name" name="first_name" required
+                                value="<?= htmlspecialchars($first_name) ?>">
+                        </div>
+                        <div class="form-group">
+                            <label>Middle Name</label>
+                            <input type="text" id="middle_name" name="middle_name"
+                                value="<?= htmlspecialchars($middle_name) ?>">
+                        </div>
+                        <div class="form-group">
+                            <label>Suffix</label>
+                            <input type="text" id="suffix" name="suffix" placeholder="Jr., Sr., III, etc."
+                                value="<?= htmlspecialchars($suffix) ?>">
+                        </div>
+                    </div>
 
-                <div class="form-row">
-                    <label for="customer_name">Customer Name:</label>
-                    <input type="text" id="customer_name" name="customer_name" placeholder="Enter full name" required
-                        value="<?= htmlspecialchars($customer_name) ?>">
-                </div>
-
-                <div class="form-row">
-                    <label for="full_address">Full Address:</label>
-                    <input type="text" id="full_address" name="full_address"
-                        placeholder="House/Blk/Lt, St., Subd., Brgy., City/Municipality, Prov." required
-                        value="<?= htmlspecialchars($full_address) ?>">
-                </div>
-
-                <div class="form-row">
-                    <label for="concrete_psi">Concrete Design (PSI):</label>
-                    <select id="concrete_psi" name="concrete_psi" required>
-                        <option value="">--Select PSI--</option>
-                        <?php foreach ($psiOptions as $psi): ?>
-                            <option value="<?= htmlspecialchars($psi) ?>" <?= $concrete_psi === $psi ? 'selected' : '' ?>>
-                                <?= htmlspecialchars($psi) ?> PSI
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-
-                <div class="form-row">
-                    <label for="curation_days">Curation Days:</label>
-                    <select id="curation_days" name="curation_days" required>
-                        <option value="">--Select Curation Days--</option>
-                        <?php if (!empty($concrete_psi) && isset($concreteData[$concrete_psi])): ?>
-                            <?php foreach ($concreteData[$concrete_psi]['days'] as $day): ?>
-                                <option value="<?= htmlspecialchars($day) ?>" <?= $curation_days === $day ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($day) ?> days
+                    <div class="address-grid">
+                        <div class="form-group">
+                            <label>House/Block/Lot</label>
+                            <input type="text" name="house_block" placeholder="e.g., Block 5 Lot 12"
+                                value="<?= htmlspecialchars($house_block) ?>">
+                        </div>
+                        <div class="form-group">
+                            <label>Street <span style="color: #f44336;">*</span></label>
+                            <input type="text" name="street" required placeholder="e.g., Main Street"
+                                value="<?= htmlspecialchars($street) ?>">
+                        </div>
+                        <div class="form-group">
+                            <label>Barangay <span style="color: #f44336;">*</span></label>
+                            <input type="text" name="barangay" required placeholder="e.g., Poblacion"
+                                value="<?= htmlspecialchars($barangay) ?>">
+                        </div>
+                        <div class="form-group">
+                            <label>City/Municipality <span style="color: #f44336;">*</span></label>
+                            <input type="text" name="city" required placeholder="e.g., Quezon City"
+                                value="<?= htmlspecialchars($city) ?>">
+                        </div>
+                        <div class="form-group">
+                            <label>Province/District <span style="color: #f44336;">*</span></label>
+                            <input type="text" name="province" required placeholder="e.g., Metro Manila"
+                                value="<?= htmlspecialchars($province) ?>">
+                        </div>
+                        <div class="form-group address-grid-item">
+                            <label>Region <span style="color: #f44336;">*</span></label>
+                            <select name="region" id="region" required class="address-input">
+                                <option value="">-- Select Region --</option>
+                                <option value="I" <?= $region === 'I' ? 'selected' : '' ?>>I - Ilocos Region (CAR)</option>
+                                <option value="II" <?= $region === 'II' ? 'selected' : '' ?>>II - Cagayan Valley</option>
+                                <option value="III" <?= $region === 'III' ? 'selected' : '' ?>>III - Central Luzon</option>
+                                <option value="IVA" <?= $region === 'IVA' ? 'selected' : '' ?>>IVA - Calabarzon</option>
+                                <option value="IVB" <?= $region === 'IVB' ? 'selected' : '' ?>>IVB - Mimaropa</option>
+                                <option value="V" <?= $region === 'V' ? 'selected' : '' ?>>V - Bicol Region</option>
+                                <option value="VI" <?= $region === 'VI' ? 'selected' : '' ?>>VI - Western Visayas</option>
+                                <option value="VII" <?= $region === 'VII' ? 'selected' : '' ?>>VII - Central Visayas
                                 </option>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </select>
-                </div>
-
-                <div class="form-row">
-                    <label for="concrete_type">Concrete Type:</label>
-                    <select id="concrete_type" name="concrete_type" required>
-                        <option value="">--Select Concrete Type--</option>
-                        <?php if (!empty($concrete_psi) && isset($concreteData[$concrete_psi])): ?>
-                            <?php foreach ($concreteData[$concrete_psi]['types'] as $type): ?>
-                                <option value="<?= htmlspecialchars($type) ?>" <?= $concrete_type === $type ? 'selected' : '' ?>>
-                                    <?= htmlspecialchars($type) ?>
+                                <option value="VIII" <?= $region === 'VIII' ? 'selected' : '' ?>>VIII - Eastern Visayas
                                 </option>
-                            <?php endforeach; ?>
-                        <?php endif; ?>
-                    </select>
+                                <option value="IX" <?= $region === 'IX' ? 'selected' : '' ?>>IX - Zamboanga Peninsula
+                                </option>
+                                <option value="X" <?= $region === 'X' ? 'selected' : '' ?>>X - Northern Mindanao</option>
+                                <option value="XI" <?= $region === 'XI' ? 'selected' : '' ?>>XI - Davao Region</option>
+                                <option value="XII" <?= $region === 'XII' ? 'selected' : '' ?>>XII - Soccsksargen</option>
+                                <option value="XIII" <?= $region === 'XIII' ? 'selected' : '' ?>>XIII - Caraga</option>
+                                <option value="NCR" <?= $region === 'NCR' ? 'selected' : '' ?>>NCR - National Capital
+                                    Region</option>
+                                <option value="CAR" <?= $region === 'CAR' ? 'selected' : '' ?>>CAR - Cordillera
+                                    Administrative Region</option>
+                                <option value="BARMM" <?= $region === 'BARMM' ? 'selected' : '' ?>>BARMM - Bangsamoro
+                                    Autonomous Region</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="form-row">
-                    <label for="cubic_meters">Cubic Meters:</label>
-                    <input type="number" id="cubic_meters" name="cubic_meters" min="0" step="0.1"
-                        placeholder="Enter quantity" required value="<?= htmlspecialchars($cubic_meters) ?>">
-                </div>
-
-                <div class="form-row">
-                    <label for="sap_concrete_price">Concrete Price:</label>
-                    <input type="number" id="sap_concrete_price" name="sap_concrete_price" step="0.01"
-                        value="<?= htmlspecialchars($sap_concrete_price ?? '') ?>">
-                </div>
-
-                <div class="form-row">
-                    <label for="order_status">Order Status:</label>
-                    <select id="order_status" name="order_status" required>
-                        <option value="">--Select Status--</option>
-                        <?php foreach ($statusLabels as $key => $label): ?>
-                            <option value="<?= $key ?>" <?= $order_status === $key ? 'selected' : '' ?>>
-                                <?= htmlspecialchars($label) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
+                <!-- SECTION 3: ORDER DETAILS -->
+                <div class="form-section">
+                    <h3>Order Details</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Concrete Design (PSI) <span style="color: #f44336;">*</span></label>
+                            <select id="concrete_psi" name="concrete_psi" required>
+                                <option value="">-- Select PSI --</option>
+                                <?php foreach ($psiOptions as $psi): ?>
+                                    <?php
+                                    // 🐛 FIX #3: Normalize PSI display
+                                    $display_psi = preg_replace('/\s*(psi|PSI)\s*/i', '', trim($psi));
+                                    $normalized_psi = trim($display_psi);
+                                    $selected = ($concrete_psi === $psi || $concrete_psi === $normalized_psi) ? 'selected' : '';
+                                    ?>
+                                    <option value="<?= htmlspecialchars($psi) ?>" <?= $selected ?>>
+                                        <?= htmlspecialchars($normalized_psi) ?> PSI
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Curation Days <span style="color: #f44336;">*</span></label>
+                            <select id="curation_days" name="curation_days" required>
+                                <option value="">-- Select Days --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Concrete Type <span style="color: #f44336;">*</span></label>
+                            <select id="concrete_type" name="concrete_type" required>
+                                <option value="">-- Select Type --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Cubic Meters <span style="color: #f44336;">*</span></label>
+                            <input type="text" id="cubic_meters" name="cubic_meters" placeholder="3/4" required
+                                value="<?= htmlspecialchars($cubic_meters) ?>">
+                        </div>
+                        <div class="form-group">
+                            <label>Concrete Price (₱)</label>
+                            <input type="number" id="sap_concrete_price" name="sap_concrete_price" step="0.01"
+                                placeholder="0.00" value="<?= htmlspecialchars($sap_concrete_price ?? '') ?>">
+                        </div>
+                        <div class="form-group">
+                            <label>Order Status <span style="color: #f44336;">*</span></label>
+                            <select id="order_status" name="order_status" required>
+                                <option value="">-- Select Status --</option>
+                                <?php foreach ($statusLabels as $key => $label): ?>
+                                    <option value="<?= $key ?>" <?= $order_status === $key ? 'selected' : '' ?>>
+                                        <?= htmlspecialchars($label) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
                 </div>
 
                 <?php if (!empty($_GET['id'])): ?>
@@ -410,20 +378,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <script>
-        // Dynamic dropdown for Curation Days and Concrete Type based on PSI selection
-        const concreteData = <?php echo json_encode($concreteData); ?>;
+        // 1. KILL AUTOCOMPLETE FIRST
+        document.addEventListener('DOMContentLoaded', function () {
+            const inputs = document.querySelectorAll('input:not([type="hidden"]):not([type="submit"]):not([type="button"])');
+            inputs.forEach(input => {
+                input.autocomplete = 'one-time-code';
+                input.autocorrect = 'off';
+                input.autocapitalize = 'off';
+                input.spellcheck = false;
+            });
+        });
+
+        // 2. CONCRETE DROPDOWN LOGIC
+        const concreteData = <?= json_encode($concreteData) ?>;
 
         document.getElementById('concrete_psi').addEventListener('change', function () {
             const selectedPsi = this.value;
             const daysSelect = document.getElementById('curation_days');
             const typeSelect = document.getElementById('concrete_type');
 
-            // Clear existing options
-            daysSelect.innerHTML = '<option value="">--Select Curation Days--</option>';
-            typeSelect.innerHTML = '<option value="">--Select Concrete Type--</option>';
+            // Clear options
+            daysSelect.innerHTML = '<option value="">-- Select Curation Days --</option>';
+            typeSelect.innerHTML = '<option value="">-- Select Concrete Type --</option>';
 
             if (selectedPsi && concreteData[selectedPsi]) {
-                // Populate Curation Days
+                // Populate days
                 concreteData[selectedPsi].days.forEach(function (day) {
                     const option = document.createElement('option');
                     option.value = day;
@@ -431,7 +410,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     daysSelect.appendChild(option);
                 });
 
-                // Populate Concrete Types
+                // Populate types
                 concreteData[selectedPsi].types.forEach(function (type) {
                     const option = document.createElement('option');
                     option.value = type;
@@ -440,8 +419,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 });
             }
         });
-    </script>
 
+        // 🐛 FIX #2: PROPER EDIT MODE INITIALIZATION
+        document.addEventListener('DOMContentLoaded', function () {
+            const psiSelect = document.getElementById('concrete_psi');
+            const savedDays = '<?= addslashes($curation_days) ?>';
+            const savedType = '<?= addslashes($concrete_type) ?>';
+
+            if (psiSelect && psiSelect.value) {
+                // Trigger PSI change to populate dropdowns
+                psiSelect.dispatchEvent(new Event('change'));
+
+                // Set saved values AFTER dropdowns are populated
+                setTimeout(function () {
+                    if (savedDays) {
+                        document.getElementById('curation_days').value = savedDays;
+                    }
+                    if (savedType) {
+                        document.getElementById('concrete_type').value = savedType;
+                    }
+                }, 200); // Give time for dropdown population
+            }
+
+            // Set region if editing
+            const regionSelect = document.getElementById('region');
+            if (regionSelect && '<?= $region ?>' !== '') {
+                regionSelect.value = '<?= $region ?>';
+            }
+        });
+
+        // 4. FORM VALIDATION
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('concreteForm');
+            form.addEventListener('submit', function (e) {
+                if (!this.checkValidity()) {
+                    e.preventDefault();
+                    this.reportValidity();
+                    return false;
+                }
+                // Form is valid, allow normal submission
+            });
+        });
+    </script>
 </body>
 
 </html>

@@ -23,10 +23,12 @@ function showHeader()
         </div>
 
         <!-- Center: Title -->
-        <div class="header-center">
-            <h1 class="header-title">SORCOM READY-MIX CONCRETE</h1>
-            <p class="header-subtitle">Inventory and Accounts Management System</p>
-        </div>
+        <a href="/Inventory-Accounts-System-v1/pages/home_page/home.php">
+            <div class="header-center">
+                <h1 class="header-title">SORCOM READY-MIX CONCRETE</h1>
+                <p class="header-subtitle">Inventory and Accounts Management System</p>
+            </div>
+        </a>    
 
         <!-- Right: Clock -->
         <div class="header-right">
