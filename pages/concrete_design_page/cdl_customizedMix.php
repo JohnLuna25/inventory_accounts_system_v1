@@ -91,10 +91,15 @@ $conn->close();
     <?php showHeader() ?>
 
     <style>
+        html,
+        body {
+            overflow: hidden;
+        }
+
         body {
             font-family: Arial;
             background: #BFC3AA;
-            margin: 0;
+            margin-top: 40px;
             padding-bottom: 60px;
         }
 
@@ -106,8 +111,22 @@ $conn->close();
             border-radius: 10px;
         }
 
+        /* HEADER TITLE (UNCHANGED) */
+        .form-grid h2 {
+            grid-column: 1 / -1;
+            text-align: center;
+            margin-bottom: 10px;
+            background: #ffffff;
+            color: #333;
+            padding: 17px;
+            border-radius: 8px;
+        }
+
+        /* MOVE CARDS SLIGHTLY DOWN */
         .form-grid {
-            margin-top: 100px;
+            align-items: start;
+            margin-top: 25px;
+            /* reduced from 100px */
             margin-left: 30px;
             margin-right: 30px;
             display: grid;
@@ -115,22 +134,13 @@ $conn->close();
             gap: 20px;
         }
 
-        .form-grid h2 {
-            grid-column: 1 / -1;
-            text-align: center;
-            margin-bottom: 10px;
-
-            background: #ffffff;
-            color: #333;
-            padding: 17px;
-            border-radius: 8px;
-        }
-
         .form-buttons {
+            grid-column: 1 / -1;
             display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 25px;
+            justify-content: left;
+            align-items: left;
+            gap: 10px;
+            margin: 10px 0 20px 0;
         }
 
         .btn-submit {
@@ -138,7 +148,7 @@ $conn->close();
             background: #28a745;
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
             cursor: pointer;
             font-size: 16px;
         }
@@ -147,15 +157,12 @@ $conn->close();
             background: #218838;
         }
 
-
-
-        /* ❌ CANCEL BUTTON (RED) */
         .btn-cancel {
             padding: 12px 30px;
             background: #6c757d;
             color: white;
             text-decoration: none;
-            border-radius: 5px;
+            border-radius: 10px;
             font-size: 16px;
         }
 
@@ -163,17 +170,15 @@ $conn->close();
             background: #5a6268;
         }
 
-        @media (max-width: 1100px) {
-            .form-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
+        /* CARD STYLE */
         .form-card {
+            height: 100%;
             border: 1px solid #ddd;
             border-radius: 10px;
-            padding: 20px;
+            padding: 8px;
             background: #fff;
+            max-height: 400px;
+            overflow: auto;
         }
 
         .section-title {
@@ -188,7 +193,7 @@ $conn->close();
             background: #4CAF50;
         }
 
-        /* KEEP YOUR ORIGINAL FORM STYLE */
+        /* FORM ROWS */
         .form-row {
             display: flex;
             flex-wrap: wrap;
@@ -218,13 +223,14 @@ $conn->close();
             border-left: 4px solid #4CAF50;
         }
 
-        .form-buttons {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-top: 25px;
+        /* RESPONSIVE */
+        @media (max-width: 1100px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
+
 </head>
 
 <body>
@@ -234,9 +240,15 @@ $conn->close();
         <div class="form-grid">
             <h2>Add Customized Concrete Mix</h2>
 
-            <!-- ================= VB CARD ================= -->
+            <!-- BUTTONS -->
+            <div class="form-buttons">
+                <button class="btn-submit" type="submit">Save Customized Mix</button>
+                <a href="concrete_design_list.php" class="btn-cancel">Cancel</a>
+            </div>
+
+            <!-- ================= CLIENT CARD ================= -->
             <div class="form-card">
-                <div class="section-title">Volume Batch (VB)</div>
+                <div class="section-title">Client & Experiment Info</div>
 
                 <div class="form-row">
                     <label>Cubic Meter:</label>
@@ -268,6 +280,60 @@ $conn->close();
                         <option value="Proem">Proem</option>
                     </select>
                 </div>
+
+                <div class="form-row">
+                    <label>Concrete PSI:</label>
+                    <input type="text" name="concrete_psi" class="form-control">
+                </div>
+
+                <div class="form-row">
+                    <label>Curation Days:</label>
+                    <input type="number" name="curation_days" class="form-control">
+                </div>
+
+                <div class="form-row">
+                    <label>Concrete Type:</label>
+                    <input type="text" name="concrete_type" class="form-control">
+                </div>
+
+                <div class="form-row">
+                    <label>Client Name:</label>
+                    <input name="client_name" class="vb-field">
+                </div>
+
+                <div class="form-row">
+                    <label>Client Contact:</label>
+                    <input name="client_contact" class="vb-field">
+                </div>
+
+                <div class="form-row">
+                    <label>Experiment Notes:</label>
+                    <textarea name="experiment_notes" class="vb-field"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <label>Customization Notes:</label>
+                    <textarea name="customization_notes" class="vb-field"></textarea>
+                </div>
+
+                <div class="form-row">
+                    <label>Is Active:</label>
+                    <select name="is_active" class="vb-field">
+                        <option value="1">Active</option>
+                        <option value="0">Inactive</option>
+                    </select>
+                </div>
+
+                <div class="form-row">
+                    <label>Concrete Price:</label>
+                    <input name="concrete_price" class="vb-field">
+                </div>
+            </div>
+
+            <!-- ================= VB CARD ================= -->
+            <div class="form-card">
+                <div class="section-title">Volume Batch (VB)</div>
+
 
                 <div class="form-row">
                     <label>Cement Mix:</label>
@@ -324,10 +390,8 @@ $conn->close();
                     <input name="vb_total" class="vb-field" placeholder="2348.8 kgs/m³">
                 </div>
 
-                <div class="form-row">
-                    <label>Concrete Price:</label>
-                    <input name="concrete_price" class="vb-field">
-                </div>
+
+
             </div>
 
             <!-- ================= SSD CARD ================= -->
@@ -383,48 +447,19 @@ $conn->close();
                     <label>Others:</label>
                     <input name="ssd_others" class="ssd-field">
                 </div>
+
+                <div class="form-row">
+                    <label>Total:</label>
+                    <input name="vb_total" class="vb-field" placeholder="2348.8 kgs/m³">
+                </div>
+
             </div>
 
-            <!-- ================= CLIENT CARD ================= -->
-            <div class="form-card">
-                <div class="section-title">Client & Experiment Info</div>
 
-                <div class="form-row">
-                    <label>Client Name:</label>
-                    <input name="client_name" class="vb-field">
-                </div>
-
-                <div class="form-row">
-                    <label>Client Contact:</label>
-                    <input name="client_contact" class="vb-field">
-                </div>
-
-                <div class="form-row">
-                    <label>Experiment Notes:</label>
-                    <textarea name="experiment_notes" class="vb-field"></textarea>
-                </div>
-
-                <div class="form-row">
-                    <label>Customization Notes:</label>
-                    <textarea name="customization_notes" class="vb-field"></textarea>
-                </div>
-
-                <div class="form-row">
-                    <label>Is Active:</label>
-                    <select name="is_active" class="vb-field">
-                        <option value="1">Active</option>
-                        <option value="0">Inactive</option>
-                    </select>
-                </div>
-            </div>
 
         </div>
 
-        <!-- BUTTONS -->
-        <div class="form-buttons">
-            <button class="btn-submit" type="submit">Save Customized Mix</button>
-            <a href="concrete_design_list.php" class="btn-cancel">Cancel</a>
-        </div>
+
 
     </form>
 

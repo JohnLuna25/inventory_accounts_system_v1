@@ -52,43 +52,7 @@ include 'reports_data.php';
             </div>
         </div>
 
-        <!-- Color Legend -->
-        <div class="row mb-4">
-            <div class="col-12">
-                <div class="card shadow-sm">
-                    <div class="legend-header">
-                        <h5 class="mb-0">🎨 Color Legend</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div class="d-flex align-items-center mb-2">
-                                    <div class="legend-box legend-green"></div>
-                                    <span class="legend-text"><strong>Green</strong> = High Stock / Top Sales</span>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="d-flex align-items-center mb-2">
-                                    <div class="legend-box legend-yellow"></div>
-                                    <span class="legend-text"><strong>Yellow</strong> = Medium Stock / Medium
-                                        Sales</span>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="d-flex align-items-center mb-2">
-                                    <div class="legend-box legend-red"></div>
-                                    <span class="legend-text"><strong>Red</strong> = Low Stock / Bottom Sales</span>
-                                </div>
-                            </div>
-                        </div>
-                        <small class="legend-note text-muted">
-                            <strong>Note:</strong> Colors are automatically assigned based on stock levels.
-                            Green = Top 33%, Yellow = Middle 33%, Red = Bottom 33%
-                        </small>
-                    </div>
-                </div>
-            </div>
-        </div>
+
 
         <!-- Date Range Filter -->
         <div class="row mb-4">
@@ -134,8 +98,20 @@ include 'reports_data.php';
                 <div class="card shadow-sm">
                     <div class="card-header bg-primary text-white">
                         <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">📦 Chart 1</h5>
-                            <h5 class="mb-0">Readymix Inventory (By Design Mix)</h5>
+                            <h5 class="mb-0">
+                                Readymix Inventory (By Design Mix)
+                                <span class="info-wrapper">
+                                    <span class="info-icon">ℹ️</span>
+
+                                    <span class="info-tooltip">
+                                        Green = High Stock / Top Sales<br>
+                                        Yellow = Medium Stock / Medium Sales<br>
+                                        Red = Low Stock / Bottom Sales<br><br>
+                                        Note: Colors are automatically assigned based on stock levels.
+                                        Green = Top 33%, Yellow = Middle 33%, Red = Bottom 33%
+                                    </span>
+                                </span>
+                            </h5>
                         </div>
                     </div>
                     <div class="card-body">
@@ -153,8 +129,21 @@ include 'reports_data.php';
                 <div class="card shadow-sm">
                     <div class="card-header bg-success text-white">
                         <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">🧱 Chart 2</h5>
-                            <h5 class="mb-0">Mixture Inventory (Current Stock)</h5>
+                            <h5 class="mb-0">
+                                Mixture Inventory (Current Stock)
+                                <span class="info-wrapper">
+                                    ℹ️
+                                    <div class="info-tooltip">
+                                        Green = High Stock / Top Sales<br>
+                                        Yellow = Medium Stock / Medium Sales<br>
+                                        Red = Low Stock / Bottom Sales<br><br>
+                                        <small>
+                                            Note: Colors are automatically assigned based on stock levels.
+                                            Green = Top 33%, Yellow = Middle 33%, Red = Bottom 33%
+                                        </small>
+                                    </div>
+                                </span>
+                            </h5>
                         </div>
                     </div>
                     <div class="card-body">
@@ -172,8 +161,21 @@ include 'reports_data.php';
                 <div class="card shadow-sm">
                     <div class="card-header bg-info text-white">
                         <div class="d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">🏆 Chart 3</h5>
-                            <h5 class="mb-0">Most Sold Design Mix (Top 5)</h5>
+                            <h5 class="mb-0">
+                                Most Sold Design Mix (Top 5)
+                                <span class="info-wrapper">
+                                    ℹ️
+                                    <div class="info-tooltip">
+                                        Green = High Stock / Top Sales<br>
+                                        Yellow = Medium Stock / Medium Sales<br>
+                                        Red = Low Stock / Bottom Sales<br><br>
+                                        <small>
+                                            Note: Colors are automatically assigned based on stock levels.
+                                            Green = Top 33%, Yellow = Middle 33%, Red = Bottom 33%
+                                        </small>
+                                    </div>
+                                </span>
+                            </h5>
                         </div>
                     </div>
                     <div class="card-body">
