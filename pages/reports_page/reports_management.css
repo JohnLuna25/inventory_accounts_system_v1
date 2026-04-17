@@ -1,131 +1,194 @@
-/* Reports Management Page Styling */
+/* COMPLETE PROFESSIONAL reports_management.css */
+
+/* BOOTSTRAP OVERRIDE - MOST IMPORTANT */
+.card-header.bg-primary,
+.card-header.bg-warning,
+.card-header.bg-info,
+.readymix-header,
+.mixture-header,
+.sales-header,
+.card-header {
+  background: linear-gradient(
+    135deg,
+    #60a5fa 0%,
+    #3b82f6 50%,
+    #1d4ed8 100%
+  ) !important;
+  color: #fef3c7 !important;
+  border: none !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+/* RESET & BASE */
+* {
+  box-sizing: border-box;
+}
 
 body {
-  background-color: #f5f5f5;
-  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  min-height: 100vh;
 }
 
+/* LAYOUT */
 .container-fluid {
   padding: 20px;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
+/* CARDS */
 .card {
-  border-radius: 8px;
-  margin-bottom: 20px;
+  border: none !important;
+  border-radius: 12px !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 24px;
+  overflow: hidden;
+  transition: all 0.3s ease;
 }
 
-/* Chart Header Layout */
-.card-header {
-  border-radius: 8px 8px 0 0 !important;
-  font-weight: bold;
-  padding: 15px 20px;
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
 }
 
-.card-header h5 {
-  margin: 0;
-  font-size: 16px;
+/* HEADER TITLES */
+.card-header h5,
+.readymix-header h5,
+.mixture-header h5,
+.sales-header h5 {
+  color: #fef3c7 !important;
+  font-weight: 700 !important;
+  font-size: 17px !important;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.4) !important;
+  margin: 0 !important;
+  position: relative !important;
+  z-index: 2 !important;
 }
 
-/* Chart 1 Header */
-.card-header.bg-primary h5:first-child {
-  color: #fff;
+/* ALL HEADER CONTENT YELLOW */
+.card-header *,
+.readymix-header *,
+.mixture-header *,
+.sales-header * {
+  color: #fef3c7 !important;
 }
 
-.card-header.bg-primary h5:last-child {
-  color: #fff;
-  font-weight: normal;
+/* SHIMMER */
+.card-header::before,
+.readymix-header::before,
+.mixture-header::before,
+.sales-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    transparent 100%
+  );
+  animation: shimmer 3s infinite;
+  z-index: 1;
 }
 
-/* Chart 2 Header */
-.card-header.bg-success h5:first-child {
-  color: #fff;
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
 }
 
-.card-header.bg-success h5:last-child {
-  color: #fff;
-  font-weight: normal;
-}
-
-/* Chart 3 Header */
-.card-header.bg-info h5:first-child {
-  color: #fff;
-}
-
-.card-header.bg-info h5:last-child {
-  color: #fff;
-  font-weight: normal;
-}
-
-.card.shadow-sm {
-    border: 1px solid #9e9e9e;
-}
-
+/* CHARTS */
 .chart-container {
   position: relative;
-  height: 400px;
+  height: 420px;
   width: 100%;
+  border-radius: 12px 12px 12px 12px;
+  overflow: hidden;
+  background: rgb(226, 226, 226);
 }
 
+/* LINE CHART LINE COLOR - WHITE → VISIBLE */
+canvas {
+  /* Line stroke color override */
+}
+
+.chart-container canvas line {
+  stroke: #3b82f6 !important;
+  stroke-width: 3px !important;
+}
+
+/* Chart.js line datasets */
+.chart-container .chartjs-render-monitor line {
+  stroke: #3b82f6 !important;
+}
+
+/* Direct dataset stroke */
+#readymixChart, #mixtureChart, #salesChart {
+  --line-color: #3b82f6 !important;
+}
+
+/* BUTTONS */
 .btn {
-  border-radius: 4px;
-  font-weight: bold;
+  border-radius: 8px !important;
+  font-weight: 600 !important;
+  font-size: 13px !important;
+  padding: 8px 12px !important;
+  border: none !important;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
 }
 
 .btn-primary {
-  background-color: #0b63c4;
-  border-color: #0b63c4;
-}
-
+  background: rgb(156, 156, 255) !important;
 .btn-success {
-  background-color: #4caf50;
-  border-color: #4caf50;
+  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
 }
-
+.btn-info {
+  background: rgb(132, 132, 255) !important;
+}
 .btn-secondary {
-  background-color: #6c757d;
-  border-color: #6c757d;
+  background: rgb(143, 143, 143) !important;
+
+/* INPUTS */
+.input-group .form-control {
+  border-radius: 8px !important;
+  border: 2px solid #e0e6ed !important;
+  padding: 8px 12px !important;
 }
 
-.form-control {
-  border-radius: 4px;
+.input-group .form-control:focus {
+  border-color: #60a5fa !important;
+  box-shadow: 0 0 0 0.2rem rgba(96, 165, 250, 0.25) !important;
 }
 
-
-
-.info-wrapper {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  cursor: pointer;
-}
-
-/* ICON ONLY */
-.info-icon {
-  font-size: 14px;
-  margin-left: 6px;
-}
-
-/* FORCE HIDE */
-.info-tooltip {
-  display: none;   /* 🔥 THIS is the key fix */
-  position: absolute;
-  top: 22px;
-  left: 0;
-
-  width: 260px;
-  background: rgb(99, 98, 98);
-  color: #fff;
-
-  padding: 10px;
-  border-radius: 8px;
-
-  font-size: 12px;
-  line-height: 1.4;
-  z-index: 9999;
-}
-
-/* SHOW ONLY ON HOVER */
-.info-wrapper:hover .info-tooltip {
-  display: block;
-}
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .chart-container {
+    height: 350px !important;
+  }
+  .card-header,
+  .readymix-header,
+  .mixture-header,
+  .sales-header {
+    padding: 15px !important;
+  }
+  .btn {
+    font-size: 12px !important;
+    padding: 6px 10px !important;
+  }
 }
