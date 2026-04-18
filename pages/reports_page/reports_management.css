@@ -49,6 +49,10 @@ body {
   transition: all 0.3s ease;
 }
 
+.card-body {
+  padding: 5px !important;
+}
+
 .card:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
@@ -97,6 +101,10 @@ body {
   z-index: 1;
 }
 
+@media (max-width: 768px) {
+  .chart-container { height: 320px !important; padding: 10px !important; }
+}
+
 @keyframes shimmer {
   0% {
     left: -100%;
@@ -106,19 +114,20 @@ body {
   }
 }
 
-/* CHARTS */
 .chart-container {
-  position: relative;
-  height: 420px;
-  width: 100%;
-  border-radius: 12px 12px 12px 12px;
-  overflow: hidden;
-  background: rgb(226, 226, 226);
+  position: relative !important;
+  height: 420px !important;
+  width: 100% !important;
+  padding: 10px !important;     /* ← ADD PADDING */
+  /* REMOVE overflow: hidden !important; */
+  border-radius: 0 0 12px 12px; /* Only bottom radius */
+  background: transparent;      /* No background conflict */
 }
 
-/* LINE CHART LINE COLOR - WHITE → VISIBLE */
-canvas {
-  /* Line stroke color override */
+.chart-container canvas {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
 }
 
 .chart-container canvas line {

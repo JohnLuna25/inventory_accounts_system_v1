@@ -202,7 +202,7 @@ $doneOrders = getDoneOrders($conn);
                     let found = false;
 
                     for (let j = 0; j < tds.length; j++) {
-                        let txtValue = tds[j].textContent || tds[j].innerText;
+                        let txtValue = tds[j].textContent '' tds[j].innerText;
 
                         if (txtValue.toLowerCase().includes(filter)) {
                             found = true;
