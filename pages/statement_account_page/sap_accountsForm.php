@@ -301,7 +301,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="main-content">
         <div class="form-container">
             <div class="form-header">
-                <h2>🏗️ Concrete Order</h2>
+                <h2>Concrete Order</h2>
             </div>
 
             <?php if (!empty($error_message)): ?>
@@ -558,14 +558,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         .then(data => {
                             if (data.available) {
                                 infoDiv.innerHTML = `
-                            <div style="color:#28a745; font-weight:bold;">
-                                ✅ ${data.stocks_in} units available
-                            </div>
-                            <div style="font-size:12px; color:#666;">
-                                📏 ${data.total_kgs} total | 
-                                ⚖️ ${data.batch_size}/unit
-                            </div>
-                        `;
+                                <div style="color:#28a745; font-weight:bold; margin-bottom:6px;">
+                                    ✅ ${data.stocks_in} units available
+                                </div>
+                                <div style="font-size:12px; color:#666; margin-bottom:2px;">
+                                    📏 ${data.total_kgs} total
+                                </div>
+                                <div style="font-size:12px; color:#666;">
+                                    ⚖️ ${data.batch_size.match(/[\d,]+\.?\d*/)[0]} kgs/m³
+                                </div>
+                            `;
                                 statusDiv.style.background = '#d4edda';
                                 statusDiv.style.borderLeft = '4px solid #28a745';
                                 unitsInput.max = data.stocks_in;
@@ -616,17 +618,53 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             });
 
             // 7. EDIT MODE: Restore selections
+            // 7. EDIT MODE: Handle bad data + restore selections
             <?php if (!empty($concrete_psi)): ?>
                 setTimeout(() => {
                     psiSelect.value = '<?= addslashes($concrete_psi) ?>';
                     psiSelect.dispatchEvent(new Event('change'));
 
                     setTimeout(() => {
-                        daysSelect.value = '<?= addslashes($curation_days) ?>';
-                        typeSelect.value = '<?= addslashes($concrete_type) ?>';
+                        const targetDays = '<?= addslashes($curation_days) ?>';
+                        const targetType = '<?= addslashes($concrete_type) ?>';
+
+                        console.log('🔍 DEBUG - Target values:', { targetDays, targetType });
+                        console.log('📋 Days options:', Array.from(daysSelect.options).map(o => o.value));
+                        console.log('📋 Type options:', Array.from(typeSelect.options).map(o => o.value));
+
+                        // Set days
+                        for (let opt of daysSelect.options) {
+                            if (opt.value === targetDays) {
+                                opt.selected = true;
+                                break;
+                            }
+                        }
+
+                        // Set concrete type - with fallback for bad data
+                        let typeSet = false;
+                        for (let opt of typeSelect.options) {
+                            if (opt.value === targetType && opt.value !== '0') {
+                                opt.selected = true;
+                                typeSet = true;
+                                console.log('✅ Type selected:', targetType);
+                                break;
+                            }
+                        }
+
+                        // FALLBACK: If type="0" or invalid, select first valid option
+                        if (!typeSet || targetType === '0') {
+                            for (let opt of typeSelect.options) {
+                                if (opt.value && opt.value !== '') {
+                                    opt.selected = true;
+                                    console.log('🔧 FALLBACK: Selected first valid type:', opt.value);
+                                    break;
+                                }
+                            }
+                        }
+
                         checkInventory();
-                    }, 200);
-                }, 100);
+                    }, 1200);
+                }, 200);
             <?php endif; ?>
 
             // 8. Region fix for edit
