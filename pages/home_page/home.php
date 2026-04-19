@@ -278,16 +278,6 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Employee';
                     <?php endif; ?>
 
 
-
-
-
-
-
-
-
-
-
-
                     <!-- Logout -->
                     <div class="col-12 col-sm-6 col-md-4 d-flex justify-content-center">
                         <button id="logout-button" class="btn btn-danger-custom dashboard-btn"

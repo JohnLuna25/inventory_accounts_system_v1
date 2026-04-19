@@ -141,6 +141,14 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
                                 </button>
                             </div>
 
+                            <div class="col-lg-2 col-md-3 col-sm-4">
+                                <label class="form-label small fw-bold mb-1 text-warning"></label>
+                                <button id="summaryBtn" class="btn btn-warning btn-sm w-100 fw-bold p-2 h-100"
+                                    onclick="showSummaryReport()">
+                                    Summary Report
+                                </button>
+                            </div>
+
                             <!-- ACTIONS -->
                             <div class="col-lg-3 col-md-3 col-sm-6">
                                 <label class="form-label small fw-bold mb-1 text-success">Actions:</label>
@@ -379,9 +387,9 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
             console.log('Data:', Object.values(window.chartData).map(d => d.data.length));
 
             const configs = [
-                { id: 'readymixChart', key: 'readymix', title: 'Readymix', unit: 'm³' },
-                { id: 'mixtureChart', key: 'mixture', title: 'Mixture', unit: 'T' },
-                { id: 'salesChart', key: 'sales', title: 'Sales', unit: 'm³' }
+                { id: 'readymixChart', key: 'readymix', title: 'Readymix', unit: 'kg/m³' },  // ← CHANGED
+                { id: 'mixtureChart', key: 'mixture', title: 'Mixture', unit: 'kg/m³' },     // ← CHANGED  
+                { id: 'salesChart', key: 'sales', title: 'Sales', unit: 'm³' }              // Keep m³ for sales
             ];
 
             configs.forEach(config => {
@@ -437,6 +445,15 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
         });
 
         updateAllCharts();
+
+        // 🔥 SUMMARY REPORT - PAGE SWITCH
+        window.showSummaryReport = function () {
+            const startDate = document.getElementById('start_date')?.value || '';
+            const endDate = document.getElementById('end_date')?.value || '';
+
+            // 🔥 SWITCH TO PAGE (same tab)
+            window.location.href = `summary_reports.html?start_date=${startDate}&end_date=${endDate}`;
+        };
 
     </script>
 

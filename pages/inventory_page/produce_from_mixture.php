@@ -113,16 +113,6 @@ try {
     $stmt->execute();
     $stmt->close();
 
-    // DEBUG: Check all values before INSERT
-    echo "<pre>";
-    echo "prefill_mixture_id: $prefill_mixture_id\n";
-    echo "design_mix: $design_mix\n";
-    echo "curation_days: $curation_days\n";
-    echo "concrete_type: $concrete_type\n";
-    echo "batch: $batch\n";
-    echo "</pre>";
-    exit;
-
     // 5. Insert into ready-mix inventory
     $today = date('Y-m-d');
     $stocks_in = 1;

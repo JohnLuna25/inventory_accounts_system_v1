@@ -124,7 +124,11 @@ body {
   background: transparent;      /* No background conflict */
 }
 
-
+#chartToggle {
+    pointer-events: auto !important;
+    cursor: pointer !important;
+    z-index: 999 !important;
+}
 
 .chart-container canvas {
   width: 100% !important;

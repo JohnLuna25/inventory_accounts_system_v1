@@ -74,7 +74,7 @@ li.dashboard-title > p {
 #burgerMenuBtn {
     display: inline-flex !important;
     position: relative !important;
-    top: -1px !important;
+    top: -5px !important;
     left: -14px !important;
     margin: 0 !important;
     padding: 4px 3px !important;
@@ -109,7 +109,6 @@ li.dashboard-title > p {
     top: 0 !important;
     left: -300px !important;
     width: 300px !important;
-    height: 100vh !important;
     background: linear-gradient(180deg, #0d6efd 0%, #1e40af 100%) !important;
     z-index: 9998 !important;
     transition: left 0.4s ease !important;
