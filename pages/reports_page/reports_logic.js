@@ -17,19 +17,6 @@ window.debugFilter = function () {
       const data = JSON.parse(text);
       console.log("✅ PARSED DATA:", data);
       console.log("readymix.data:", data.readymix?.data);
-
-      // Test ONE chart
-      if (data.readymix?.data?.length) {
-        console.log("🟢 Creating readymix chart...");
-        const canvas = document.getElementById("readymixChart");
-        new Chart(canvas, {
-          type: "bar",
-          data: {
-            labels: data.readymix.labels,
-            datasets: [{ data: data.readymix.data, backgroundColor: "blue" }],
-          },
-        });
-      }
     })
     .catch((e) => console.error("💥 FULL ERROR:", e));
 };
@@ -46,13 +33,19 @@ let isFiltered = false;
 // ==========================================
 // ENHANCED COLOR GRADIENT (GOOD)
 // ==========================================
+// ==========================================
+// 3 COLORS TO MATCH YOUR LEGEND
+// ==========================================
 function getColor(value, max, min) {
+  if (min === max) return "#00ff88"; // All same = Green
+
   const range = max - min;
-  const threshold1 = min + range * 0.33;
-  const threshold2 = min + range * 0.66;
-  if (value >= threshold2) return "rgba(76, 175, 80, 0.8)";
-  if (value >= threshold1) return "rgba(255, 193, 7, 0.8)";
-  return "rgba(244, 67, 54, 0.8)";
+  const lowThreshold = min + range * 0.33;
+  const highThreshold = min + range * 0.66;
+
+  if (value >= highThreshold) return "#00ff88"; // 🟢 Green
+  if (value >= lowThreshold) return "#ffeb3b"; // 🟡 Yellow
+  return "#ff5722"; // 🔴 Red
 }
 
 // ==========================================
@@ -91,10 +84,18 @@ function updateChart(canvasId, data, chartTitle, chartLabel) {
   const ctx = document.getElementById(canvasId);
   if (!ctx || !data?.data?.length) return;
 
-  if (chartInstances[canvasId]) chartInstances[canvasId].destroy();
+  // 🔥 BULLETPROOF DESTROY OLD CHART
+  if (chartInstances[canvasId]) {
+    chartInstances[canvasId].destroy();
+    chartInstances[canvasId] = null;
+  }
 
   const max = Math.max(...data.data);
   const min = Math.min(...data.data);
+
+  // 🔥 PRE-CALCULATE COLORS (Green/Yellow/Red ONLY)
+  const colors = data.data.map((v) => getColor(v, max, min));
+  console.log(`🎨 ${canvasId} colors:`, colors); // PROOF!
 
   chartInstances[canvasId] = new Chart(ctx, {
     type: currentChartType,
@@ -104,10 +105,8 @@ function updateChart(canvasId, data, chartTitle, chartLabel) {
         {
           label: chartLabel,
           data: data.data,
-          backgroundColor: data.data.map((v) => getColor(v, max, min)),
-          borderColor: data.data.map((v) =>
-            getColor(v, max, min).replace("0.8", "1"),
-          ),
+          backgroundColor: colors, // 🟢🟡🔴 ONLY THESE 3!
+          borderColor: colors.map((c) => c.replace(/[\d.]+(?=\$)/, "1")), // Solid borders
           borderWidth: currentChartType === "line" ? 3 : 2,
           tension: currentChartType === "line" ? 0.4 : 0,
           fill: currentChartType === "line",
@@ -178,7 +177,7 @@ function applyEnhancedFilter() {
 // ==========================================
 function cycleChartType() {
   const types = ["bar", "line", "pie"];
-  const names = ["📊 Bar", "📈 Line", "🥧 Pie"];
+  const names = ["Bar", "Line", "Pie"];
   const index = types.indexOf(currentChartType);
   currentChartType = types[(index + 1) % 3];
 

@@ -63,77 +63,59 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
 
     <!-- PRO TABLE STYLES -->
     <style>
-        /* MAX Z-INDEX + NO CLIP */
+        /* CLEAN INFO TOOLTIP */
         .info-wrapper {
             position: relative !important;
             display: inline-flex !important;
             align-items: center !important;
-            cursor: pointer !important;
-            z-index: 999999 !important;
         }
 
         .info-icon {
-            background: rgba(254, 243, 199, 0.4) !important;
+            background: #fef3c7 !important;
             color: #d97706 !important;
             font-weight: bold !important;
-            font-size: 18px !important;
-            padding: 8px !important;
+            font-size: 16px !important;
+            width: 24px !important;
+            height: 24px !important;
             border-radius: 50% !important;
-            margin-left: 8px !important;
-            transition: all 0.3s ease !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            cursor: help !important;
+            margin-left: 5px !important;
         }
 
-        .info-wrapper:hover .info-icon {
-            background: #fef3c7 !important;
-            color: #b45309 !important;
-            transform: scale(1.2) !important;
-        }
-
-        /* TOOLTIP - UNBREAKABLE */
         .info-tooltip {
-            display: none !important;
             position: fixed !important;
-            top: 28% !important;
-            left: 38% !important;
-            transform: translate(-50%, -50%) !important;
-            width: 240px !important;
-            background: #000000dd !important;
-            backdrop-filter: blur(20px) !important;
-            padding: 16px !important;
-            border-radius: 16px !important;
-            border: 3px solid #ffffff !important;
+            /* ← ADD THIS */
+            top: 0vh !important;
+            /* ← Top positioning */
+            left: 22vw !important;
+            /* ← Left positioning */
+            transform: none !important;
+            /* ← No transform */
+            background: rgba(59, 59, 59, 0.95) !important;
+            color: white !important;
+            padding: 12px !important;
+            border-radius: 8px !important;
             font-size: 12px !important;
-            line-height: 1.4 !important;
-            color: #ffffff !important;
-            text-align: center !important;
-            font-weight: 600 !important;
-            z-index: 9999999 !important;
-            box-shadow: 0 0 100px rgba(0, 0, 0, 0.9) !important;
+            white-space: normal !important;
+            opacity: 0 !important;
+            visibility: hidden !important;
+            transition: all 0.2s !important;
+            z-index: 999999 !important;
+            /* ← ADD Z-INDEX */
+            pointer-events: none !important;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+            max-width: 200px !important;
+        }
+
+        .info-wrapper:hover .info-tooltip {
             opacity: 1 !important;
             visibility: visible !important;
         }
 
-        .info-wrapper:hover .info-tooltip {
-            display: block !important;
-        }
-
-        .info-tooltip::before {
-            content: "LEGEND" !important;
-            display: block !important;
-            font-size: 13px !important;
-            font-weight: 700 !important;
-            margin-bottom: 16px !important;
-            text-align: center !important;
-        }
-
-        .info-tooltip::after {
-            content: "Green = High Stock/Top Sales | Yellow = Medium | Red = Low/Bottom" !important;
-            display: block !important;
-            font-size: 11px !important;
-            margin-top: 12px !important;
-            padding-top: 12px !important;
-            border-top: 1px solid #ffffff40 !important;
-        }
+        /* REMOVED ::before ::after - Text in HTML now */
     </style>
 </head>
 
@@ -181,9 +163,7 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
                                 <label class="form-label small fw-bold mb-1 text-success">Actions:</label>
                                 <div class="d-grid gap-1 h-100">
                                     <button id="updateBtn" class="btn btn-success btn-sm fw-bold p-2"
-                                        onclick="location.reload()">
-                                        Update
-                                    </button>
+                                        onclick="location.reload()"> Update </button>
                                     <button id="pdfBtn" class="btn btn-secondary btn-sm fw-bold p-2"
                                         onclick="exportPDF()">
                                         PDF
@@ -214,7 +194,17 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
                             Readymix Inventory (By Design Mix)
                             <span class="info-wrapper">
                                 <span class="info-icon">i</span>
-                                <span class="info-tooltip"></span>
+                                <span class="info-tooltip" style="
+                                    background: rgba(59, 59, 59, 0.95) !important;
+                                    color: white !important;
+                                ">
+                                    <p style="color: #00ff88 !important; text-shadow: 0 0 4px #00ff00;">Green = High
+                                        Stock</p>
+                                    <p style="color: #ffeb3b !important; text-shadow: 0 0 4px #ffff00;">Yellow =
+                                        Medium</p>
+                                    <p style="color: #ff5722 !important; text-shadow: 0 0 4px #ff4444;">Red =
+                                        Low/Bottom</p>
+                                </span>
                             </span>
                         </h5>
                     </div>
@@ -237,7 +227,17 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
                             Mixture Inventory (Current Stock)
                             <span class="info-wrapper">
                                 <span class="info-icon">i</span>
-                                <span class="info-tooltip"></span>
+                                <span class="info-tooltip" style="
+                                    background: rgba(59, 59, 59, 0.95) !important;
+                                    color: white !important;
+                                ">
+                                    <p style="color: #00ff88 !important; text-shadow: 0 0 4px #00ff00;">Green = High
+                                        Stock</p>
+                                    <p style="color: #ffeb3b !important; text-shadow: 0 0 4px #ffff00;">Yellow =
+                                        Medium</p>
+                                    <p style="color: #ff5722 !important; text-shadow: 0 0 4px #ff4444;">Red =
+                                        Low/Bottom</p>
+                                </span>
                             </span>
                         </h5>
                     </div>
@@ -260,7 +260,17 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
                             Most Sold Design Mix (Top 5)
                             <span class="info-wrapper">
                                 <span class="info-icon">i</span>
-                                <span class="info-tooltip"></span>
+                                <span class="info-tooltip" style="
+                                    background: rgba(59, 59, 59, 0.95) !important;
+                                    color: white !important;
+                                ">
+                                    <p style="color: #00ff88 !important; text-shadow: 0 0 4px #00ff00;">Green = High
+                                        Stock</p>
+                                    <p style="color: #ffeb3b !important; text-shadow: 0 0 4px #ffff00;">Yellow =
+                                        Medium</p>
+                                    <p style="color: #ff5722 !important; text-shadow: 0 0 4px #ff4444;">Red =
+                                        Low/Bottom</p>
+                                </span>
                             </span>
                         </h5>
                     </div>
@@ -299,20 +309,18 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
 
 
 
-        // ==========================================
-        // 🔥 COLORS - Gradient Guaranteed
-        // ==========================================
-        function getChartColors(dataLength) {
-            const colors = [
-                { bg: 'rgba(59, 130, 246, 0.85)', border: 'rgba(59, 130, 246, 1)' },
-                { bg: 'rgba(16, 185, 129, 0.85)', border: 'rgba(16, 185, 129, 1)' },
-                { bg: 'rgba(251, 191, 36, 0.85)', border: 'rgba(251, 191, 36, 1)' },
-                { bg: 'rgba(245, 101, 101, 0.85)', border: 'rgba(245, 101, 101, 1)' },
-                { bg: 'rgba(168, 85, 247, 0.85)', border: 'rgba(168, 85, 247, 1)' },
-                { bg: 'rgba(236, 72, 153, 0.85)', border: 'rgba(236, 72, 153, 1)' },
-                { bg: 'rgba(34, 197, 94, 0.85)', border: 'rgba(34, 197, 94, 1)' }
-            ];
-            return Array.from({ length: dataLength }, (_, i) => colors[i % colors.length]);
+        function getChartColors(data) {
+            const max = Math.max(...data);
+            const min = Math.min(...data);
+            const range = max - min;
+            const lowThreshold = min + range * 0.33;
+            const highThreshold = min + range * 0.66;
+
+            return data.map(value => {
+                if (value >= highThreshold) return { bg: '#00ff88', border: '#00ff88' };      // Green
+                if (value >= lowThreshold) return { bg: '#ffeb3b', border: '#ffeb3b' };       // Yellow
+                return { bg: '#ff5722', border: '#ff5722' };                                  // Red
+            });
         }
 
         // ==========================================
@@ -403,7 +411,7 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
                 if (charts[config.id]) charts[config.id].destroy();
 
                 const ctx = canvas.getContext('2d');
-                const colors = getChartColors(data.data.length);
+                const colors = getChartColors(data.data);
 
                 charts[config.id] = new Chart(ctx, {
                     type: currentChartType,
