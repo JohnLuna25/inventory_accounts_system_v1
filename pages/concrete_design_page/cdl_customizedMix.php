@@ -4,6 +4,18 @@ include __DIR__ . '/../../FunctionAndDB/Web_Functions.php';
 
 session_start();
 
+// ================= PAGE MODE LOGIC =================
+$page_mode = 'Add';
+$title_text = 'Add Customized Concrete Mix';
+$submit_text = 'Save Customized Mix';
+
+if (isset($_GET['edit_id']) || isset($_POST['edit_id'])) {
+    $page_mode = 'Edit';
+    $title_text = 'Edit Customized Concrete Mix';
+    $submit_text = 'Update Customized Mix';
+}
+// ====================================================
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // ================= CLIENT & EXPERIMENT INFO =================
@@ -63,12 +75,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $cdl_ssd_air = $_POST['ssd_air'] ?? '';
     $cdl_ssd_others = $_POST['ssd_others'] ?? '';
 
+
     // ================= CLIENT =================
 
     $cdl_client_name = $_POST['client_name'] ?? '';
     $cdl_client_contact = $_POST['client_contact'] ?? '';
-    $cdl_experiment_notes = $_POST['experiment_notes'] ?? '';
-    $cdl_customization_notes = $_POST['customization_notes'] ?? '';
+    $cdl_remarks = $_POST['cdl_remarks'] ?? '';
     $cdl_is_active = $_POST['is_active'] ?? 1;
 
     $created_by = $_SESSION['username'] ?? 'admin';
@@ -88,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         cdl_vb_air, cdl_vb_others, cdl_vb_total, cdl_concrete_price,
         cdl_ssd_cement_mix, cdl_ssd_fly_ash, cdl_ssd_sand, cdl_ssd_three_eight, cdl_ssd_three_fourth,
         cdl_ssd_G1, cdl_ssd_admix, cdl_ssd_water, cdl_ssd_air, cdl_ssd_others,
-        cdl_client_name, cdl_client_contact, cdl_experiment_notes, cdl_customization_notes, cdl_is_active,
+        cdl_client_name, cdl_client_contact, cdl_remarks, cdl_is_active,
         created_by, created_at, updated_at
     ) VALUES (
         '" . $escape($cdl_vb_concrete_psi) . "',
@@ -123,8 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         '" . $escape($cdl_ssd_others) . "',
         '" . $escape($cdl_client_name) . "',
         '" . $escape($cdl_client_contact) . "',
-        '" . $escape($cdl_experiment_notes) . "',
-        '" . $escape($cdl_customization_notes) . "',
+        '" . $escape($cdl_remarks) . "',
         '" . $escape($cdl_is_active) . "',
         '" . $escape($created_by) . "',
         NOW(),
@@ -303,7 +314,9 @@ $conn->close();
     <form id="addForm" method="POST">
 
         <div class="form-grid">
-            <h2>Add Customized Concrete Mix</h2>
+            <h2>
+                <?php echo $title_text; ?>
+            </h2>
 
             <!-- BUTTONS -->
             <div class="form-buttons">
@@ -317,53 +330,57 @@ $conn->close();
 
                 <!-- Cubic Meter -->
                 <div class="form-row">
-                    <label>Cubic Meter:</label>
-                    <select name="vb_cubic_meter" class="vb-field" id="cubicMeterSelect">
+                    <label>Cubic Meter <span style="color:red;">*</span>:</label>
+                    <select name="vb_cubic_meter" class="vb-field required-field" id="cubicMeterSelect" required>
+                        <option value="">Select Cubic Meter</option>
                         <option value="3/4">3/4</option>
                         <option value="others">Others</option>
                     </select>
-                    <input type="text" name="vb_cubic_meter_other" id="cubicMeterOther" class="vb-field"
-                        placeholder="Enter cubic meter" style="display:none; margin-top:5px;">
+                    <input type="text" name="vb_cubic_meter_other" id="cubicMeterOther" class="vb-field required-field"
+                        placeholder="Enter cubic meter" style="display:none; margin-top:5px;" required>
                 </div>
 
-                <!-- Concrete Slump (unchanged input) -->
+                <!-- Concrete Slump -->
                 <div class="form-row">
-                    <label>Concrete Slump:</label>
-                    <input name="vb_concrete_slump" class="vb-field" placeholder='6" - 8"'>
+                    <label>Concrete Slump <span style="color:red;">*</span>:</label>
+                    <input name="vb_concrete_slump" class="vb-field required-field" placeholder='6" - 8"' required>
                 </div>
 
                 <!-- W/C Ratio -->
                 <div class="form-row">
-                    <label>W/C Ratio:</label>
-                    <input name="vb_wc_ratio" class="vb-field" placeholder="0.00">
+                    <label>W/C Ratio <span style="color:red;">*</span>:</label>
+                    <input name="vb_wc_ratio" class="vb-field required-field" placeholder="0.00" required>
                 </div>
 
                 <!-- Cement Source -->
                 <div class="form-row">
-                    <label>Cement Source:</label>
-                    <select name="vb_cement_source" class="vb-field" id="cementSourceSelect">
+                    <label>Cement Source <span style="color:red;">*</span>:</label>
+                    <select name="vb_cement_source" class="vb-field required-field" id="cementSourceSelect" required>
+                        <option value="">Select Cement Source</option>
                         <option value="Portland">Portland</option>
                         <option value="others">Others</option>
                     </select>
-                    <input type="text" name="vb_cement_source_other" id="cementSourceOther" class="vb-field"
-                        style="display:none; margin-top:5px;">
+                    <input type="text" name="vb_cement_source_other" id="cementSourceOther"
+                        class="vb-field required-field" style="display:none; margin-top:5px;" required>
                 </div>
 
                 <!-- Admix Source -->
                 <div class="form-row">
-                    <label>Admix Source:</label>
-                    <select name="vb_admix_source" class="vb-field" id="admixSourceSelect">
+                    <label>Admix Source <span style="color:red;">*</span>:</label>
+                    <select name="vb_admix_source" class="vb-field required-field" id="admixSourceSelect" required>
+                        <option value="">Select Admix Source</option>
                         <option value="Proem">Proem</option>
                         <option value="others">Others</option>
                     </select>
-                    <input type="text" name="vb_admix_source_other" id="admixSourceOther" class="vb-field"
-                        style="display:none; margin-top:5px;">
+                    <input type="text" name="vb_admix_source_other" id="admixSourceOther"
+                        class="vb-field required-field" style="display:none; margin-top:5px;" required>
                 </div>
 
                 <!-- Concrete PSI -->
                 <div class="form-row">
-                    <label>Concrete PSI:</label>
-                    <select name="concrete_psi" class="form-control" id="psiSelect">
+                    <label>Concrete PSI <span style="color:red;">*</span>:</label>
+                    <select name="concrete_psi" class="vb-field required-field" id="psiSelect" required>
+                        <option value="">Select PSI</option>
                         <option value="1500">1500</option>
                         <option value="3000">3000</option>
                         <option value="3500">3500</option>
@@ -373,64 +390,61 @@ $conn->close();
                         <option value="6000">6000</option>
                         <option value="others">Others</option>
                     </select>
-                    <input type="text" name="concrete_psi_other" id="psiOther" class="form-control"
-                        style="display:none; margin-top:5px;">
+                    <input type="text" name="concrete_psi_other" id="psiOther" class="vb-field required-field"
+                        style="display:none; margin-top:5px;" required>
                 </div>
 
                 <!-- Curing Days -->
                 <div class="form-row">
-                    <label>Curing Days:</label>
-                    <select name="curation_days" class="form-control" id="curingDaysSelect">
+                    <label>Curing Days <span style="color:red;">*</span>:</label>
+                    <select name="curation_days" class="vb-field required-field" id="curingDaysSelect" required>
+                        <option value="">Select Days</option>
                         <option value="7">7</option>
                         <option value="14">14</option>
                         <option value="21">21</option>
                         <option value="others">Others</option>
                     </select>
-                    <input type="text" name="curation_days_other" id="curingDaysOther" class="form-control"
-                        style="display:none; margin-top:5px;">
+                    <input type="text" name="curation_days_other" id="curingDaysOther" class="vb-field required-field"
+                        style="display:none; margin-top:5px;" required>
                 </div>
 
                 <!-- Concrete Type -->
                 <div class="form-row">
-                    <label>Concrete Type:</label>
-                    <select name="concrete_type" class="form-control" id="concreteTypeSelect">
+                    <label>Concrete Type <span style="color:red;">*</span>:</label>
+                    <select name="concrete_type" class="vb-field required-field" id="concreteTypeSelect" required>
+                        <option value="">Select Type</option>
                         <option value="Ordinary">Ordinary</option>
                         <option value="Pumpcrete Design">Pumpcrete Design</option>
                         <option value="Tremie">Tremie</option>
                         <option value="others">Others</option>
                     </select>
-                    <input type="text" name="concrete_type_other" id="concreteTypeOther" class="form-control"
-                        style="display:none; margin-top:5px;">
+                    <input type="text" name="concrete_type_other" id="concreteTypeOther" class="vb-field required-field"
+                        style="display:none; margin-top:5px;" required>
                 </div>
 
                 <!-- Client Name -->
                 <div class="form-row">
-                    <label>Client Name:</label>
-                    <input name="client_name" class="vb-field">
+                    <label>Client Name <span style="color:red;">*</span>:</label>
+                    <input name="client_name" class="vb-field required-field" required>
                 </div>
 
                 <!-- Client Contact -->
                 <div class="form-row">
-                    <label>Client Contact:</label>
-                    <input name="client_contact" class="vb-field">
+                    <label>Client Contact <span style="color:red;">*</span>:</label>
+                    <input name="client_contact" class="vb-field required-field" required>
                 </div>
 
-                <!-- Experiment Notes -->
+                <!-- Remarks -->
                 <div class="form-row">
-                    <label>Experiment Notes:</label>
-                    <textarea name="experiment_notes" class="vb-field"></textarea>
-                </div>
-
-                <!-- Customization Notes -->
-                <div class="form-row">
-                    <label>Customization Notes:</label>
-                    <textarea name="customization_notes" class="vb-field"></textarea>
+                    <label>Remarks <span style="color:red;">*</span>:</label>
+                    <textarea name="cdl_remarks" class="vb-field required-field" required></textarea>
                 </div>
 
                 <!-- Is Active -->
                 <div class="form-row">
-                    <label>Is Active:</label>
-                    <select name="is_active" class="vb-field">
+                    <label>Is Active <span style="color:red;">*</span>:</label>
+                    <select name="is_active" class="vb-field required-field" required>
+                        <option value="">Select Status</option>
                         <option value="1">Active</option>
                         <option value="0">Inactive</option>
                     </select>
@@ -438,8 +452,8 @@ $conn->close();
 
                 <!-- Concrete Price -->
                 <div class="form-row">
-                    <label>Concrete Price:</label>
-                    <input name="concrete_price" class="vb-field">
+                    <label>Concrete Price <span style="color:red;">*</span>:</label>
+                    <input name="concrete_price" class="vb-field required-field" required>
                 </div>
             </div>
 
@@ -449,8 +463,8 @@ $conn->close();
 
 
                 <div class="form-row">
-                    <label>Cement Mix:</label>
-                    <input name="vb_cement_mix" class="vb-field" placeholder="29.00 kgs/0.50 m³">
+                    <label>Cement Mix <span style="color:red;">*</span>:</label>
+                    <input name="vb_cement_mix" class="vb-field required-field" required>
                 </div>
 
                 <div class="form-row">
@@ -459,8 +473,8 @@ $conn->close();
                 </div>
 
                 <div class="form-row">
-                    <label>Sand:</label>
-                    <input name="vb_sand" class="vb-field" placeholder="36.60 kgs/0.50 m³">
+                    <label>Sand <span style="color:red;">*</span>:</label>
+                    <input name="vb_sand" class="vb-field required-field" required>
                 </div>
 
                 <div class="form-row">
@@ -469,8 +483,8 @@ $conn->close();
                 </div>
 
                 <div class="form-row">
-                    <label>3/4\":</label>
-                    <input name="vb_three_fourth" class="vb-field" placeholder="42.55 kgs/0.50 m³">
+                    <label>3/4" <span style="color:red;">*</span>:</label>
+                    <input name="vb_three_fourth" class="vb-field required-field" required>
                 </div>
 
                 <div class="form-row">
@@ -479,13 +493,13 @@ $conn->close();
                 </div>
 
                 <div class="form-row">
-                    <label>Admix:</label>
-                    <input name="vb_admix" class="vb-field" placeholder="0.29 ltr">
+                    <label>Admix <span style="color:red;">*</span>:</label>
+                    <input name="vb_admix" class="vb-field required-field" required>
                 </div>
 
                 <div class="form-row">
-                    <label>Water:</label>
-                    <input name="vb_water" class="vb-field" placeholder="9.00 ltr">
+                    <label>Water <span style="color:red;">*</span>:</label>
+                    <input name="vb_water" class="vb-field required-field" required>
                 </div>
 
                 <div class="form-row">
@@ -512,8 +526,8 @@ $conn->close();
                 <div class="section-title ssd">Saturated Surface Dry (SSD)</div>
 
                 <div class="form-row">
-                    <label>Cement Mix:</label>
-                    <input name="ssd_cement_mix" class="ssd-field" placeholder="580.00">
+                    <label>Cement Mix <span style="color:red;">*</span>:</label>
+                    <input name="vb_cement_mix" class="vb-field required-field" required>
                 </div>
 
                 <div class="form-row">
@@ -522,8 +536,8 @@ $conn->close();
                 </div>
 
                 <div class="form-row">
-                    <label>Sand:</label>
-                    <input name="ssd_sand" class="ssd-field" placeholder="732.00">
+                    <label>Sand <span style="color:red;">*</span>:</label>
+                    <input name="ssd_sand" class="ssd-field required-field" required>
                 </div>
 
                 <div class="form-row">
@@ -532,8 +546,8 @@ $conn->close();
                 </div>
 
                 <div class="form-row">
-                    <label>3/4\":</label>
-                    <input name="ssd_three_fourth" class="ssd-field" placeholder="851.00">
+                    <label>3/4" <span style="color:red;">*</span>:</label>
+                    <input name="ssd_three_fourth" class="ssd-field required-field" required>
                 </div>
 
                 <div class="form-row">
@@ -542,13 +556,13 @@ $conn->close();
                 </div>
 
                 <div class="form-row">
-                    <label>Admix:</label>
-                    <input name="ssd_admix" class="ssd-field" placeholder="5.80">
+                    <label>Admix <span style="color:red;">*</span>:</label>
+                    <input name="ssd_admix" class="ssd-field required-field" required>
                 </div>
 
                 <div class="form-row">
-                    <label>Water:</label>
-                    <input name="ssd_water" class="ssd-field" placeholder="180.00">
+                    <label>Water <span style="color:red;">*</span>:</label>
+                    <input name="ssd_water" class="ssd-field required-field" required>
                 </div>
 
                 <div class="form-row">

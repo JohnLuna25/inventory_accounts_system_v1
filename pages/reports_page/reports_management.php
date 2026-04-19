@@ -4,23 +4,6 @@ require_once __DIR__ . '/../../FunctionAndDB/db_connect.php';
 
 // Fetch data for charts
 
-
-// ULTIMATE DEBUG - SAFE VERSION
-echo "<script>
-console.log('DEBUG MODE ACTIVATED');
-console.log('Readymix:', " . json_encode($readymixData ?? ['data' => []]) . ");
-console.log('Mixture:', " . json_encode($mixtureData ?? ['data' => []]) . ");
-console.log('Sales:', " . json_encode($salesData ?? ['data' => []]) . ");
-</script>";
-
-$readymixCount = isset($readymixData['data']) ? count($readymixData['data']) : 0;
-$mixtureSum = isset($mixtureData['data']) ? array_sum($mixtureData['data']) : 0;
-$salesCount = isset($salesData['data']) ? count($salesData['data']) : 0;
-
-echo '<div style="position:fixed;top:10px;right:10px;background:#28a745;color:white;padding:8px;font-size:12px;z-index:9999;border-radius:5px;">
-DEBUG: R=' . $readymixCount . ' M=' . number_format($mixtureSum / 1000, 1) . 'k S=' . $salesCount . '
-</div>';
-
 // FALLBACK TEST DATA - SAFE
 if (!isset($readymixData['data']) || empty($readymixData['data'])) {
     $readymixData = ['labels' => ['4000psi-28d', '3000psi-28d', '5000psi-28d', '2500psi-28d'], 'data' => [1250, 980, 750, 420]];
