@@ -18,10 +18,10 @@ if (isset($_GET['ajax']) && $_GET['ajax'] === 'filter_reports') {
     ];
 
     // 🔥 1. SALES - SIMPLIFIED (Works with your table)
-    $salesData = ['labels' => [], 'data' => [], 'table_labels' => []];
+    $salesData = ['labels' => [], 'data' => []];  // ✅ REMOVED table_labels
     $sql = "
         SELECT 
-            COALESCE(concrete_psi, 'Unknown') as psi,
+            TRIM(REGEXP_REPLACE(concrete_psi, '[^0-9]', '')) as psi,
             SUM(cubic_meters) as m3
         FROM statement_of_account 
         WHERE order_status = 'Done'
@@ -36,7 +36,7 @@ if (isset($_GET['ajax']) && $_GET['ajax'] === 'filter_reports') {
         while ($row = $result->fetch_assoc()) {
             $salesData['labels'][] = $row['psi'] . 'psi';
             $salesData['data'][] = round((float) $row['m3'], 1);
-            $salesData['table_labels'][] = number_format($row['m3'], 1) . 'm³';
+            // ✅ REMOVED table_labels line
         }
     }
 

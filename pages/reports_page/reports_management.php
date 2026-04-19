@@ -3,7 +3,7 @@ require_once __DIR__ . '/../../FunctionAndDB/Web_Functions.php';
 require_once __DIR__ . '/../../FunctionAndDB/db_connect.php';
 
 // Fetch data for charts
-include 'reports_data.php';
+
 
 // ULTIMATE DEBUG - SAFE VERSION
 echo "<script>
@@ -22,15 +22,30 @@ DEBUG: R=' . $readymixCount . ' M=' . number_format($mixtureSum / 1000, 1) . 'k 
 </div>';
 
 // FALLBACK TEST DATA - SAFE
-if (empty($readymixData['data'] ?? [])) {
+if (!isset($readymixData['data']) || empty($readymixData['data'])) {
     $readymixData = ['labels' => ['4000psi-28d', '3000psi-28d', '5000psi-28d', '2500psi-28d'], 'data' => [1250, 980, 750, 420]];
 }
-if (empty($mixtureData['data'] ?? [])) {
+if (!isset($mixtureData['data']) || empty($mixtureData['data'])) {
     $mixtureData = ['labels' => ['Cement', 'Fly Ash', 'Sand', '3/4', '3/8', 'G1', 'Admix', 'Water'], 'data' => [45000, 12000, 250000, 18000, 12000, 8000, 500, 30000]];
 }
-if (empty($salesData['data'] ?? [])) {
+if (!isset($salesData['data']) || empty($salesData['data'])) {
     $salesData = ['labels' => ['4000psi-28d', '3000psi-28d', '5000psi-28d', '3500psi-28d'], 'data' => [2450, 1980, 1750, 1420]];
 }
+
+if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
+    // Load default via AJAX simulation WITHOUT headers
+    ob_start();
+    $_GET['ajax'] = 'filter_reports';
+    $_GET['start_date'] = date('Y-m-01');
+    $_GET['end_date'] = date('Y-m-d', strtotime('yesterday'));
+    include 'reports_data.php';
+    $defaultResponse = json_decode(ob_get_clean(), true);
+
+    $readymixData = $defaultResponse['readymix'] ?? $readymixData;
+    $mixtureData = $defaultResponse['mixture'] ?? $mixtureData;
+    $salesData = $defaultResponse['sales'] ?? $salesData;
+}
+
 ?>
 
 <!DOCTYPE html>
@@ -48,53 +63,6 @@ if (empty($salesData['data'] ?? [])) {
 
     <!-- PRO TABLE STYLES -->
     <style>
-        /* PRO TABLE STYLES */
-        .table-toggle {
-            transition: all 0.3s ease;
-        }
-
-        .data-table {
-            background: rgba(255, 255, 255, 0.95) !important;
-            border-radius: 12px !important;
-            border: 1px solid #e0e6ed !important;
-            max-height: 250px !important;
-            overflow: auto !important;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
-        }
-
-        .data-table .header-row {
-            color: #3b82f6 !important;
-            background: rgba(59, 130, 246, 0.1) !important;
-            font-weight: 700 !important;
-        }
-
-        .data-table .hover-row {
-            transition: all 0.2s ease !important;
-            cursor: pointer !important;
-            border-radius: 8px !important;
-            margin: 0 -1rem !important;
-            padding: 0.75rem 1rem !important;
-        }
-
-        .data-table .hover-row:hover {
-            background: linear-gradient(90deg, #3b82f6, #60a5fa) !important;
-            color: white !important;
-            transform: translateX(4px) !important;
-        }
-
-        .table-btn {
-            background: rgba(59, 130, 246, 0.1) !important;
-            border: 2px solid #3b82f6 !important;
-            color: #1e40af !important;
-            font-weight: 600 !important;
-        }
-
-        .table-btn.active {
-            background: #3b82f6 !important;
-            color: white !important;
-            transform: translateY(-1px) !important;
-        }
-
         /* MAX Z-INDEX + NO CLIP */
         .info-wrapper {
             position: relative !important;
@@ -150,7 +118,7 @@ if (empty($salesData['data'] ?? [])) {
         }
 
         .info-tooltip::before {
-            content: "📊 LEGEND" !important;
+            content: "LEGEND" !important;
             display: block !important;
             font-size: 13px !important;
             font-weight: 700 !important;
@@ -159,7 +127,7 @@ if (empty($salesData['data'] ?? [])) {
         }
 
         .info-tooltip::after {
-            content: "🟢 Green = High Stock/Top Sales | 🟡 Yellow = Medium | 🔴 Red = Low/Bottom" !important;
+            content: "Green = High Stock/Top Sales | Yellow = Medium | Red = Low/Bottom" !important;
             display: block !important;
             font-size: 11px !important;
             margin-top: 12px !important;
@@ -190,11 +158,12 @@ if (empty($salesData['data'] ?? [])) {
                             <div class="col-lg-5 col-md-6 col-sm-8">
                                 <label class="form-label small fw-bold mb-1 text-primary">Date:</label>
                                 <div class="input-group input-group-sm">
+                                    <!-- ✅ CHANGE THESE 2 lines only: -->
                                     <input type="date" id="start_date" class="form-control form-control-sm"
-                                        value="<?= date('Y-m-d', strtotime('-30 days')) ?>">
+                                        value="<?= date('Y-m-01') ?>">
                                     <span class="input-group-text bg-light">-</span>
                                     <input type="date" id="end_date" class="form-control form-control-sm"
-                                        value="<?= date('Y-m-d') ?>">
+                                        value="<?= date('Y-m-d', strtotime('yesterday')) ?>">
                                 </div>
                             </div>
 
@@ -226,7 +195,7 @@ if (empty($salesData['data'] ?? [])) {
                             <div class="col-lg-2 col-md-2 col-sm-6">
                                 <label class="form-label small fw-bold mb-1 text-info d-none d-md-block">Chart:</label>
                                 <button id="chartToggle" class="btn btn-info btn-sm w-100 fw-bold p-2"
-                                    data-chart-type="bar">
+                                    onclick="toggleChartType()">
                                     Bar
                                 </button>
                             </div>
@@ -254,16 +223,6 @@ if (empty($salesData['data'] ?? [])) {
                         <div class="chart-container mb-4" style="height: 300px;">
                             <canvas id="readymixChart"></canvas>
                         </div>
-
-                        <!-- PRO TABLE TOGGLE -->
-                        <div class="table-toggle">
-                            <button class="btn btn-sm table-btn w-100" data-target="readymixTable">
-                                📋 Show Detailed Data <i class="fas fa-chevron-down ms-2"></i>
-                            </button>
-                            <div id="readymixTable" class="data-table mt-3 p-3" style="display: none">
-                                <!-- JS populates here -->
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -286,16 +245,6 @@ if (empty($salesData['data'] ?? [])) {
                         <!-- Chart Container -->
                         <div class="chart-container mb-4" style="height: 300px;">
                             <canvas id="mixtureChart"></canvas>
-                        </div>
-
-                        <!-- PRO TABLE TOGGLE -->
-                        <div class="table-toggle">
-                            <button class="btn btn-sm table-btn w-100" data-target="mixtureTable">
-                                📋 Show Detailed Data <i class="fas fa-chevron-down ms-2"></i>
-                            </button>
-                            <div id="mixtureTable" class="data-table mt-3 p-3" style="display: none">
-                                <!-- JS populates here -->
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -320,16 +269,6 @@ if (empty($salesData['data'] ?? [])) {
                         <div class="chart-container mb-4" style="height: 300px;">
                             <canvas id="salesChart"></canvas>
                         </div>
-
-                        <!-- PRO TABLE TOGGLE -->
-                        <div class="table-toggle">
-                            <button class="btn btn-sm table-btn w-100" data-target="salesTable">
-                                📋 Show Detailed Data <i class="fas fa-chevron-down ms-2"></i>
-                            </button>
-                            <div id="salesTable" class="data-table mt-3 p-3" style="display: none">
-                                <!-- JS populates here -->
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -340,22 +279,25 @@ if (empty($salesData['data'] ?? [])) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <!-- ALL-IN-ONE WORKING SCRIPT + PRO TABLES -->
-
-
-
+    <?php
+    include 'reports_data.php';
+    ?>
 
     <script>
         // ==========================================
         // 🔥 GLOBAL STATE
         // ==========================================
-        window.chartData = {
-            readymix: { labels: [], data: [] },
-            mixture: { labels: [], data: [] },
-            sales: { labels: [], data: [], table_labels: [] }
-        };
-
+        // 🔥 REAL DEFAULT DATA FROM PHP
         let charts = {};
         let currentChartType = 'bar';
+        window.chartData = {};
+        window.chartData.readymix = <?= json_encode($readymixData) ?>;
+        window.chartData.mixture = <?= json_encode($mixtureData) ?>;
+        window.chartData.sales = <?= json_encode($salesData) ?>;
+        console.log('DEFAULT DATA:', window.chartData);
+
+
+
 
         // ==========================================
         // 🔥 COLORS - Gradient Guaranteed
@@ -381,7 +323,7 @@ if (empty($salesData['data'] ?? [])) {
             const index = types.indexOf(currentChartType);
             currentChartType = types[(index + 1) % types.length];
 
-            console.log('🔄 Type:', currentChartType);
+            console.log('Type:', currentChartType);
 
             Object.keys(charts).forEach(id => {
                 const chart = charts[id];
@@ -396,50 +338,43 @@ if (empty($salesData['data'] ?? [])) {
             });
 
             const btn = document.getElementById('chartToggle');
-            if (btn) btn.innerHTML = ['📊 Bar', '📈 Line', '🥧 Pie'][(index + 1) % 3];
+            if (btn) btn.innerHTML = ['Bar', 'Line', 'Pie'][(index + 1) % 3];
         };
 
         // ==========================================
         // 🔥 MAIN FILTER
         // ==========================================
+        // 🔥 REPLACE ONLY THIS FUNCTION in your existing script
         window.filterData = function () {
             const startDate = document.getElementById('start_date')?.value || '';
             const endDate = document.getElementById('end_date')?.value || '';
 
             const btn = document.getElementById('filterBtn');
-            if (!btn) return console.error('❌ No filter button');
-
-            btn.innerHTML = '⏳ Loading...';
+            btn.innerHTML = 'Loading...';
             btn.disabled = true;
 
-            const url = new URL(window.location.href);
-            url.searchParams.set('ajax', 'filter_reports');
-            if (startDate) url.searchParams.set('start_date', startDate);
-            if (endDate) url.searchParams.set('end_date', endDate);
-
-            fetch(url.toString())
-                .then(r => r.ok ? r.json() : Promise.reject(`HTTP ${r.status}`))
+            fetch(`reports_data.php?ajax=filter_reports&start_date=${startDate}&end_date=${endDate}`)
+                .then(r => r.json())
                 .then(data => {
-                    console.log('✅ DATA:', data);
+                    console.log('GOT DATA:', data.readymix.data);
 
-                    ['readymix', 'mixture', 'sales'].forEach(key => {
-                        if (data[key]) window.chartData[key] = data[key];
-                    });
+                    // 🔥 EXACT ASSIGNMENT
+                    window.chartData.readymix = data.readymix;
+                    window.chartData.mixture = data.mixture;
+                    window.chartData.sales = data.sales;
 
-                    updateDebugPanel(data);
                     updateAllCharts();
 
-                    btn.innerHTML = `✅ ${data.debug?.sales_count || 0}`;
+                    btn.innerHTML = `${data.debug.sales_count}`;
                     btn.className = 'btn btn-success btn-sm w-100 fw-bold p-2 h-100';
                 })
                 .catch(e => {
-                    console.error('❌', e);
-                    btn.innerHTML = '❌ Error';
-                    btn.className = 'btn btn-danger btn-sm w-100 fw-bold p-2 h-100';
+                    console.error('AJAX ERROR:', e);
+                    btn.innerHTML = 'Error';
                 })
                 .finally(() => {
                     setTimeout(() => {
-                        btn.innerHTML = '🔄 Filter';
+                        btn.innerHTML = 'Filter';
                         btn.disabled = false;
                         btn.className = 'btn btn-primary btn-sm w-100 fw-bold p-2 h-100';
                     }, 1500);
@@ -450,17 +385,17 @@ if (empty($salesData['data'] ?? [])) {
         // 🔥 CHARTS - Toggle Ready
         // ==========================================
         function updateAllCharts() {
-            console.log('📊 Data:', Object.values(window.chartData).map(d => d.data.length));
+            console.log('Data:', Object.values(window.chartData).map(d => d.data.length));
 
             const configs = [
-                { id: 'readymixChart', key: 'readymix', title: '🛣️ Readymix', unit: 'm³' },
-                { id: 'mixtureChart', key: 'mixture', title: '🏭 Mixture', unit: 'T' },
-                { id: 'salesChart', key: 'sales', title: '💰 Sales', unit: 'm³' }
+                { id: 'readymixChart', key: 'readymix', title: 'Readymix', unit: 'm³' },
+                { id: 'mixtureChart', key: 'mixture', title: 'Mixture', unit: 'T' },
+                { id: 'salesChart', key: 'sales', title: 'Sales', unit: 'm³' }
             ];
 
             configs.forEach(config => {
                 const canvas = document.getElementById(config.id);
-                if (!canvas) return console.warn(`❌ ${config.id}`);
+                if (!canvas) return console.warn(`${config.id}`);
 
                 const data = window.chartData[config.key];
                 if (!data?.data?.length) return;
@@ -480,8 +415,8 @@ if (empty($salesData['data'] ?? [])) {
                             backgroundColor: colors.map(c => c.bg),
                             borderColor: colors.map(c => c.border),
                             borderWidth: currentChartType === 'line' ? 3 : 2,
-                            tension: currentChartType === 'line' ? 0.4 : 0,
-                            fill: currentChartType === 'line',
+                            tension: 0,
+                            fill: false,
                             pointRadius: currentChartType === 'line' ? 6 : 3,
                             borderRadius: currentChartType === 'bar' ? 8 : 0
                         }]
@@ -506,66 +441,13 @@ if (empty($salesData['data'] ?? [])) {
             });
         }
 
-        // ==========================================
-        // 🔥 DEBUG PANEL
-        // ==========================================
-        function updateDebugPanel(data) {
-            const div = document.getElementById('debugInfo') || createDebugDiv();
-            const totalSales = window.chartData.sales.data.reduce((a, b) => a + b, 0);
-            div.innerHTML = `
-            ✅ <strong>LIVE STATS:</strong><br>
-            🛣️ R: ${window.chartData.readymix.data.length}<br>
-            🏭 M: ${window.chartData.mixture.data.length}<br>
-            💰 S: ${window.chartData.sales.data.length} (${totalSales.toLocaleString()}m³)<br>
-            📅 ${data.debug?.date_range} | ${data.debug?.done_orders || 0} orders
-        `;
-            div.className = 'alert alert-success mt-3';
-        }
-
-        function createDebugDiv() {
-            const div = document.createElement('div');
-            div.id = 'debugInfo';
-            div.className = 'alert alert-info mt-3';
-            document.querySelector('.container-fluid')?.append(div);
-            return div;
-        }
-
-        // ==========================================
-        // 🔥 AUTO-LOAD THIS MONTH
-        // ==========================================
-        window.autoLoadData = function () {
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = String(today.getMonth() + 1).padStart(2, '0');
-            document.getElementById('start_date').value = `${year}-${month}-01`;
-            console.log(`🚀 Auto-load: ${year}-${month}-01`);
-            window.filterData();
-        };
-
-        // ==========================================
-        // 🔥 PERFECT INIT
-        // ==========================================
         document.addEventListener('DOMContentLoaded', function () {
-            console.log('🚀 Dashboard v3.0');
-
-            // Wait for canvases
-            const checkReady = setInterval(() => {
-                if (document.getElementById('readymixChart') &&
-                    document.getElementById('mixtureChart') &&
-                    document.getElementById('salesChart')) {
-
-                    clearInterval(checkReady);
-                    setTimeout(window.autoLoadData, 200);
-                }
-            }, 50);
-
-            // Bind buttons
-            document.getElementById('filterBtn')?.addEventListener('click', window.filterData);
-            document.getElementById('chartToggle')?.addEventListener('click', window.toggleChartType);
+            setTimeout(updateAllCharts, 500);
         });
+
+        updateAllCharts();
+
     </script>
-
-
 
 </body>
 
