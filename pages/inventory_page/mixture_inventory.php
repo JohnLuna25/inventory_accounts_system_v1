@@ -101,7 +101,7 @@ while ($d = $designs_result->fetch_assoc()) {
             background: white;
             padding: 10px;
             border-radius: 8px;
-            border: 1px solid #363636;
+            border: 1px solid #b4b4b4;
             margin-top: 8px;
         }
 

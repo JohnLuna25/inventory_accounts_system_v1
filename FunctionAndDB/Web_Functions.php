@@ -38,6 +38,11 @@ function showHeader()
 <nav class="slide-menu" id="slideMenuNav">
     <button class="close-menu" id="closeMenuBtn">&times;</button>
     <ul class="menu-list">
+        <li class="dashboard-title">
+            <p>
+                Main Menu
+            </p>
+        </li>
         <li><a href="/Inventory-Accounts-System-v1/pages/concrete_design_page/concrete_design_list.php">Concrete Design List</a></li>
         <li><a href="/Inventory-Accounts-System-v1/pages/inventory_page/inventory_management.php">Inventory Management</a></li>
         <li><a href="/Inventory-Accounts-System-v1/pages/statement_account_page/sap_accountsManagement.php">Transaction Records</a></li>
@@ -49,6 +54,23 @@ function showHeader()
 
 <style>
 /* 🔥 Z-INDEX WAR - BULLETPROOF */
+
+li.dashboard-title > p {
+    color: yellow;
+    font-size: 22px;
+    margin-top: -53px;
+    margin-bottom: 20px;
+          
+    /* ✅ FIXED: Center text INSIDE p */
+    text-align: center;
+    display: block;  /* p is block by default */
+    
+    /* ✅ OPTIONAL: Perfect width control */
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 #burgerMenuBtn {
     display: inline-flex !important;
     position: relative !important;
@@ -287,30 +309,52 @@ body, html { overflow-x: hidden; margin: 0; padding: 0; }
     }
     
     // INIT MULTIPLE TIMES
-    function init() { attachHandlers(); }
-    
-    document.addEventListener("DOMContentLoaded", init);
-    setTimeout(init, 500);
-    setTimeout(init, 1500);
-    
-    // ESCAPE
-    document.addEventListener("keydown", e => {
-        if (e.key === "Escape" && isMenuOpen) toggleMenu();
-    });
-    
-    window.confirmLogout = () => {
-        return confirm("Did you save all changes?") && confirm("Are you sure?");
-    };
-    
-    // CLOCK
-    setInterval(() => {
-        const clock = document.getElementById("clock");
-        if (clock) {
-            const now = new Date();
-            clock.textContent = now.toLocaleDateString("en-US", {month:"short",day:"2-digit",year:"numeric"}).replace(",", ".") + 
-                               " || " + now.toLocaleTimeString("en-US", {hour12:false});
-        }
-    }, 1000);
+    // 🔥 FORCE RESET FIRST
+function init() { 
+    // FORCE RESET FIRST
+    const burger = document.getElementById("burgerMenuBtn");
+    if (burger) {
+        burger.classList.remove("active");
+        burger.style.zIndex = "99999";
+        burger.style.pointerEvents = "auto";
+    }
+    attachHandlers(); 
+}
+
+document.addEventListener("DOMContentLoaded", init);
+setTimeout(init, 100);  // FASTER
+setTimeout(init, 500);
+setTimeout(init, 1500);
+
+// 🔥 ESCAPE - FORCE CLOSE
+document.addEventListener("keydown", e => {
+    if (e.key === "Escape") {
+        const burger = document.getElementById("burgerMenuBtn");
+        const menu = document.getElementById("slideMenuNav");
+        const overlay = document.getElementById("menuOverlayDiv");
+        const closeBtn = document.getElementById("closeMenuBtn");
+        if (burger) burger.classList.remove("active");
+        if (menu) menu.classList.remove("active");
+        if (overlay) overlay.classList.remove("active");
+        if (closeBtn) closeBtn.classList.remove("active");
+        document.body.classList.remove("menu-open");
+        isMenuOpen = false;
+    }
+});
+
+window.confirmLogout = () => {
+    return confirm("Did you save all changes?") && confirm("Are you sure?");
+};
+
+// CLOCK
+setInterval(() => {
+    const clock = document.getElementById("clock");
+    if (clock) {
+        const now = new Date();
+        clock.textContent = now.toLocaleDateString("en-US", {month:"short",day:"2-digit",year:"numeric"}).replace(",", ".") + 
+                           " || " + now.toLocaleTimeString("en-US", {hour12:false});
+    }
+}, 1000);
     
 })();
 </script>

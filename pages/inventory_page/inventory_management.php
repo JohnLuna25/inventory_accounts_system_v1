@@ -48,7 +48,7 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventory Management</title>
     <link rel="stylesheet" href="inventory_management.css">
-    <?php showHeader() ?>
+
 
     <style>
         /* ==== SAME STYLING AS CONCRETE DESIGN MASTERLIST ==== */
