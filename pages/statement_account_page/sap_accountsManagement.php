@@ -5,6 +5,25 @@ require_once __DIR__ . '/../../FunctionAndDB/db_connect.php';
 
 showHeader();
 
+function checkRemainingInventory($conn, $psi, $days, $type)
+{
+    $stmt = $conn->prepare("
+        SELECT stocks_in FROM sorcom_readymix_inventory 
+        WHERE design_mix_id = ? AND curation_days = ? AND concrete_type = ?
+        ORDER BY date_added DESC LIMIT 1
+    ");
+    if (!$stmt)
+        return 0;
+
+    $stmt->bind_param("sss", $psi, $days, $type);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $inventory = $result->fetch_assoc();
+    $stmt->close();
+
+    return $inventory ? intval($inventory['stocks_in']) : 0;
+}
+
 // Delete function
 function deleteOrder($conn, $sap_id)
 {
@@ -22,8 +41,14 @@ if (isset($_GET['delete'])) {
     }
 }
 
-// Fetch all non-done orders
-$sql = "SELECT * FROM statement_of_account WHERE order_status != 'done' ORDER BY sap_id DESC";
+// ✅ SAFE SORTING (uses EXISTING columns only)
+$sql = "
+    SELECT * FROM statement_of_account 
+    WHERE order_status != 'done' 
+    ORDER BY 
+        order_date DESC,   -- 🆗 Uses existing column
+        sap_id DESC        -- 🆗 Uses existing column  
+";
 $result = $conn->query($sql);
 ?>
 
@@ -141,7 +166,16 @@ $result = $conn->query($sql);
                                             <td class="dropbar-detail"><?= htmlspecialchars($row['curation_days'] ?? 'N/A') ?>
                                             </td>
                                             <td class="dropbar-detail"><?= htmlspecialchars($row['concrete_type']) ?></td>
-                                            <td class="dropbar-detail"><?= htmlspecialchars($row['sap_units']) ?></td>
+                                            <td class="dropbar-detail">
+                                                <?= htmlspecialchars($row['sap_units']) ?> units<br>
+                                                <small style="color:#666;">
+                                                    <?php
+                                                    // 🆕 Show remaining inventory
+                                                    $inv_check = checkRemainingInventory($conn, $row['concrete_psi'], $row['curation_days'], $row['concrete_type']);
+                                                    echo $inv_check > 0 ? "📦 {$inv_check} left" : "⚠️ Out of stock";
+                                                    ?>
+                                                </small>
+                                            </td>
                                         </tr>
                                     </table>
                                 </td>

@@ -87,14 +87,28 @@ sort($psiOptions);
 // --- Load existing data if editing ---
 if (isset($_GET['id'])) {
     $id = $_GET['id'];
-    $stmt = $conn->prepare("SELECT sap_id, order_date, delivery_date, customer_name, full_address, concrete_psi, curation_days, concrete_type, cubic_meters, sap_concrete_price, order_status FROM statement_of_account WHERE sap_id=?");
+    $stmt = $conn->prepare("SELECT sap_id, order_date, delivery_date, customer_name, full_address, 
+                                   concrete_psi, curation_days, concrete_type, sap_units, sap_concrete_price, order_status 
+                            FROM statement_of_account WHERE sap_id=?");
     $stmt->bind_param("s", $id);
     $stmt->execute();
-    $stmt->bind_result($sap_id, $order_date, $delivery_date, $customer_name, $full_address, $concrete_psi, $curation_days, $concrete_type, $units, $sap_concrete_price, $order_status);
+    $stmt->bind_result(
+        $sap_id,
+        $order_date,
+        $delivery_date,
+        $customer_name,
+        $full_address,
+        $concrete_psi,
+        $curation_days,
+        $concrete_type,
+        $sap_units,
+        $sap_concrete_price,
+        $order_status
+    );
     $stmt->fetch();
     $stmt->close();
 
-    // Split full name into components for editing
+    // Fix name splitting...
     if ($customer_name) {
         $name_parts = preg_split('/\s+/', trim($customer_name), 4);
         $last_name = $name_parts[0] ?? '';
@@ -102,6 +116,7 @@ if (isset($_GET['id'])) {
         $middle_name = $name_parts[2] ?? '';
         $suffix = $name_parts[3] ?? '';
     }
+
 
     // 🐛 FIX #1: ROBUST ADDRESS SPLITTING
     if ($full_address) {
@@ -124,7 +139,56 @@ if (isset($_GET['id'])) {
     $order_date = date('Y-m-d');
 }
 
-// --- Handle form submission ---
+//-----------------------------------------------------------------STEP 1: ADD THIS FUNCTION BEFORE POST HANDLER
+function checkAndUpdateInventory($conn, $concrete_psi, $curation_days, $concrete_type, $units)
+{
+    $stmt = $conn->prepare("
+        SELECT id, stocks_in, stocks_out, batch, current_stock_batch 
+        FROM sorcom_readymix_inventory 
+        WHERE design_mix_id = ? AND curation_days = ? AND concrete_type = ?
+        ORDER BY date_added DESC LIMIT 1
+    ");
+    $stmt->bind_param("sss", $concrete_psi, $curation_days, $concrete_type);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $inventory = $result->fetch_assoc();
+    $stmt->close();
+
+    if (!$inventory || intval($inventory['stocks_in']) <= 0) {
+        return ['success' => false, 'message' => 'No stock available for this mix'];
+    }
+
+    $available_units = intval($inventory['stocks_in']);
+    if ($units > $available_units) {
+        return ['success' => false, 'message' => "Only {$available_units} units available (max order)"];
+    }
+
+    // ✅ CALCULATE KGS DEDUCTION
+    $batch_size = floatval($inventory['batch']);  // 2332.0 kgs/unit
+    $total_kgs_deduct = $units * $batch_size;     // 2 units × 2332 = 4664 kgs
+
+    // ✅ UPDATE INVENTORY
+    $update_stmt = $conn->prepare("
+        UPDATE sorcom_readymix_inventory SET
+            stocks_in = GREATEST(0, stocks_in - ?),
+            stocks_out = stocks_out + ?,
+            current_stock_batch = ?
+        WHERE id = ?
+    ");
+
+    $new_current_stock = floatval($inventory['current_stock_batch']) - $total_kgs_deduct;
+    $new_current_stock = max(0, $new_current_stock); // Prevent negative
+
+    $update_stmt->bind_param("iids", $units, $units, $new_current_stock, $inventory['id']);
+    $update_success = $update_stmt->execute();
+    $update_stmt->close();
+
+    if ($update_success) {
+        return ['success' => true, 'deducted_units' => $units, 'deducted_kgs' => $total_kgs_deduct];
+    }
+    return ['success' => false, 'message' => 'Inventory update failed'];
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $order_date = $_POST['order_date'] ?? '';
     $delivery_date = $_POST['delivery_date'] ?? '';
@@ -148,31 +212,76 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $concrete_psi = $_POST['concrete_psi'] ?? '';
     $curation_days = $_POST['curation_days'] ?? '';
     $concrete_type = $_POST['concrete_type'] ?? '';
-    $sap_units = floatval($_POST['units'] ?? 0);
-    $sap_concrete_price = $_POST['sap_concrete_price'] ?? '';
-    $order_status = $_POST['order_status'] ?? '';
+    $sap_units = floatval($_POST['sap_units'] ?? 0);
+    $sap_concrete_price = floatval($_POST['sap_concrete_price'] ?? 0);
+    $order_status = $_POST['order_status'] ?? 'pending';
 
-    if (!empty($_POST['edit_id'])) {
-        $id = $_POST['edit_id'];
-        $stmt = $conn->prepare("UPDATE statement_of_account 
-            SET order_date=?, delivery_date=?, customer_name=?, full_address=?, concrete_psi=?, curation_days=?, concrete_type=?, sap_units=?, sap_concrete_price=?, order_status=? 
-            WHERE sap_id=?");
-        $stmt->bind_param("sssssssssss", $order_date, $delivery_date, $customer_name, $full_address, $concrete_psi, $curation_days, $concrete_type, $cubic_meters, $sap_concrete_price, $order_status, $id);
-    } else {
-        $sap_id = generateUniqueSapId($conn);
-        $stmt = $conn->prepare("INSERT INTO statement_of_account 
-            (sap_id, order_date, delivery_date, customer_name, full_address, concrete_psi, curation_days, concrete_type, cubic_meters, sap_concrete_price, order_status) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sssssssssss", $sap_id, $order_date, $delivery_date, $customer_name, $full_address, $concrete_psi, $curation_days, $concrete_type, $cubic_meters, $sap_concrete_price, $order_status);
-    }
+    // 🆕 1. CHECK & UPDATE INVENTORY FIRST
+    if ($sap_units > 0 && !empty($concrete_psi) && !empty($curation_days) && !empty($concrete_type)) {
+        $inventory_result = checkAndUpdateInventory($conn, $concrete_psi, $curation_days, $concrete_type, $sap_units);
 
-    if ($stmt->execute()) {
-        $stmt->close();
-        header("Location: sap_accountsManagement.php?success=1");
-        exit;
+        if (!$inventory_result['success']) {
+            $error_message = "❌ INVENTORY ERROR: " . $inventory_result['message'];
+        } else {
+            // ✅ INVENTORY OK - SAVE ORDER
+            if (!empty($_POST['edit_id'])) {
+                // EDIT MODE
+                $id = $_POST['edit_id'];
+                $stmt = $conn->prepare("UPDATE statement_of_account 
+                    SET order_date=?, delivery_date=?, customer_name=?, full_address=?, 
+                        concrete_psi=?, curation_days=?, concrete_type=?, sap_units=?, 
+                        sap_concrete_price=?, order_status=? 
+                    WHERE sap_id=?");
+                $stmt->bind_param(
+                    "sssssssdsss",  // ✅ 11 types for 11 params
+                    $order_date,
+                    $delivery_date,
+                    $customer_name,
+                    $full_address,
+                    $concrete_psi,
+                    $curation_days,
+                    $concrete_type,
+                    $sap_units,
+                    $sap_concrete_price,
+                    $order_status,
+                    $id
+                );
+            } else {
+                // NEW ORDER
+                $sap_id = generateUniqueSapId($conn);
+                $stmt = $conn->prepare("INSERT INTO statement_of_account 
+                    (sap_id, order_date, delivery_date, customer_name, full_address, 
+                     concrete_psi, curation_days, concrete_type, sap_units, sap_concrete_price, order_status) 
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt->bind_param(
+                    "sssssssdsss",  // ✅ 11 types for 11 params
+                    $sap_id,
+                    $order_date,
+                    $delivery_date,
+                    $customer_name,
+                    $full_address,
+                    $concrete_psi,
+                    $curation_days,
+                    $concrete_type,
+                    $sap_units,
+                    $sap_concrete_price,
+                    $order_status
+                );
+            }
+
+            if ($stmt->execute()) {
+                $stmt->close();
+                $success_msg = "✅ Order saved! Inventory deducted: " . $inventory_result['deducted_units'] .
+                    " units (" . number_format($inventory_result['deducted_kgs'], 1) . " kgs)";
+                header("Location: sap_accountsManagement.php?success=1&msg=" . urlencode($success_msg));
+                exit;
+            } else {
+                $error_message = "❌ Order failed: " . $stmt->error;
+                $stmt->close();
+            }
+        }
     } else {
-        $error_message = "Error saving order: " . $stmt->error;
-        $stmt->close();
+        $error_message = "❌ Please select concrete mix and enter units";
     }
 }
 ?>
@@ -318,7 +427,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <option value="">-- Select PSI --</option>
                                 <?php foreach ($psiOptions as $psi): ?>
                                     <?php
-                                    // 🐛 FIX #3: Normalize PSI display
                                     $display_psi = preg_replace('/\s*(psi|PSI)\s*/i', '', trim($psi));
                                     $normalized_psi = trim($display_psi);
                                     $selected = ($concrete_psi === $psi || $concrete_psi === $normalized_psi) ? 'selected' : '';
@@ -343,8 +451,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                         <div class="form-group">
                             <label>Units <span style="color: #f44336;">*</span></label>
-                            <input type="text" id="sap_units" name="sap_units" placeholder="3/4" required
-                                value="<?= htmlspecialchars($sap_units) ?>">
+                            <input type="number" id="sap_units" name="sap_units" step="0.01" min="0" required
+                                placeholder="Max based on inventory" value="<?= htmlspecialchars($sap_units) ?>">
                         </div>
                         <div class="form-group">
                             <label>Concrete Price (₱)</label>
@@ -363,6 +471,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </select>
                         </div>
                     </div>
+
+                    <!-- 🆕 INVENTORY STATUS DISPLAY -->
+                    <div id="inventory-status" style="display:none; margin-top:15px; padding:15px; border-radius:8px;">
+                        <div id="inventory-info" style="font-weight:bold; font-size:14px;">
+                            Select concrete mix to check availability...
+                        </div>
+                    </div>
                 </div>
 
                 <?php if (!empty($_GET['id'])): ?>
@@ -378,87 +493,147 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <script>
-        // 1. KILL AUTOCOMPLETE FIRST
+        // 🛠️ COMPLETE FIXED SCRIPT - DROPDOWNS + INVENTORY
         document.addEventListener('DOMContentLoaded', function () {
-            const inputs = document.querySelectorAll('input:not([type="hidden"]):not([type="submit"]):not([type="button"])');
+            // 1. ANTI-AUTOCOMPLETE
+            const inputs = document.querySelectorAll('input:not([type="hidden"])');
             inputs.forEach(input => {
                 input.autocomplete = 'one-time-code';
                 input.autocorrect = 'off';
                 input.autocapitalize = 'off';
                 input.spellcheck = false;
             });
-        });
 
-        // 2. CONCRETE DROPDOWN LOGIC
-        const concreteData = <?= json_encode($concreteData) ?>;
+            // 2. CONCRETE DROPDOWN DATA
+            const concreteData = <?= json_encode($concreteData) ?>;
 
-        document.getElementById('concrete_psi').addEventListener('change', function () {
-            const selectedPsi = this.value;
+            // 3. PSI CHANGE → Populate Days & Types
+            const psiSelect = document.getElementById('concrete_psi');
             const daysSelect = document.getElementById('curation_days');
             const typeSelect = document.getElementById('concrete_type');
 
-            // Clear options
-            daysSelect.innerHTML = '<option value="">-- Select Curation Days --</option>';
-            typeSelect.innerHTML = '<option value="">-- Select Concrete Type --</option>';
+            psiSelect.addEventListener('change', function () {
+                // Clear options
+                daysSelect.innerHTML = '<option value="">-- Select Days --</option>';
+                typeSelect.innerHTML = '<option value="">-- Select Type --</option>';
 
-            if (selectedPsi && concreteData[selectedPsi]) {
-                // Populate days
-                concreteData[selectedPsi].days.forEach(function (day) {
-                    const option = document.createElement('option');
-                    option.value = day;
-                    option.textContent = day;
-                    daysSelect.appendChild(option);
-                });
+                const selectedPsi = this.value;
+                if (selectedPsi && concreteData[selectedPsi]) {
+                    // Populate days (unique)
+                    concreteData[selectedPsi].days.forEach(function (day) {
+                        const option = document.createElement('option');
+                        option.value = day;
+                        option.textContent = day + ' days';
+                        daysSelect.appendChild(option);
+                    });
 
-                // Populate types
-                concreteData[selectedPsi].types.forEach(function (type) {
-                    const option = document.createElement('option');
-                    option.value = type;
-                    option.textContent = type;
-                    typeSelect.appendChild(option);
-                });
+                    // Populate types (unique)  
+                    concreteData[selectedPsi].types.forEach(function (type) {
+                        const option = document.createElement('option');
+                        option.value = type;
+                        option.textContent = type;
+                        typeSelect.appendChild(option);
+                    });
+                }
+
+                checkInventory(); // Check stock
+            });
+
+            // 4. INVENTORY CHECK FUNCTION
+            function checkInventory() {
+                const psi = psiSelect.value;
+                const days = daysSelect.value;
+                const type = typeSelect.value;
+                const statusDiv = document.getElementById('inventory-status');
+                const infoDiv = document.getElementById('inventory-info');
+                const unitsInput = document.getElementById('sap_units');
+
+                if (psi && days && type) {
+                    // Show loading
+                    infoDiv.innerHTML = '🔄 Checking inventory...';
+                    statusDiv.style.display = 'block';
+
+                    fetch(`check_inventory.php?psi=${encodeURIComponent(psi)}&days=${encodeURIComponent(days)}&type=${encodeURIComponent(type)}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.available) {
+                                infoDiv.innerHTML = `
+                            <div style="color:#28a745; font-weight:bold;">
+                                ✅ ${data.stocks_in} units available
+                            </div>
+                            <div style="font-size:12px; color:#666;">
+                                📏 ${data.total_kgs} total | 
+                                ⚖️ ${data.batch_size}/unit
+                            </div>
+                        `;
+                                statusDiv.style.background = '#d4edda';
+                                statusDiv.style.borderLeft = '4px solid #28a745';
+                                unitsInput.max = data.stocks_in;
+                                unitsInput.placeholder = `Max: ${data.stocks_in}`;
+                            } else {
+                                infoDiv.innerHTML = `
+                            <div style="color:#dc3545; font-weight:bold;">
+                                ❌ No stock available
+                            </div>
+                        `;
+                                statusDiv.style.background = '#f8d7da';
+                                statusDiv.style.borderLeft = '4px solid #dc3545';
+                                unitsInput.max = 0;
+                                unitsInput.placeholder = 'Out of stock';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Inventory check failed:', error);
+                            infoDiv.innerHTML = '❌ Check failed';
+                            statusDiv.style.background = '#fff3cd';
+                        });
+                } else {
+                    statusDiv.style.display = 'none';
+                }
             }
-        });
 
-        // 🐛 FIX #2: PROPER EDIT MODE INITIALIZATION
-        document.addEventListener('DOMContentLoaded', function () {
-            const psiSelect = document.getElementById('concrete_psi');
-            const savedDays = '<?= addslashes($curation_days) ?>';
-            const savedType = '<?= addslashes($concrete_type) ?>';
+            // 5. TRIGGER INVENTORY CHECK ON DROPDOWN CHANGES
+            [daysSelect, typeSelect].forEach(select => {
+                select.addEventListener('change', checkInventory);
+            });
 
-            if (psiSelect && psiSelect.value) {
-                // Trigger PSI change to populate dropdowns
-                psiSelect.dispatchEvent(new Event('change'));
+            // 6. FORM VALIDATION
+            const form = document.getElementById('concreteForm');
+            form.addEventListener('submit', function (e) {
+                const units = parseFloat(unitsInput.value);
+                const maxUnits = unitsInput.max || 0;
 
-                // Set saved values AFTER dropdowns are populated
-                setTimeout(function () {
-                    if (savedDays) {
-                        document.getElementById('curation_days').value = savedDays;
-                    }
-                    if (savedType) {
-                        document.getElementById('concrete_type').value = savedType;
-                    }
-                }, 200); // Give time for dropdown population
-            }
+                if (units > maxUnits) {
+                    e.preventDefault();
+                    alert(`Units exceed available stock! Max: ${maxUnits}`);
+                    return false;
+                }
 
-            // Set region if editing
+                if (!this.checkValidity()) {
+                    e.preventDefault();
+                    this.reportValidity();
+                }
+            });
+
+            // 7. EDIT MODE: Restore selections
+            <?php if (!empty($concrete_psi)): ?>
+                setTimeout(() => {
+                    psiSelect.value = '<?= addslashes($concrete_psi) ?>';
+                    psiSelect.dispatchEvent(new Event('change'));
+
+                    setTimeout(() => {
+                        daysSelect.value = '<?= addslashes($curation_days) ?>';
+                        typeSelect.value = '<?= addslashes($concrete_type) ?>';
+                        checkInventory();
+                    }, 200);
+                }, 100);
+            <?php endif; ?>
+
+            // 8. Region fix for edit
             const regionSelect = document.getElementById('region');
             if (regionSelect && '<?= $region ?>' !== '') {
                 regionSelect.value = '<?= $region ?>';
             }
-        });
-
-        // 4. FORM VALIDATION
-        document.addEventListener('DOMContentLoaded', function () {
-            const form = document.getElementById('concreteForm');
-            form.addEventListener('submit', function (e) {
-                if (!this.checkValidity()) {
-                    e.preventDefault();
-                    this.reportValidity();
-                    return false;
-                }
-                // Form is valid, allow normal submission
-            });
         });
     </script>
 </body>
