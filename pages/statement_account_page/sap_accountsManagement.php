@@ -132,7 +132,7 @@ $result = $conn->query($sql);
                                             <td class="dropbar-header">Concrete Design</td>
                                             <td class="dropbar-header">Curation Days</td>
                                             <td class="dropbar-header">Concrete Type</td>
-                                            <td class="dropbar-header">Cubic Meters</td>
+                                            <td class="dropbar-header">Units</td>
                                         </tr>
                                         <!-- ROW 2: DETAILS -->
                                         <tr>
@@ -141,7 +141,7 @@ $result = $conn->query($sql);
                                             <td class="dropbar-detail"><?= htmlspecialchars($row['curation_days'] ?? 'N/A') ?>
                                             </td>
                                             <td class="dropbar-detail"><?= htmlspecialchars($row['concrete_type']) ?></td>
-                                            <td class="dropbar-detail"><?= htmlspecialchars($row['cubic_meters']) ?></td>
+                                            <td class="dropbar-detail"><?= htmlspecialchars($row['sap_units']) ?></td>
                                         </tr>
                                     </table>
                                 </td>

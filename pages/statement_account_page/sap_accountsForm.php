@@ -36,7 +36,7 @@ $concrete_psi = "";
 $curation_days = "";
 $concrete_type = "";
 $order_status = "";
-$cubic_meters = 0;
+$units = 0;
 $sap_id = "";
 $sap_concrete_price = "";
 $error_message = "";
@@ -44,7 +44,7 @@ $error_message = "";
 // --- Status labels mapping ---
 $statusLabels = [
     'Pending' => 'Pending',
-    'In Transit' => 'In Progress',
+    'In Transit' => 'In Transit',
     'Done' => 'Done'
 ];
 
@@ -90,7 +90,7 @@ if (isset($_GET['id'])) {
     $stmt = $conn->prepare("SELECT sap_id, order_date, delivery_date, customer_name, full_address, concrete_psi, curation_days, concrete_type, cubic_meters, sap_concrete_price, order_status FROM statement_of_account WHERE sap_id=?");
     $stmt->bind_param("s", $id);
     $stmt->execute();
-    $stmt->bind_result($sap_id, $order_date, $delivery_date, $customer_name, $full_address, $concrete_psi, $curation_days, $concrete_type, $cubic_meters, $sap_concrete_price, $order_status);
+    $stmt->bind_result($sap_id, $order_date, $delivery_date, $customer_name, $full_address, $concrete_psi, $curation_days, $concrete_type, $units, $sap_concrete_price, $order_status);
     $stmt->fetch();
     $stmt->close();
 
@@ -148,14 +148,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $concrete_psi = $_POST['concrete_psi'] ?? '';
     $curation_days = $_POST['curation_days'] ?? '';
     $concrete_type = $_POST['concrete_type'] ?? '';
-    $cubic_meters = floatval($_POST['cubic_meters'] ?? 0);
+    $sap_units = floatval($_POST['units'] ?? 0);
     $sap_concrete_price = $_POST['sap_concrete_price'] ?? '';
     $order_status = $_POST['order_status'] ?? '';
 
     if (!empty($_POST['edit_id'])) {
         $id = $_POST['edit_id'];
         $stmt = $conn->prepare("UPDATE statement_of_account 
-            SET order_date=?, delivery_date=?, customer_name=?, full_address=?, concrete_psi=?, curation_days=?, concrete_type=?, cubic_meters=?, sap_concrete_price=?, order_status=? 
+            SET order_date=?, delivery_date=?, customer_name=?, full_address=?, concrete_psi=?, curation_days=?, concrete_type=?, sap_units=?, sap_concrete_price=?, order_status=? 
             WHERE sap_id=?");
         $stmt->bind_param("sssssssssss", $order_date, $delivery_date, $customer_name, $full_address, $concrete_psi, $curation_days, $concrete_type, $cubic_meters, $sap_concrete_price, $order_status, $id);
     } else {
@@ -342,9 +342,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>Cubic Meters <span style="color: #f44336;">*</span></label>
-                            <input type="text" id="cubic_meters" name="cubic_meters" placeholder="3/4" required
-                                value="<?= htmlspecialchars($cubic_meters) ?>">
+                            <label>Units <span style="color: #f44336;">*</span></label>
+                            <input type="text" id="sap_units" name="sap_units" placeholder="3/4" required
+                                value="<?= htmlspecialchars($sap_units) ?>">
                         </div>
                         <div class="form-group">
                             <label>Concrete Price (₱)</label>
