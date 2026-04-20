@@ -54,6 +54,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             : ($_POST[$key] ?? '');
     };
 
+    // **FIXED: Only columns that exist in your database**
     $update = "UPDATE cdl_customized_mix_list SET
 
         cdl_vb_cubic_meter='" . $escape($getValue('vb_cubic_meter', 'vb_cubic_meter_other')) . "',
@@ -93,8 +94,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         cdl_client_name='" . $escape($_POST['client_name']) . "',
         cdl_client_contact='" . $escape($_POST['client_contact']) . "',
-        cdl_experiment_notes='" . $escape($_POST['experiment_notes']) . "',
-        cdl_customization_notes='" . $escape($_POST['customization_notes']) . "',
         cdl_is_active='" . $escape($_POST['is_active']) . "',
         updated_at=NOW()
 
@@ -104,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header("Location: concrete_design_list.php");
         exit;
     } else {
-        echo "Error: " . $conn->error;
+        $error = "Error: " . $conn->error;
     }
 }
 ?>
@@ -139,7 +138,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-radius: 10px;
         }
 
-        /* HEADER TITLE (UNCHANGED) */
         .form-grid h2 {
             grid-column: 1 / -1;
             text-align: center;
@@ -150,11 +148,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             border-radius: 8px;
         }
 
-        /* MOVE CARDS SLIGHTLY DOWN */
         .form-grid {
             align-items: start;
             margin-top: 25px;
-            /* reduced from 100px */
             margin-left: 30px;
             margin-right: 30px;
             display: grid;
@@ -193,13 +189,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             text-decoration: none;
             border-radius: 10px;
             font-size: 16px;
+            display: inline-block;
+            line-height: 1.5;
         }
 
         .btn-cancel:hover {
             background: #5a6268;
         }
 
-        /* CARD STYLE */
         .form-card {
             height: 100%;
             border: 1px solid #ddd;
@@ -222,7 +219,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             background: #4CAF50;
         }
 
-        /* FORM ROWS */
         .form-row {
             display: flex;
             flex-wrap: wrap;
@@ -233,6 +229,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .form-row label {
             width: 160px;
             font-weight: bold;
+            min-width: 160px;
         }
 
         .form-row input,
@@ -242,32 +239,43 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             padding: 8px;
             border: 1px solid #ccc;
             border-radius: 5px;
+            min-width: 200px;
         }
 
         .vb-field {
             border-left: 4px solid #0b63c4;
+            padding-left: 10px;
         }
 
         .ssd-field {
             border-left: 4px solid #4CAF50;
+            padding-left: 10px;
         }
 
-        /* RESPONSIVE */
+        .error {
+            color: red;
+            padding: 10px;
+            background: #ffe6e6;
+            border-radius: 5px;
+            margin: 20px 30px;
+        }
+
         @media (max-width: 1100px) {
             .form-grid {
                 grid-template-columns: 1fr;
             }
         }
     </style>
-
 </head>
 
 <body>
+    <?php if (isset($error)): ?>
+        <div class="error"><?php echo htmlspecialchars($error); ?></div>
+    <?php endif; ?>
 
     <form id="addForm" method="POST">
-
         <div class="form-grid">
-            <h2>Edit Customized Concrete Mix</h2>
+            <h2>Edit Customized Mix #<?php echo $mix_id; ?></h2>
 
             <!-- BUTTONS -->
             <div class="form-buttons">
@@ -281,246 +289,225 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                 <!-- Cubic Meter -->
                 <div class="form-row">
-                    <label>Cubic Meter:</label>
-                    <select name="vb_cubic_meter" class="vb-field" id="cubicMeterSelect">
-                        <option value="3/4"<?= ($data['cdl_vb_cubic_meter'] == '3/4') ? 'selected' : '' ?>>3/4</option>
-            <option value="others" <?= (!in_array($data['cdl_vb_cubic_meter'], ['3/4'])) ? 'selected' : '' ?>>Others</option>
-        </select>
+                    <label>Cubic Meter <span style="color:red;">*</span>:</label>
+                    <select name="vb_cubic_meter" class="vb-field required-field" id="cubicMeterSelect" required>
+                        <option value="">Select Cubic Meter</option>
+                        <option value="3/4" <?php echo ($data['cdl_vb_cubic_meter'] == '3/4') ? 'selected' : ''; ?>>3/4
+                        </option>
+                        <option value="others" <?php echo $meter_is_other ? 'selected' : ''; ?>>Others</option>
+                    </select>
+                    <input type="text" name="vb_cubic_meter_other" id="cubicMeterOther" class="vb-field required-field"
+                        value="<?php echo $meter_is_other ? htmlspecialchars($data['cdl_vb_cubic_meter']) : ''; ?>"
+                        placeholder="Enter cubic meter"
+                        style="display:<?php echo $meter_is_other ? 'block' : 'none'; ?>; margin-top:5px;" <?php echo $meter_is_other ? 'required' : ''; ?>>
+                </div>
 
-        <input type="text"
-               name="vb_cubic_meter_other"
-               id="cubicMeterOther"
-               class="vb-field"
-               placeholder="Enter cubic meter"
-               style="display:<?= in_array($data['cdl_vb_cubic_meter'], ['3/4']) ? 'none' : 'block' ?>; margin-top:5px;"
-               value="<?= (!in_array($data['cdl_vb_cubic_meter'], ['3/4'])) ? htmlspecialchars($data['cdl_vb_cubic_meter']) : '' ?>">
-    </div>
+                <!-- Concrete Slump -->
+                <div class="form-row">
+                    <label>Concrete Slump <span style="color:red;">*</span>:</label>
+                    <input name="vb_concrete_slump" class="vb-field required-field"
+                        value="<?php echo htmlspecialchars($data['cdl_vb_concrete_slump'] ?? ''); ?>"
+                        placeholder='6" - 8"' required>
+                </div>
 
-    <!-- Concrete Slump -->
-    <div class="form-row">
-        <label>Concrete Slump:</label>
-        <input name="vb_concrete_slump"
-               class="vb-field"
-               value="<?= htmlspecialchars($data['cdl_vb_concrete_slump']) ?>">
-    </div>
+                <!-- W/C Ratio -->
+                <div class="form-row">
+                    <label>W/C Ratio <span style="color:red;">*</span>:</label>
+                    <input name="vb_wc_ratio" class="vb-field required-field"
+                        value="<?php echo htmlspecialchars($data['cdl_vb_wc_ratio'] ?? ''); ?>" placeholder="0.00"
+                        required>
+                </div>
 
-    <!-- W/C Ratio -->
-    <div class="form-row">
-        <label>W/C Ratio:</label>
-        <input name="vb_wc_ratio"
-               class="vb-field"
-               value="<?= htmlspecialchars($data['cdl_vb_wc_ratio']) ?>">
-    </div>
+                <!-- Cement Source -->
+                <div class="form-row">
+                    <label>Cement Source <span style="color:red;">*</span>:</label>
+                    <select name="vb_cement_source" class="vb-field required-field" id="cementSourceSelect" required>
+                        <option value="">Select Cement Source</option>
+                        <option value="Portland" <?php echo ($data['cdl_vb_cement_source'] == 'Portland') ? 'selected' : ''; ?>>Portland</option>
+                        <option value="others" <?php echo $cement_is_other ? 'selected' : ''; ?>>Others</option>
+                    </select>
+                    <input type="text" name="vb_cement_source_other" id="cementSourceOther"
+                        value="<?php echo $cement_is_other ? htmlspecialchars($data['cdl_vb_cement_source']) : ''; ?>"
+                        class="vb-field required-field"
+                        style="display:<?php echo $cement_is_other ? 'block' : 'none'; ?>; margin-top:5px;" <?php echo $cement_is_other ? 'required' : ''; ?>>
+                </div>
 
-    <!-- Cement Source -->
-    <div class="form-row">
-        <label>Cement Source:</label>
-        <select name="vb_cement_source" class="vb-field" id="cementSourceSelect">
-            <option value="Portland" <?= ($data['cdl_vb_cement_source'] == 'Portland') ? 'selected' : '' ?>>Portland</option>
-            <option value="others" <?= ($data['cdl_vb_cement_source'] != 'Portland') ? 'selected' : '' ?>>Others</option>
-        </select>
+                <!-- Admix Source -->
+                <div class="form-row">
+                    <label>Admix Source <span style="color:red;">*</span>:</label>
+                    <select name="vb_admix_source" class="vb-field required-field" id="admixSourceSelect" required>
+                        <option value="">Select Admix Source</option>
+                        <option value="Proem" <?php echo ($data['cdl_vb_admix_source'] == 'Proem') ? 'selected' : ''; ?>>
+                            Proem</option>
+                        <option value="others" <?php echo $admix_is_other ? 'selected' : ''; ?>>Others</option>
+                    </select>
+                    <input type="text" name="vb_admix_source_other" id="admixSourceOther"
+                        value="<?php echo $admix_is_other ? htmlspecialchars($data['cdl_vb_admix_source']) : ''; ?>"
+                        class="vb-field required-field"
+                        style="display:<?php echo $admix_is_other ? 'block' : 'none'; ?>; margin-top:5px;" <?php echo $admix_is_other ? 'required' : ''; ?>>
+                </div>
 
-        <input type="text"
-               name="vb_cement_source_other"
-               id="cementSourceOther"
-               class="vb-field"
-               style="display:<?= ($data['cdl_vb_cement_source'] == 'Portland') ? 'none' : 'block' ?>; margin-top:5px;"
-               value="<?= ($data['cdl_vb_cement_source'] != 'Portland') ? htmlspecialchars($data['cdl_vb_cement_source']) : '' ?>">
-    </div>
+                <!-- Concrete PSI -->
+                <div class="form-row">
+                    <label>Concrete PSI <span style="color:red;">*</span>:</label>
+                    <select name="concrete_psi" class="vb-field required-field" id="psiSelect" required>
+                        <option value="">Select PSI</option>
+                        <?php foreach ($psiOptions as $psi): ?>
+                            <option value="<?php echo $psi; ?>" <?php echo ($data['cdl_vb_concrete_psi'] == $psi) ? 'selected' : ''; ?>><?php echo $psi; ?></option>
+                        <?php endforeach; ?>
+                        <option value="others" <?php echo $psi_is_other ? 'selected' : ''; ?>>Others</option>
+                    </select>
+                    <input type="text" name="concrete_psi_other" id="psiOther" class="vb-field required-field"
+                        value="<?php echo $psi_is_other ? htmlspecialchars($data['cdl_vb_concrete_psi']) : ''; ?>"
+                        style="display:<?php echo $psi_is_other ? 'block' : 'none'; ?>; margin-top:5px;" <?php echo $psi_is_other ? 'required' : ''; ?>>
+                </div>
 
-    <!-- Admix Source -->
-    <div class="form-row">
-        <label>Admix Source:</label>
-        <select name="vb_admix_source" class="vb-field" id="admixSourceSelect">
-            <option value="Proem" <?= ($data['cdl_vb_admix_source'] == 'Proem') ? 'selected' : '' ?>>Proem</option>
-            <option value="others" <?= ($data['cdl_vb_admix_source'] != 'Proem') ? 'selected' : '' ?>>Others</option>
-        </select>
+                <!-- Curing Days -->
+                <div class="form-row">
+                    <label>Curing Days <span style="color:red;">*</span>:</label>
+                    <select name="curation_days" class="vb-field required-field" id="curingDaysSelect" required>
+                        <option value="">Select Days</option>
+                        <?php foreach ($daysOptions as $day): ?>
+                            <option value="<?php echo $day; ?>" <?php echo ($data['cdl_vb_curation_days'] == $day) ? 'selected' : ''; ?>><?php echo $day; ?></option>
+                        <?php endforeach; ?>
+                        <option value="others" <?php echo $days_is_other ? 'selected' : ''; ?>>Others</option>
+                    </select>
+                    <input type="text" name="curation_days_other" id="curingDaysOther" class="vb-field required-field"
+                        value="<?php echo $days_is_other ? htmlspecialchars($data['cdl_vb_curation_days']) : ''; ?>"
+                        style="display:<?php echo $days_is_other ? 'block' : 'none'; ?>; margin-top:5px;" <?php echo $days_is_other ? 'required' : ''; ?>>
+                </div>
 
-        <input type="text"
-               name="vb_admix_source_other"
-               id="admixSourceOther"
-               class="vb-field"
-               style="display:<?= ($data['cdl_vb_admix_source'] == 'Proem') ? 'none' : 'block' ?>; margin-top:5px;"
-               value="<?= ($data['cdl_vb_admix_source'] != 'Proem') ? htmlspecialchars($data['cdl_vb_admix_source']) : '' ?>">
-    </div>
+                <!-- Concrete Type -->
+                <div class="form-row">
+                    <label>Concrete Type <span style="color:red;">*</span>:</label>
+                    <select name="concrete_type" class="vb-field required-field" id="concreteTypeSelect" required>
+                        <option value="">Select Type</option>
+                        <?php foreach ($typeOptions as $type): ?>
+                            <option value="<?php echo $type; ?>" <?php echo ($data['cdl_vb_concrete_type'] == $type) ? 'selected' : ''; ?>>
+                                <?php echo $type; ?>
+                                </option>
+                        <?php endforeach; ?>
+                        <option value="others" <?php echo $type_is_other ? 'selected' : ''; ?>>Others</option>
+                    </select>
+                    <input type="text" name="concrete_type_other" id="concreteTypeOther" class="vb-field required-field"
+                        value="<?php echo $type_is_other ? htmlspecialchars($data['cdl_vb_concrete_type']) : ''; ?>"
+                       
+                        style="display:<?php echo $type_is_other ? 'block' : 'none'; ?>; margin-top:5px;" <?php echo $type_is_other ? 'required' : ''; ?>>
+                </div>
 
-    <!-- Concrete PSI -->
-    <div class="form-row">
-        <label>Concrete PSI:</label>
-        <select name="concrete_psi" class="form-control" id="psiSelect">
-            <?php
-            $psiOptions = ["1500", "3000", "3500", "4000", "4500", "5000", "6000"];
-            $val = $data['cdl_vb_concrete_psi'];
-            foreach ($psiOptions as $opt) {
-                $sel = ($val == $opt) ? 'selected' : '';
-                echo "<option value='$opt' $sel>$opt</option>";
-            }
-            ?>
-            <option value="others" <?= (!in_array($val, $psiOptions)) ? 'selected' : '' ?>>Others</option>
-        </select>
+                <!-- Client Name -->
+                <div class="form-row">
+                    <label>Client Name <span style="color:red;">*</span>:</label>
+                    <input name="client_name" class="vb-field required-field"
+                        value="<?php echo htmlspecialchars($data['cdl_client_name'] ?? ''); ?>" required>
+                </div>
 
-        <input type="text"
-               name="concrete_psi_other"
-               id="psiOther"
-               class="form-control"
-               style="display:<?= in_array($val, $psiOptions) ? 'none' : 'block' ?>; margin-top:5px;"
-               value="<?= (!in_array($val, $psiOptions)) ? htmlspecialchars($val) : '' ?>">
-    </div>
+                <!-- Client Contact -->
+                <div class="form-row">
+                    <label>Client Contact <span style="color:red;">*</span>:</label>
+                    <input name="client_contact" class="vb-field required-field"
+                        value="<?php echo htmlspecialchars($data['cdl_client_contact'] ?? ''); ?>" required>
+                </div>
 
-    <!-- Curing Days -->
-    <div class="form-row">
-        <label>Curing Days:</label>
-        <select name="curation_days" class="form-control" id="curingDaysSelect">
-            <?php
-            $daysOptions = ["7", "14", "21"];
-            $val = $data['cdl_vb_curation_days'];
-            foreach ($daysOptions as $opt) {
-                $sel = ($val == $opt) ? 'selected' : '';
-                echo "<option value='$opt' $sel>$opt</option>";
-            }
-            ?>
-            <option value="others" <?= (!in_array($val, $daysOptions)) ? 'selected' : '' ?>>Others</option>
-        </select>
+                <!-- Remarks (if cdl_remarks exists) -->
+            <?php if (isset($data['cdl_remarks'])): ?>
+                    <div class="form-row">
+                        <label>Remarks:</label>
+                        <textarea name="cdl_remarks"
+                            class="vb-field"><?php echo htmlspecialchars($data['cdl_remarks'] ?? ''); ?></textarea>
+                        </div>
+                <?php endif; ?>
 
-        <input type="text"
-               name="curation_days_other"
-               id="curingDaysOther"
-               class="form-control"
-               style="display:<?= in_array($val, $daysOptions) ? 'none' : 'block' ?>; margin-top:5px;"
-               value="<?= (!in_array($val, $daysOptions)) ? htmlspecialchars($val) : '' ?>">
-    </div>
+                <!-- Is Active -->
+                <div class="form-row">
+                    <label>Is Active <span style="color:red;">*</span>:</label>
+                    <select name="is_active" class="vb-field required-field" required>
+                        <option value="">Select Status</option>
+                        <option value="1" <?php echo ($data['cdl_is_active'] == '1') ? 'selected' : ''; ?>>Active
+                        </option>
+                        <option value="0" <?php echo ($data['cdl_is_active'] == '0') ? 'selected' : ''; ?>>Inactive
+                        </option>
+                    </select>
+                </div>
 
-    <!-- Concrete Type -->
-    <div class="form-row">
-        <label>Concrete Type:</label>
-        <select name="concrete_type" class="form-control" id="concreteTypeSelect">
-            <?php
-            $typeOptions = ["Ordinary", "Pumpcrete Design", "Tremie"];
-            $val = $data['cdl_vb_concrete_type'];
-            foreach ($typeOptions as $opt) {
-                $sel = ($val == $opt) ? 'selected' : '';
-                echo "<option value='$opt' $sel>$opt</option>";
-            }
-            ?>
-            <option value="others" <?= (!in_array($val, $typeOptions)) ? 'selected' : '' ?>>Others</option>
-        </select>
-
-        <input type="text"
-               name="concrete_type_other"
-               id="concreteTypeOther"
-               class="form-control"
-               style="display:<?= in_array($val, $typeOptions) ? 'none' : 'block' ?>; margin-top:5px;"
-               value="<?= (!in_array($val, $typeOptions)) ? htmlspecialchars($val) : '' ?>">
-    </div>
-
-    <!-- Client Name -->
-    <div class="form-row">
-        <label>Client Name:</label>
-        <input name="client_name"
-               class="vb-field"
-               value="<?= htmlspecialchars($data['cdl_client_name']) ?>">
-    </div>
-
-    <!-- Client Contact -->
-    <div class="form-row">
-        <label>Client Contact:</label>
-        <input name="client_contact"
-               class="vb-field"
-               value="<?= htmlspecialchars($data['cdl_client_contact']) ?>">
-    </div>
-
-    <!-- Experiment Notes -->
-    <div class="form-row">
-        <label>Experiment Notes:</label>
-        <textarea name="experiment_notes" class="vb-field"><?= htmlspecialchars($data['cdl_experiment_notes']) ?></textarea>
-    </div>
-
-    <!-- Customization Notes -->
-    <div class="form-row">
-        <label>Customization Notes:</label>
-        <textarea name="customization_notes" class="vb-field"><?= htmlspecialchars($data['cdl_customization_notes']) ?></textarea>
-    </div>
-
-    <!-- Is Active -->
-    <div class="form-row">
-        <label>Is Active:</label>
-        <select name="is_active" class="vb-field">
-            <option value="1" <?= ($data['cdl_is_active'] == 1) ? 'selected' : '' ?>>Active</option>
-            <option value="0" <?= ($data['cdl_is_active'] == 0) ? 'selected' : '' ?>>Inactive</option>
-        </select>
-    </div>
-
-    <!-- Concrete Price -->
-    <div class="form-row">
-        <label>Concrete Price:</label>
-        <input name="concrete_price"
-               class="vb-field"
-               value="<?= htmlspecialchars($data['cdl_concrete_price']) ?>">
-    </div>
-</div>
+                <!-- Concrete Price -->
+                <div class="form-row">
+                    <label>Concrete Price <span style="color:red;">*</span>:</label>
+                    <input name="concrete_price" class="vb-field required-field"
+                        value="<?php echo htmlspecialchars($data['cdl_concrete_price'] ?? ''); ?>" required>
+                </div>
+            </div>
 
             <!-- ================= VB CARD ================= -->
             <div class="form-card">
                 <div class="section-title">Volume Batch (VB)</div>
 
-
                 <div class="form-row">
-                    <label>Cement Mix:</label>
-                    <input name="vb_cement_mix" class="vb-field" placeholder="29.00 kgs/0.50 m³">
+                    <label>Cement Mix <span style="color:red;">*</span>:</label>
+                    <input name="vb_cement_mix" class="vb-field required-field"
+                        value="<?php echo htmlspecialchars($data['cdl_vb_cement_mix'] ?? ''); ?>" required>
                 </div>
 
                 <div class="form-row">
                     <label>Fly Ash:</label>
-                    <input name="vb_fly_ash" class="vb-field" placeholder="3.00">
+                    <input name="vb_fly_ash" class="vb-field"
+                        value="<?php echo htmlspecialchars($data['cdl_vb_fly_ash'] ?? ''); ?>" placeholder="3.00">
                 </div>
 
                 <div class="form-row">
-                    <label>Sand:</label>
-                    <input name="vb_sand" class="vb-field" placeholder="36.60 kgs/0.50 m³">
+                    <label>Sand <span style="color:red;">*</span>:</label>
+                    <input name="vb_sand" class="vb-field required-field"
+                        value="<?php echo htmlspecialchars($data['cdl_vb_sand'] ?? ''); ?>" required>
                 </div>
 
                 <div class="form-row">
-                    <label>3/8\":</label>
-                    <input name="vb_three_eight" class="vb-field" placeholder="42.55">
+                    <label>3/8":</label>
+                    <input name="vb_three_eight" class="vb-field"
+                        value="<?php echo htmlspecialchars($data['cdl_vb_three_eight'] ?? ''); ?>" placeholder="42.55">
                 </div>
 
                 <div class="form-row">
-                    <label>3/4\":</label>
-                    <input name="vb_three_fourth" class="vb-field" placeholder="42.55 kgs/0.50 m³">
+                    <label>3/4" <span style="color:red;">*</span>:</label>
+                    <input name="vb_three_fourth" class="vb-field required-field"
+                        value="<?php echo htmlspecialchars($data['cdl_vb_three_fourth'] ?? ''); ?>" required>
                 </div>
 
                 <div class="form-row">
                     <label>G1:</label>
-                    <input name="vb_G1" class="vb-field">
+                    <input name="vb_G1" class="vb-field"
+                        value="<?php echo htmlspecialchars($data['cdl_vb_G1'] ?? ''); ?>">
                 </div>
 
                 <div class="form-row">
-                    <label>Admix:</label>
-                    <input name="vb_admix" class="vb-field" placeholder="0.29 ltr">
+                    <label>Admix <span style="color:red;">*</span>:</label>
+                    <input name="vb_admix" class="vb-field required-field"
+                        value="<?php echo htmlspecialchars($data['cdl_vb_admix'] ?? ''); ?>" required>
                 </div>
 
                 <div class="form-row">
-                    <label>Water:</label>
-                    <input name="vb_water" class="vb-field" placeholder="9.00 ltr">
+                    <label>Water <span style="color:red;">*</span>:</label>
+                    <input name="vb_water" class="vb-field required-field"
+                        value="<?php echo htmlspecialchars($data['cdl_vb_water'] ?? ''); ?>" required>
                 </div>
 
                 <div class="form-row">
                     <label>Air:</label>
-                    <input name="vb_air" class="vb-field" placeholder="0.001 m³">
+                    <input name="vb_air" class="vb-field"
+                        value="<?php echo htmlspecialchars($data['cdl_vb_air'] ?? ''); ?>" placeholder="0.001 m³">
                 </div>
 
                 <div class="form-row">
                     <label>Others:</label>
-                    <input name="vb_others" class="vb-field">
+                    <input name="vb_others" class="vb-field"
+                        value="<?php echo htmlspecialchars($data['cdl_vb_others'] ?? ''); ?>">
                 </div>
 
                 <div class="form-row">
                     <label>Total:</label>
-                    <input name="vb_total" class="vb-field" placeholder="2348.8 kgs/m³">
+                    <input name="vb_total" class="vb-field"
+                        value="<?php echo htmlspecialchars($data['cdl_vb_total'] ?? ''); ?>"
+                        placeholder="2348.8 kgs/m³">
                 </div>
-
-
-
             </div>
 
             <!-- ================= SSD CARD ================= -->
@@ -528,68 +515,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 <div class="section-title ssd">Saturated Surface Dry (SSD)</div>
 
                 <div class="form-row">
-                    <label>Cement Mix:</label>
-                    <input name="ssd_cement_mix" class="ssd-field" placeholder="580.00">
+                    <label>Cement Mix <span style="color:red;">*</span>:</label>
+                    <input name="ssd_cement_mix" class="ssd-field required-field"
+                        value="<?php echo htmlspecialchars($data['cdl_ssd_cement_mix'] ?? ''); ?>" required>
                 </div>
 
                 <div class="form-row">
                     <label>Fly Ash:</label>
-                    <input name="ssd_fly_ash" class="ssd-field" placeholder="3/4">
+                    <input name="ssd_fly_ash" class="ssd-field"
+                        value="<?php echo htmlspecialchars($data['cdl_ssd_fly_ash'] ?? ''); ?>" placeholder="3/4">
                 </div>
 
                 <div class="form-row">
-                    <label>Sand:</label>
-                    <input name="ssd_sand" class="ssd-field" placeholder="732.00">
+                    <label>Sand <span style="color:red;">*</span>:</label>
+                    <input name="ssd_sand" class="ssd-field required-field"
+                        value="<?php echo htmlspecialchars($data['cdl_ssd_sand'] ?? ''); ?>" required>
                 </div>
 
                 <div class="form-row">
-                    <label>3/8\":</label>
-                    <input name="ssd_three_eight" class="ssd-field">
+                    <label>3/8":</label>
+                    <input name="ssd_three_eight" class="ssd-field"
+                        value="<?php echo htmlspecialchars($data['cdl_ssd_three_eight'] ?? ''); ?>">
                 </div>
 
                 <div class="form-row">
-                    <label>3/4\":</label>
-                    <input name="ssd_three_fourth" class="ssd-field" placeholder="851.00">
+                    <label>3/4" <span style="color:red;">*</span>:</label>
+                    <input name="ssd_three_fourth" class="ssd-field required-field"
+                        value="<?php echo htmlspecialchars($data['cdl_ssd_three_fourth'] ?? ''); ?>" required>
                 </div>
 
                 <div class="form-row">
                     <label>G1:</label>
-                    <input name="ssd_G1" class="ssd-field">
+                    <input name="ssd_G1" class="ssd-field"
+                        value="<?php echo htmlspecialchars($data['cdl_ssd_G1'] ?? ''); ?>">
                 </div>
 
                 <div class="form-row">
-                    <label>Admix:</label>
-                    <input name="ssd_admix" class="ssd-field" placeholder="5.80">
+                    <label>Admix <span style="color:red;">*</span>:</label>
+                    <input name="ssd_admix" class="ssd-field required-field"
+                        value="<?php echo htmlspecialchars($data['cdl_ssd_admix'] ?? ''); ?>" required>
                 </div>
 
                 <div class="form-row">
-                    <label>Water:</label>
-                    <input name="ssd_water" class="ssd-field" placeholder="180.00">
+                    <label>Water <span style="color:red;">*</span>:</label>
+                    <input name="ssd_water" class="ssd-field required-field"
+                        value="<?php echo htmlspecialchars($data['cdl_ssd_water'] ?? ''); ?>" required>
                 </div>
 
                 <div class="form-row">
                     <label>Air:</label>
-                    <input name="ssd_air" class="ssd-field">
+                    <input name="ssd_air" class="ssd-field"
+                        value="<?php echo htmlspecialchars($data['cdl_ssd_air'] ?? ''); ?>">
                 </div>
 
                 <div class="form-row">
                     <label>Others:</label>
-                    <input name="ssd_others" class="ssd-field">
+                    <input name="ssd_others" class="ssd-field"
+                        value="<?php echo htmlspecialchars($data['cdl_ssd_others'] ?? ''); ?>">
                 </div>
-
-                <div class="form-row">
-                    <label>Total:</label>
-                    <input name="vb_total" class="vb-field" placeholder="2348.8 kgs/m³">
-                </div>
-
             </div>
-
-
-
         </div>
-
-
-
     </form>
 
     <!-- ================= JS HANDLER ================= -->
