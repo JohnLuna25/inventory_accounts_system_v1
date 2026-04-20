@@ -113,17 +113,16 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
             </div>
         </div>
 
-        <!-- PERFECT FILTER BAR -->
+        <!-- PERFECT FILTER BAR - CENTERED CLEAN LAYOUT -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow-sm border-0">
                     <div class="card-body p-3">
-                        <div class="row align-items-end g-2">
+                        <div class="row align-items-end g-3 justify-content-center">
                             <!-- DATE RANGE -->
-                            <div class="col-lg-5 col-md-6 col-sm-8">
+                            <div class="col-lg-4 col-md-4 col-sm-6">
                                 <label class="form-label small fw-bold mb-1 text-primary">Date:</label>
                                 <div class="input-group input-group-sm">
-                                    <!-- ✅ CHANGE THESE 2 lines only: -->
                                     <input type="date" id="start_date" class="form-control form-control-sm"
                                         value="<?= date('Y-m-01') ?>">
                                     <span class="input-group-text bg-light">-</span>
@@ -132,26 +131,22 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
                                 </div>
                             </div>
 
-                            <!-- WORKING FILTER BUTTON -->
-                            <div class="col-lg-2 col-md-3 col-sm-4">
-                                <label class="form-label small fw-bold mb-1 text-primary">Filter:</label>
-                                <button id="filterBtn" class="btn btn-primary btn-sm w-100 fw-bold p-2 h-100"
-                                    onclick="filterData()">
-                                    Filter
-                                </button>
+                            <!-- FILTER + SUMMARY STACKED (NO LABELS) -->
+                            <div class="col-lg-2 col-md-2 col-sm-3">
+                                <div class="d-grid gap-1 h-100">
+                                    <button id="filterBtn" class="btn btn-primary btn-sm w-100 fw-bold p-2 flex-fill"
+                                        onclick="filterData()">
+                                        Filter
+                                    </button>
+                                    <button id="summaryBtn" class="btn btn-warning btn-sm w-100 fw-bold p-2 flex-fill"
+                                        onclick="showSummaryReport()">
+                                        Summary Report
+                                    </button>
+                                </div>
                             </div>
 
-                            <div class="col-lg-2 col-md-3 col-sm-4">
-                                <label class="form-label small fw-bold mb-1 text-warning"></label>
-                                <button id="summaryBtn" class="btn btn-warning btn-sm w-100 fw-bold p-2 h-100"
-                                    onclick="showSummaryReport()">
-                                    Summary Report
-                                </button>
-                            </div>
-
-                            <!-- ACTIONS -->
-                            <div class="col-lg-3 col-md-3 col-sm-6">
-                                <label class="form-label small fw-bold mb-1 text-success">Actions:</label>
+                            <!-- ACTIONS STACK (NO LABEL) -->
+                            <div class="col-lg-2 col-md-2 col-sm-3">
                                 <div class="d-grid gap-1 h-100">
                                     <button id="updateBtn" class="btn btn-success btn-sm fw-bold p-2"
                                         onclick="location.reload()"> Update </button>
@@ -163,8 +158,9 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
                             </div>
 
                             <!-- CHART TOGGLE -->
-                            <div class="col-lg-2 col-md-2 col-sm-6">
-                                <label class="form-label small fw-bold mb-1 text-info d-none d-md-block">Chart:</label>
+                            <div class="col-lg-2 col-md-2 col-sm-3">
+                                <label class="form-label small fw-bold mb-1 text-info d-none d-md-block">Chart
+                                    toggle:</label>
                                 <button id="chartToggle" class="btn btn-info btn-sm w-100 fw-bold p-2"
                                     onclick="toggleChartType()">
                                     Bar
