@@ -75,7 +75,7 @@ $result = $conn->query($sql);
                 <!-- LEFT SIDE -->
                 <div class="left-buttons">
                     <a href="sap_accountsForm.php" class="btn btn-primary">+ Add Order</a>
-                    <a href="sap_finishedOrders.php" class="btn btn-primary">Show Finished Orders</a>
+                    <a href="sap_transactionHistory.php" class="btn btn-primary">Show Finished Orders</a>
                 </div>
 
                 <!-- RIGHT SIDE -->

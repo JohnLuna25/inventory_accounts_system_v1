@@ -1,0 +1,278 @@
+.month-separator td {
+  background: linear-gradient(135deg, #386da1, #456183, #575d63);
+  color: white;
+  font-weight: bold;
+  text-align: center;
+  padding: 8px;
+  letter-spacing: 1px;
+}
+
+.page-title-bar {
+  background: white;
+  margin: 15px 10px;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.page-title-bar h2 {
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 15px;
+  color: #333;
+  font-weight: 300;
+}
+
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.search-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+#searchInput {
+  width: 400px;
+  padding: 10px;
+  border-radius: 20px;
+  border: 1px solid #ccc;
+}
+
+#searchInput:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.search-container button {
+  padding: 10px 15px;
+  border-radius: 20px;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+.btn-pdf {
+  background-color: #dc3545;
+  color: white;
+  padding: 10px 25px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-pdf:hover {
+  background-color: #c82333;
+}
+
+.btn-print {
+  background-color: #28a745;
+  color: white;
+  padding: 10px 25px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: bold;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.btn-print:hover {
+  background-color: #218838;
+}
+
+/* Compact table styles */
+.table-container table {
+  font-size: 11px;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-container th,
+.table-container td {
+  padding: 6px 4px;
+  white-space: nowrap;
+}
+
+/* Allow address column to wrap */
+.table-container td:nth-child(4),
+.table-container th:nth-child(4) {
+  white-space: normal;
+  max-width: 180px;
+  word-wrap: break-word;
+}
+
+/* Customer name column - full width */
+.table-container td:nth-child(3),
+.table-container th:nth-child(3) {
+  white-space: normal;
+  min-width: 150px;
+}
+
+/* ===== PRINT STYLES - SHRINK TABLE, WIDER WIDTH, BLACK TEXT ===== */
+@media print {
+  /* Hide UI elements */
+  .main-header,
+  .burger-menu,
+  #burgerMenuBtn,
+  #slideMenuNav,
+  #menuOverlayDiv,
+  .button-container,
+  .search-container,
+  .action-buttons,
+  .btn-back,
+  .btn-pdf,
+  .btn-print,
+  .no-print {
+    display: none !important;
+  }
+
+  body {
+    background: white !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .main-content {
+    padding-top: 0 !important;
+    margin: 0 !important;
+  }
+
+  .page-title-bar {
+    margin: 0 0 10px 0 !important;
+    padding: 5px !important;
+    box-shadow: none !important;
+    border: none !important;
+    background: none !important;
+  }
+
+  .page-title-bar h2 {
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 16px !important;
+    text-align: center !important;
+    color: black !important;
+  }
+
+  .table-container {
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow-x: visible !important;
+  }
+
+  /* SHRINK TABLE VERTICALLY - smaller padding, smaller font */
+  table {
+    width: 100% !important;
+    border-collapse: collapse !important;
+    font-size: 8px !important;
+    margin-bottom: 50px !important;
+    page-break-inside: avoid !important;
+  }
+
+  /* SMALLER PADDING = SHRINK VERTICALLY */
+  th,
+  td {
+    border: 1px solid #000 !important;
+    padding: 2px 4px !important;
+    text-align: left !important;
+    vertical-align: top !important;
+    color: black !important;
+  }
+
+  /* HEADER - keep blue background, black text */
+  th {
+    background-color: #4472c4 !important;
+    color: black !important;
+    font-weight: bold !important;
+    text-align: center !important;
+    font-size: 8px !important;
+    padding: 3px 4px !important;
+  }
+
+  /* Month separator - keep blue background, black text */
+  .month-separator {
+    margin-top: 30px !important;
+  }
+
+  .month-separator:first-of-type {
+    margin-top: 0 !important;
+  }
+
+  .month-separator td {
+    background-color: #386da1 !important;
+    color: black !important;
+    font-weight: bold !important;
+    text-align: center !important;
+    padding: 4px !important;
+    font-size: 10px !important;
+  }
+
+  /* FORCE ALL TEXT BLACK */
+  * {
+    color: black !important;
+  }
+
+  /* Keep background colors for headers */
+  th,
+  .month-separator td {
+    background-color: #4472c4 !important;
+  }
+
+  /* WIDER TABLE - use full page width */
+  table {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Allow columns to expand */
+  th,
+  td {
+    white-space: normal !important;
+    word-break: break-word !important;
+  }
+
+  /* Make address column wider */
+  .table-container td:nth-child(4),
+  .table-container th:nth-child(4) {
+    max-width: 250px !important;
+    min-width: 150px !important;
+  }
+
+  /* Make customer column wider */
+  .table-container td:nth-child(3),
+  .table-container th:nth-child(3) {
+    min-width: 180px !important;
+  }
+
+  /* Prevent page breaks */
+  tbody tr {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+
+  @page {
+    margin: 1cm;
+    size: portrait;
+  }
+
+  div:empty,
+  span:empty,
+  p:empty {
+    display: none !important;
+  }
+}
