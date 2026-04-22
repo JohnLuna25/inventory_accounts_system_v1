@@ -1,4 +1,4 @@
-/* COMPLETE PROFESSIONAL reports_management.css */
+/* COMPLETE PROFESSIONAL reports_management.css - NO GRADIENTS, NO INFO */
 
 /* BOOTSTRAP OVERRIDE - MOST IMPORTANT */
 .card-header.bg-primary,
@@ -8,12 +8,7 @@
 .mixture-header,
 .sales-header,
 .card-header {
-  background: linear-gradient(
-    135deg,
-    #60a5fa 0%,
-    #3b82f6 50%,
-    #1d4ed8 100%
-  ) !important;
+  background: #3b82f6 !important;
   color: #fef3c7 !important;
   border: none !important;
   position: relative !important;
@@ -26,10 +21,13 @@
 }
 
 body {
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  min-height: 100vh;
+  min-height: 100vh !important;
+  font-family: Arial, sans-serif !important;
+  background: #bfc3aa !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  padding-bottom: 60px !important;
+  color: black !important;
 }
 
 /* LAYOUT */
@@ -80,37 +78,10 @@ body {
   color: #fef3c7 !important;
 }
 
-/* SHIMMER */
-.card-header::before,
-.readymix-header::before,
-.mixture-header::before,
-.sales-header::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(255, 255, 255, 0.2) 50%,
-    transparent 100%
-  );
-  animation: shimmer 3s infinite;
-  z-index: 1;
-}
-
 @media (max-width: 768px) {
-  .chart-container { height: 320px !important; padding: 10px !important; }
-}
-
-@keyframes shimmer {
-  0% {
-    left: -100%;
-  }
-  100% {
-    left: 100%;
+  .chart-container {
+    height: 320px !important;
+    padding: 10px !important;
   }
 }
 
@@ -118,16 +89,15 @@ body {
   position: relative !important;
   height: 420px !important;
   width: 100% !important;
-  padding: 10px !important;     /* ← ADD PADDING */
-  /* REMOVE overflow: hidden !important; */
-  border-radius: 0 0 12px 12px; /* Only bottom radius */
-  background: transparent;      /* No background conflict */
+  padding: 10px !important;
+  border-radius: 0 0 12px 12px;
+  background: transparent;
 }
 
 #chartToggle {
-    pointer-events: auto !important;
-    cursor: pointer !important;
-    z-index: 999 !important;
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  z-index: 999 !important;
 }
 
 .chart-container canvas {
@@ -147,7 +117,9 @@ body {
 }
 
 /* Direct dataset stroke */
-#readymixChart, #mixtureChart, #salesChart {
+#readymixChart,
+#mixtureChart,
+#salesChart {
   --line-color: #3b82f6 !important;
 }
 
@@ -169,15 +141,24 @@ body {
 }
 
 .btn-primary {
-  background: rgb(156, 156, 255) !important;
+  background: #1565c0 !important;
+  color: white !important;
+}
+
 .btn-success {
-  background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%) !important;
+  background: #11998e !important;
+  color: white !important;
 }
+
 .btn-info {
-  background: rgb(132, 132, 255) !important;
+  background: #0284c7 !important;
+  color: white !important;
 }
+
 .btn-secondary {
-  background: rgb(143, 143, 143) !important;
+  background: #6c757d !important;
+  color: white !important;
+}
 
 /* INPUTS */
 .input-group .form-control {

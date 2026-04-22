@@ -41,12 +41,13 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
     <link rel="stylesheet" href="/Inventory-Accounts-System-v1/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="reports_management.css?v=4">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <?php showHeader() ?>
 
     <!-- PRO TABLE STYLES -->
     <style>
-        /* CLEAN INFO TOOLTIP */
+        /* CLEAN INFO TOOLTIP - NO GLOW */
         .info-wrapper {
             position: relative !important;
             display: inline-flex !important;
@@ -54,8 +55,8 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
         }
 
         .info-icon {
-            background: #fef3c7 !important;
-            color: #d97706 !important;
+            background: #0059ff !important;
+            color: #ffffff !important;
             font-weight: bold !important;
             font-size: 16px !important;
             width: 24px !important;
@@ -70,13 +71,8 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
 
         .info-tooltip {
             position: fixed !important;
-            /* ← ADD THIS */
             top: 0vh !important;
-            /* ← Top positioning */
             left: 22vw !important;
-            /* ← Left positioning */
-            transform: none !important;
-            /* ← No transform */
             background: rgba(59, 59, 59, 0.95) !important;
             color: white !important;
             padding: 12px !important;
@@ -85,11 +81,9 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
             white-space: normal !important;
             opacity: 0 !important;
             visibility: hidden !important;
-            transition: all 0.2s !important;
+            transition: opacity 0.2s ease !important;
             z-index: 999999 !important;
-            /* ← ADD Z-INDEX */
             pointer-events: none !important;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
             max-width: 200px !important;
         }
 
@@ -98,7 +92,29 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
             visibility: visible !important;
         }
 
-        /* REMOVED ::before ::after - Text in HTML now */
+        /* PDF Export temporary wrapper styles */
+        .pdf-export-wrapper {
+            background: white;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+
+        .pdf-export-wrapper .card {
+            margin-bottom: 30px;
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
+        .pdf-export-wrapper .card-header {
+            background: #3b82f6 !important;
+            color: #fef3c7 !important;
+            padding: 15px;
+        }
+
+        .pdf-export-wrapper .chart-container {
+            height: 300px !important;
+            margin-bottom: 20px;
+        }
     </style>
 </head>
 
@@ -182,21 +198,17 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
                             <span class="info-wrapper">
                                 <span class="info-icon">i</span>
                                 <span class="info-tooltip" style="
-                                    background: rgba(59, 59, 59, 0.95) !important;
-                                    color: white !important;
-                                ">
-                                    <p style="color: #00ff88 !important; text-shadow: 0 0 4px #00ff00;">Green = High
-                                        Stock</p>
-                                    <p style="color: #ffeb3b !important; text-shadow: 0 0 4px #ffff00;">Yellow =
-                                        Medium</p>
-                                    <p style="color: #ff5722 !important; text-shadow: 0 0 4px #ff4444;">Red =
-                                        Low/Bottom</p>
+                                        background: rgba(59, 59, 59, 0.95) !important;
+                                        color: white !important;
+                                    ">
+                                    <p style="color: #00ff88 !important;">Green = High Stock / Most Sold</p>
+                                    <p style="color: #ffeb3b !important;">Yellow = Medium Stock / Average Sold</p>
+                                    <p style="color: #ff5722 !important;">Red = Low Stock / Least Sold</p>
                                 </span>
                             </span>
                         </h5>
                     </div>
                     <div class="card-body p-4">
-                        <!-- Chart Container -->
                         <div class="chart-container mb-4" style="height: 300px;">
                             <canvas id="readymixChart"></canvas>
                         </div>
@@ -215,21 +227,17 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
                             <span class="info-wrapper">
                                 <span class="info-icon">i</span>
                                 <span class="info-tooltip" style="
-                                    background: rgba(59, 59, 59, 0.95) !important;
-                                    color: white !important;
-                                ">
-                                    <p style="color: #00ff88 !important; text-shadow: 0 0 4px #00ff00;">Green = High
-                                        Stock</p>
-                                    <p style="color: #ffeb3b !important; text-shadow: 0 0 4px #ffff00;">Yellow =
-                                        Medium</p>
-                                    <p style="color: #ff5722 !important; text-shadow: 0 0 4px #ff4444;">Red =
-                                        Low/Bottom</p>
+                                        background: rgba(59, 59, 59, 0.95) !important;
+                                        color: white !important;
+                                    ">
+                                    <p style="color: #00ff88 !important;">Green = High Stock / Most Sold</p>
+                                    <p style="color: #ffeb3b !important;">Yellow = Medium Stock / Average Sold</p>
+                                    <p style="color: #ff5722 !important;">Red = Low Stock / Least Sold</p>
                                 </span>
                             </span>
                         </h5>
                     </div>
                     <div class="card-body p-4">
-                        <!-- Chart Container -->
                         <div class="chart-container mb-4" style="height: 300px;">
                             <canvas id="mixtureChart"></canvas>
                         </div>
@@ -248,21 +256,17 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
                             <span class="info-wrapper">
                                 <span class="info-icon">i</span>
                                 <span class="info-tooltip" style="
-                                    background: rgba(59, 59, 59, 0.95) !important;
-                                    color: white !important;
-                                ">
-                                    <p style="color: #00ff88 !important; text-shadow: 0 0 4px #00ff00;">Green = High
-                                        Stock</p>
-                                    <p style="color: #ffeb3b !important; text-shadow: 0 0 4px #ffff00;">Yellow =
-                                        Medium</p>
-                                    <p style="color: #ff5722 !important; text-shadow: 0 0 4px #ff4444;">Red =
-                                        Low/Bottom</p>
+                                        background: rgba(59, 59, 59, 0.95) !important;
+                                        color: white !important;
+                                    ">
+                                    <p style="color: #00ff88 !important;">Green = High Stock / Most Sold</p>
+                                    <p style="color: #ffeb3b !important;">Yellow = Medium Stock / Average Sold</p>
+                                    <p style="color: #ff5722 !important;">Red = Low Stock / Least Sold</p>
                                 </span>
                             </span>
                         </h5>
                     </div>
                     <div class="card-body p-4">
-                        <!-- Chart Container -->
                         <div class="chart-container mb-4" style="height: 300px;">
                             <canvas id="salesChart"></canvas>
                         </div>
@@ -284,7 +288,6 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
         // ==========================================
         // 🔥 GLOBAL STATE
         // ==========================================
-        // 🔥 REAL DEFAULT DATA FROM PHP
         let charts = {};
         let currentChartType = 'bar';
         window.chartData = {};
@@ -292,9 +295,6 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
         window.chartData.mixture = <?= json_encode($mixtureData) ?>;
         window.chartData.sales = <?= json_encode($salesData) ?>;
         console.log('DEFAULT DATA:', window.chartData);
-
-
-
 
         function getChartColors(data) {
             const max = Math.max(...data);
@@ -304,9 +304,9 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
             const highThreshold = min + range * 0.66;
 
             return data.map(value => {
-                if (value >= highThreshold) return { bg: '#00ff88', border: '#00ff88' };      // Green
-                if (value >= lowThreshold) return { bg: '#ffeb3b', border: '#ffeb3b' };       // Yellow
-                return { bg: '#ff5722', border: '#ff5722' };                                  // Red
+                if (value >= highThreshold) return { bg: '#00ff88', border: '#00ff88' };
+                if (value >= lowThreshold) return { bg: '#ffeb3b', border: '#ffeb3b' };
+                return { bg: '#ff5722', border: '#ff5722' };
             });
         }
 
@@ -317,8 +317,6 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
             const types = ['bar', 'line', 'pie'];
             const index = types.indexOf(currentChartType);
             currentChartType = types[(index + 1) % types.length];
-
-            console.log('Type:', currentChartType);
 
             Object.keys(charts).forEach(id => {
                 const chart = charts[id];
@@ -339,7 +337,6 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
         // ==========================================
         // 🔥 MAIN FILTER
         // ==========================================
-        // 🔥 REPLACE ONLY THIS FUNCTION in your existing script
         window.filterData = function () {
             const startDate = document.getElementById('start_date')?.value || '';
             const endDate = document.getElementById('end_date')?.value || '';
@@ -351,13 +348,9 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
             fetch(`reports_data.php?ajax=filter_reports&start_date=${startDate}&end_date=${endDate}`)
                 .then(r => r.json())
                 .then(data => {
-                    console.log('GOT DATA:', data.readymix.data);
-
-                    // 🔥 EXACT ASSIGNMENT
                     window.chartData.readymix = data.readymix;
                     window.chartData.mixture = data.mixture;
                     window.chartData.sales = data.sales;
-
                     updateAllCharts();
 
                     btn.innerHTML = `${data.debug.sales_count}`;
@@ -377,20 +370,18 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
         };
 
         // ==========================================
-        // 🔥 CHARTS - Toggle Ready
+        // 🔥 UPDATE ALL CHARTS
         // ==========================================
         function updateAllCharts() {
-            console.log('Data:', Object.values(window.chartData).map(d => d.data.length));
-
             const configs = [
-                { id: 'readymixChart', key: 'readymix', title: 'Readymix', unit: 'kg/m³' },  // ← CHANGED
-                { id: 'mixtureChart', key: 'mixture', title: 'Mixture', unit: 'kg/m³' },     // ← CHANGED  
-                { id: 'salesChart', key: 'sales', title: 'Sales', unit: 'm³' }              // Keep m³ for sales
+                { id: 'readymixChart', key: 'readymix', title: 'Readymix', unit: 'kg/m³' },
+                { id: 'mixtureChart', key: 'mixture', title: 'Mixture', unit: 'kg/m³' },
+                { id: 'salesChart', key: 'sales', title: 'Sales', unit: 'm³' }
             ];
 
             configs.forEach(config => {
                 const canvas = document.getElementById(config.id);
-                if (!canvas) return console.warn(`${config.id}`);
+                if (!canvas) return;
 
                 const data = window.chartData[config.key];
                 if (!data?.data?.length) return;
@@ -436,21 +427,147 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
             });
         }
 
+        // ==========================================
+        // 🔥 PDF EXPORT FUNCTION - MULTI-PAGE SUPPORT
+        // ==========================================
+        window.exportPDF = async function () {
+            const btn = document.getElementById('pdfBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
+            btn.disabled = true;
+
+            try {
+                const startDate = document.getElementById('start_date')?.value || '';
+                const endDate = document.getElementById('end_date')?.value || '';
+
+                // Create a temporary container
+                const wrapper = document.createElement('div');
+                wrapper.style.cssText = `
+            position: absolute;
+            top: -9999px;
+            left: 0;
+            width: 210mm;
+            background: white;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        `;
+
+                // Add header
+                const header = document.createElement('div');
+                header.style.cssText = `
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3b82f6;
+        `;
+                header.innerHTML = `
+            <h1 style="color: #2c3e50; margin-bottom: 5px;">Sorcom Reports Dashboard</h1>
+            <p style="color: #666;">Period: ${startDate} - ${endDate}</p>
+            <p style="color: #666;">Generated: ${new Date().toLocaleString()}</p>
+        `;
+                wrapper.appendChild(header);
+
+                // Get all cards
+                const cards = document.querySelectorAll('.card.shadow-lg');
+                console.log('Found cards:', cards.length);
+
+                for (let i = 0; i < cards.length; i++) {
+                    const card = cards[i];
+                    const cardClone = card.cloneNode(true);
+
+                    // Find canvas in this card
+                    const originalCanvas = card.querySelector('canvas');
+                    const cloneCanvas = cardClone.querySelector('canvas');
+
+                    if (originalCanvas && cloneCanvas) {
+                        const canvasId = originalCanvas.id;
+
+                        if (charts[canvasId]) {
+                            // Create an image from the existing chart
+                            const chartImage = charts[canvasId].canvas.toDataURL('image/png');
+                            const img = document.createElement('img');
+                            img.src = chartImage;
+                            img.style.width = '100%';
+                            img.style.height = '300px';
+                            img.style.objectFit = 'contain';
+
+                            // Replace canvas with image
+                            cloneCanvas.parentNode.replaceChild(img, cloneCanvas);
+                        }
+                    }
+
+                    cardClone.style.marginBottom = '30px';
+                    cardClone.style.pageBreakInside = 'avoid';
+                    wrapper.appendChild(cardClone);
+                }
+
+                document.body.appendChild(wrapper);
+
+                // Wait for rendering
+                await new Promise(r => setTimeout(r, 500));
+
+                // Capture the entire wrapper as canvas
+                const canvas = await html2canvas(wrapper, {
+                    scale: 2.5,
+                    backgroundColor: '#ffffff',
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: false
+                });
+
+                document.body.removeChild(wrapper);
+
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+
+                const imgData = canvas.toDataURL('image/jpeg', 0.95);
+                const imgWidth = 190; // mm (A4 width minus margins)
+                const pageHeight = 277; // mm (A4 height minus margins)
+                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
+                let heightLeft = imgHeight;
+                let position = 10;
+
+                // Add first page
+                pdf.addImage(imgData, 'JPEG', 10, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+
+                // Add additional pages if content overflows
+                let pageCount = 1;
+                while (heightLeft > 0) {
+                    position = heightLeft - imgHeight;
+                    pdf.addPage();
+                    pdf.addImage(imgData, 'JPEG', 10, position, imgWidth, imgHeight);
+                    heightLeft -= pageHeight;
+                    pageCount++;
+                }
+
+                console.log(`PDF generated with ${pageCount} page(s)`);
+                pdf.save(`sorcom_report_${startDate}_to_${endDate}.pdf`);
+
+            } catch (error) {
+                console.error('PDF Error:', error);
+                alert('Failed to generate PDF: ' + error.message);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        };
+
+        // ==========================================
+        // 🔥 SUMMARY REPORT
+        // ==========================================
+        window.showSummaryReport = function () {
+            const startDate = document.getElementById('start_date')?.value || '';
+            const endDate = document.getElementById('end_date')?.value || '';
+            window.location.href = `summary_reports.html?start_date=${startDate}&end_date=${endDate}`;
+        };
+
         document.addEventListener('DOMContentLoaded', function () {
             setTimeout(updateAllCharts, 500);
         });
 
         updateAllCharts();
-
-        // 🔥 SUMMARY REPORT - PAGE SWITCH
-        window.showSummaryReport = function () {
-            const startDate = document.getElementById('start_date')?.value || '';
-            const endDate = document.getElementById('end_date')?.value || '';
-
-            // 🔥 SWITCH TO PAGE (same tab)
-            window.location.href = `summary_reports.html?start_date=${startDate}&end_date=${endDate}`;
-        };
-
     </script>
 
 </body>
