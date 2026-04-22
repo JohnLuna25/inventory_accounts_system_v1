@@ -122,64 +122,79 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
     <div style="height: 20px;"></div>
 
     <div class="container-fluid mt-4">
-        <!-- HEADER -->
-        <div class="row mb-4">
-            <div class="col-12 text-center">
-                <h2 style="color: #000; font-weight: bold;">Sorcom Reports Dashboard</h2>
-            </div>
-        </div>
 
-        <!-- PERFECT FILTER BAR - CENTERED CLEAN LAYOUT -->
+
+        <!-- FILTER CARD WITH TITLE INSIDE -->
         <div class="row mb-4">
             <div class="col-12">
                 <div class="card shadow-sm border-0">
-                    <div class="card-body p-3">
-                        <div class="row align-items-end g-3 justify-content-center">
-                            <!-- DATE RANGE -->
-                            <div class="col-lg-4 col-md-4 col-sm-6">
-                                <label class="form-label small fw-bold mb-1 text-primary">Date:</label>
-                                <div class="input-group input-group-sm">
+                    <div class="card-body p-4">
+                        <!-- TITLE INSIDE CARD -->
+                        <div class="text-center mb-4 pb-2 border-bottom">
+                            <h2 style="color: #000; font-weight: bold; margin: 0;">Sorcom Reports Dashboard</h2>
+                        </div>
+
+                        <!-- ROW 1: Date From + Buttons -->
+                        <div class="row align-items-center g-3 mb-3">
+                            <div class="col-md-3">
+                                <div class="d-flex align-items-center">
+                                    <label class="form-label small fw-bold mb-0 me-2 text-primary"
+                                        style="min-width: 85px;">Date From:</label>
                                     <input type="date" id="start_date" class="form-control form-control-sm"
-                                        value="<?= date('Y-m-01') ?>">
-                                    <span class="input-group-text bg-light">-</span>
+                                        value="<?= date('Y-m-01') ?>" style="flex: 1;">
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <button id="filterBtn" class="btn btn-primary btn-sm w-100 fw-bold"
+                                    onclick="filterData()">
+                                    <i class="fas fa-filter me-1"></i> Filter
+                                </button>
+                            </div>
+
+                            <div class="col-md-3">
+                                <button id="summaryBtn" class="btn btn-warning btn-sm w-100 fw-bold"
+                                    onclick="showSummaryReport()">
+                                    <i class="fas fa-file-alt me-1"></i> Summary Report
+                                </button>
+                            </div>
+
+                            <div class="col-md-3">
+                                <button id="updateBtn" class="btn btn-success btn-sm w-100 fw-bold"
+                                    onclick="location.reload()">
+                                    <i class="fas fa-sync-alt me-1"></i> Update
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- ROW 2: Date To + Buttons -->
+                        <div class="row align-items-center g-3">
+                            <div class="col-md-3">
+                                <div class="d-flex align-items-center">
+                                    <label class="form-label small fw-bold mb-0 me-2 text-primary"
+                                        style="min-width: 85px;">Date To:</label>
                                     <input type="date" id="end_date" class="form-control form-control-sm"
-                                        value="<?= date('Y-m-d', strtotime('yesterday')) ?>">
+                                        value="<?= date('Y-m-d') ?>" style="flex: 1;">
                                 </div>
                             </div>
 
-                            <!-- FILTER + SUMMARY STACKED (NO LABELS) -->
-                            <div class="col-lg-2 col-md-2 col-sm-3">
-                                <div class="d-grid gap-1 h-100">
-                                    <button id="filterBtn" class="btn btn-primary btn-sm w-100 fw-bold p-2 flex-fill"
-                                        onclick="filterData()">
-                                        Filter
-                                    </button>
-                                    <button id="summaryBtn" class="btn btn-warning btn-sm w-100 fw-bold p-2 flex-fill"
-                                        onclick="showSummaryReport()">
-                                        Summary Report
-                                    </button>
-                                </div>
+                            <div class="col-md-3">
+                                <button id="clearFilterBtn" class="btn btn-secondary btn-sm w-100 fw-bold"
+                                    onclick="clearFilter()">
+                                    <i class="fas fa-eraser me-1"></i> Clear Filter
+                                </button>
                             </div>
 
-                            <!-- ACTIONS STACK (NO LABEL) -->
-                            <div class="col-lg-2 col-md-2 col-sm-3">
-                                <div class="d-grid gap-1 h-100">
-                                    <button id="updateBtn" class="btn btn-success btn-sm fw-bold p-2"
-                                        onclick="location.reload()"> Update </button>
-                                    <button id="pdfBtn" class="btn btn-secondary btn-sm fw-bold p-2"
-                                        onclick="exportPDF()">
-                                        PDF
-                                    </button>
-                                </div>
+                            <div class="col-md-3">
+                                <button id="pdfBtn" class="btn btn-danger btn-sm w-100 fw-bold" onclick="exportPDF()">
+                                    <i class="fas fa-file-pdf me-1"></i> PDF
+                                </button>
                             </div>
 
-                            <!-- CHART TOGGLE -->
-                            <div class="col-lg-2 col-md-2 col-sm-3">
-                                <label class="form-label small fw-bold mb-1 text-info d-none d-md-block">Chart
-                                    toggle:</label>
-                                <button id="chartToggle" class="btn btn-info btn-sm w-100 fw-bold p-2"
+                            <div class="col-md-3">
+                                <button id="chartToggle" class="btn btn-info btn-sm w-100 fw-bold"
                                     onclick="toggleChartType()">
-                                    Bar
+                                    <i class="fas fa-chart-bar me-1"></i> Bar
                                 </button>
                             </div>
                         </div>
@@ -204,6 +219,11 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
                                     <p style="color: #00ff88 !important;">Green = High Stock / Most Sold</p>
                                     <p style="color: #ffeb3b !important;">Yellow = Medium Stock / Average Sold</p>
                                     <p style="color: #ff5722 !important;">Red = Low Stock / Least Sold</p>
+                                    <hr style="margin: 5px 0; border-color: #555;">
+                                    <p
+                                        style="color: #ccc !important; margin: 5px 0 0 0; font-size: 12px; font-style: italic;">
+                                        💡 Based on current stock levels and sales performance
+                                    </p>
                                 </span>
                             </span>
                         </h5>
@@ -233,6 +253,11 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
                                     <p style="color: #00ff88 !important;">Green = High Stock / Most Sold</p>
                                     <p style="color: #ffeb3b !important;">Yellow = Medium Stock / Average Sold</p>
                                     <p style="color: #ff5722 !important;">Red = Low Stock / Least Sold</p>
+                                    <hr style="margin: 5px 0; border-color: #555;">
+                                    <p
+                                        style="color: #ccc !important; margin: 5px 0 0 0; font-size: 12px; font-style: italic;">
+                                        💡 Based on current stock levels and sales performance
+                                    </p>
                                 </span>
                             </span>
                         </h5>
@@ -262,6 +287,11 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
                                     <p style="color: #00ff88 !important;">Green = High Stock / Most Sold</p>
                                     <p style="color: #ffeb3b !important;">Yellow = Medium Stock / Average Sold</p>
                                     <p style="color: #ff5722 !important;">Red = Low Stock / Least Sold</p>
+                                    <hr style="margin: 5px 0; border-color: #555;">
+                                    <p
+                                        style="color: #ccc !important; margin: 5px 0 0 0; font-size: 12px; font-style: italic;">
+                                        💡 Based on current stock levels and sales performance
+                                    </p>
                                 </span>
                             </span>
                         </h5>
@@ -311,12 +341,16 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
         }
 
         // ==========================================
-        // 🔥 CHART TOGGLE - Bar/Line/Pie
+        // 🔥 CHART TOGGLE - Bar/Line/Pie with Icons
         // ==========================================
         window.toggleChartType = function () {
             const types = ['bar', 'line', 'pie'];
+            const icons = ['fa-chart-bar', 'fa-chart-line', 'fa-chart-pie'];
+            const names = ['Bar', 'Line', 'Pie'];
+
             const index = types.indexOf(currentChartType);
-            currentChartType = types[(index + 1) % types.length];
+            const nextIndex = (index + 1) % 3;
+            currentChartType = types[nextIndex];
 
             Object.keys(charts).forEach(id => {
                 const chart = charts[id];
@@ -330,19 +364,22 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
                 }
             });
 
+            // Update button text with icon
             const btn = document.getElementById('chartToggle');
-            if (btn) btn.innerHTML = ['Bar', 'Line', 'Pie'][(index + 1) % 3];
+            if (btn) {
+                btn.innerHTML = `<i class="fas ${icons[nextIndex]} me-1"></i> ${names[nextIndex]}`;
+            }
         };
 
         // ==========================================
-        // 🔥 MAIN FILTER
+        // 🔥 MAIN FILTER - SIMPLIFIED (NO CONFUSING NUMBER)
         // ==========================================
         window.filterData = function () {
             const startDate = document.getElementById('start_date')?.value || '';
             const endDate = document.getElementById('end_date')?.value || '';
 
             const btn = document.getElementById('filterBtn');
-            btn.innerHTML = 'Loading...';
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
             btn.disabled = true;
 
             fetch(`reports_data.php?ajax=filter_reports&start_date=${startDate}&end_date=${endDate}`)
@@ -353,16 +390,17 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
                     window.chartData.sales = data.sales;
                     updateAllCharts();
 
-                    btn.innerHTML = `${data.debug.sales_count}`;
+                    btn.innerHTML = '<i class="fas fa-check"></i> Done!';
                     btn.className = 'btn btn-success btn-sm w-100 fw-bold p-2 h-100';
                 })
                 .catch(e => {
                     console.error('AJAX ERROR:', e);
-                    btn.innerHTML = 'Error';
+                    btn.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Error';
+                    btn.className = 'btn btn-danger btn-sm w-100 fw-bold p-2 h-100';
                 })
                 .finally(() => {
                     setTimeout(() => {
-                        btn.innerHTML = 'Filter';
+                        btn.innerHTML = '<i class="fas fa-filter me-1"></i> Filter';
                         btn.disabled = false;
                         btn.className = 'btn btn-primary btn-sm w-100 fw-bold p-2 h-100';
                     }, 1500);
@@ -428,6 +466,30 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
         }
 
         // ==========================================
+        // 🔥 CLEAR FILTER - Reset to current month defaults
+        // ==========================================
+        window.clearFilter = function () {
+            const today = new Date();
+            const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+
+            const yearFrom = firstDay.getFullYear();
+            const monthFrom = String(firstDay.getMonth() + 1).padStart(2, '0');
+            const dayFrom = String(firstDay.getDate()).padStart(2, '0');
+            const defaultStartDate = `${yearFrom}-${monthFrom}-${dayFrom}`;
+
+            const yearTo = today.getFullYear();
+            const monthTo = String(today.getMonth() + 1).padStart(2, '0');
+            const dayTo = String(today.getDate()).padStart(2, '0');
+            const defaultEndDate = `${yearTo}-${monthTo}-${dayTo}`;
+
+            document.getElementById('start_date').value = defaultStartDate;
+            document.getElementById('end_date').value = defaultEndDate;
+
+            filterData();
+            console.log(`✅ Cleared filter. Date range: ${defaultStartDate} to ${defaultEndDate}`);
+        };
+
+        // ==========================================
         // 🔥 PDF EXPORT FUNCTION - MULTI-PAGE SUPPORT
         // ==========================================
         window.exportPDF = async function () {
@@ -440,34 +502,31 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
                 const startDate = document.getElementById('start_date')?.value || '';
                 const endDate = document.getElementById('end_date')?.value || '';
 
-                // Create a temporary container
                 const wrapper = document.createElement('div');
                 wrapper.style.cssText = `
-            position: absolute;
-            top: -9999px;
-            left: 0;
-            width: 210mm;
-            background: white;
-            padding: 20px;
-            font-family: Arial, sans-serif;
-        `;
+                position: absolute;
+                top: -9999px;
+                left: 0;
+                width: 210mm;
+                background: white;
+                padding: 20px;
+                font-family: Arial, sans-serif;
+            `;
 
-                // Add header
                 const header = document.createElement('div');
                 header.style.cssText = `
-            text-align: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #3b82f6;
-        `;
+                text-align: center;
+                margin-bottom: 20px;
+                padding-bottom: 10px;
+                border-bottom: 2px solid #3b82f6;
+            `;
                 header.innerHTML = `
-            <h1 style="color: #2c3e50; margin-bottom: 5px;">Sorcom Reports Dashboard</h1>
-            <p style="color: #666;">Period: ${startDate} - ${endDate}</p>
-            <p style="color: #666;">Generated: ${new Date().toLocaleString()}</p>
-        `;
+                <h1 style="color: #2c3e50; margin-bottom: 5px;">Sorcom Reports Dashboard</h1>
+                <p style="color: #666;">Period: ${startDate} - ${endDate}</p>
+                <p style="color: #666;">Generated: ${new Date().toLocaleString()}</p>
+            `;
                 wrapper.appendChild(header);
 
-                // Get all cards
                 const cards = document.querySelectorAll('.card.shadow-lg');
                 console.log('Found cards:', cards.length);
 
@@ -475,23 +534,18 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
                     const card = cards[i];
                     const cardClone = card.cloneNode(true);
 
-                    // Find canvas in this card
                     const originalCanvas = card.querySelector('canvas');
                     const cloneCanvas = cardClone.querySelector('canvas');
 
                     if (originalCanvas && cloneCanvas) {
                         const canvasId = originalCanvas.id;
-
                         if (charts[canvasId]) {
-                            // Create an image from the existing chart
                             const chartImage = charts[canvasId].canvas.toDataURL('image/png');
                             const img = document.createElement('img');
                             img.src = chartImage;
                             img.style.width = '100%';
                             img.style.height = '300px';
                             img.style.objectFit = 'contain';
-
-                            // Replace canvas with image
                             cloneCanvas.parentNode.replaceChild(img, cloneCanvas);
                         }
                     }
@@ -502,11 +556,8 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
                 }
 
                 document.body.appendChild(wrapper);
-
-                // Wait for rendering
                 await new Promise(r => setTimeout(r, 500));
 
-                // Capture the entire wrapper as canvas
                 const canvas = await html2canvas(wrapper, {
                     scale: 2.5,
                     backgroundColor: '#ffffff',
@@ -521,18 +572,16 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
                 const pdf = new jsPDF('p', 'mm', 'a4');
 
                 const imgData = canvas.toDataURL('image/jpeg', 0.95);
-                const imgWidth = 190; // mm (A4 width minus margins)
-                const pageHeight = 277; // mm (A4 height minus margins)
+                const imgWidth = 190;
+                const pageHeight = 277;
                 const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
                 let heightLeft = imgHeight;
                 let position = 10;
 
-                // Add first page
                 pdf.addImage(imgData, 'JPEG', 10, position, imgWidth, imgHeight);
                 heightLeft -= pageHeight;
 
-                // Add additional pages if content overflows
                 let pageCount = 1;
                 while (heightLeft > 0) {
                     position = heightLeft - imgHeight;
