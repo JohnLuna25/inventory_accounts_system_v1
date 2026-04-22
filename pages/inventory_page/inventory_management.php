@@ -54,11 +54,11 @@ $conn->close();
     <style>
         /* ==== SAME STYLING AS CONCRETE DESIGN MASTERLIST ==== */
         body {
-            font-family: Arial, sans-serif;
-            background: #BFC3AA;
-            margin: 0;
-            padding: 0;
-            padding-bottom: 60px;
+            font-family: Arial, sans-serif !important;
+            background: #BFC3AA !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            padding-bottom: 60px !important;
         }
 
         .main-content {
@@ -192,7 +192,6 @@ $conn->close();
 
             .page-title-bar h2 {
                 font-size: 24px;
-
                 text-align: center;
                 margin: 0;
                 color: black;
@@ -228,6 +227,20 @@ $conn->close();
                 font-size: 11px;
             }
         }
+
+        /* FIX: Add Inventory and Open Mixture Inventory buttons - Blue color */
+        .search-container a.btn,
+        .search-container a[href="ip_addForm.php"],
+        .search-container a[href="mixture_inventory.php"] {
+            background-color: #0400ff !important;
+            font-weight: bold !important;
+        }
+
+        .search-container a.btn:hover,
+        .search-container a[href="ip_addForm.php"]:hover,
+        .search-container a[href="mixture_inventory.php"]:hover {
+            background-color: #1976d2 !important;
+        }
     </style>
 </head>
 
@@ -237,8 +250,8 @@ $conn->close();
             <h2 class="text-center mb-3" style="font-weight: 300; font-size: 32px; margin-top: auto;">Ready-Mix
                 Inventory</h2>
             <div class="search-container">
-                <a href="ip_addForm.php" class="btn">+ Add Inventory</a>
-                <a href="mixture_inventory.php" class="btn">Open Mixture Inventory</a>
+                <a href="ip_addForm.php" class="add-inventory-btn">+ Add Inventory</a>
+                <a href="mixture_inventory.php" class="open-mixture-btn">Open Mixture Inventory</a>
             </div>
         </div>
 

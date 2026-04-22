@@ -38,6 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Add Mixture</title>
+    <!-- BOOTSTRAP CSS ADDED -->
+    <link rel="stylesheet" href="/Inventory-Accounts-System-v1/assets/bootstrap/css/bootstrap.min.css">
     <link rel="stylesheet" href="../assets/css/style.css">
     <link rel="stylesheet" href="../inventory_page/mixture_inventory.css">
     <link rel="stylesheet" href="../inventory_page/addMixture_inventory.css">
@@ -46,8 +48,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #bfc3aa;
-            padding: 20px;
+            background: #BFC3AA;
+            margin: 0;
+            padding: 0;
+            padding-bottom: 60px;
         }
 
         .form-container {

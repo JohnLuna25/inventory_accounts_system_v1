@@ -20,6 +20,7 @@ while ($d = $designs_result->fetch_assoc()) {
 <head>
     <meta charset="UTF-8">
     <title>SORCOM Mixture Inventory</title>
+    <link rel="stylesheet" href="/Inventory-Accounts-System-v1/assets/bootstrap/css/bootstrap.min.css">
     <?php showHeader(); ?>
 
     <style>

@@ -41,6 +41,7 @@ if (!$result)
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="ip_table.css">
+    <link rel="stylesheet" href="/Inventory-Accounts-System-v1/assets/bootstrap/css/bootstrap.min.css">
     <?php showHeader() ?>
 
     <style>
