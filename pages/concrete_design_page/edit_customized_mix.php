@@ -275,7 +275,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <form id="addForm" method="POST">
         <div class="form-grid">
-            <h2>Edit Customized Mix #<?php echo $mix_id; ?></h2>
+            <h2>Edit Customized Mix</h2>
 
             <!-- BUTTONS -->
             <div class="form-buttons">
@@ -385,13 +385,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <?php foreach ($typeOptions as $type): ?>
                             <option value="<?php echo $type; ?>" <?php echo ($data['cdl_vb_concrete_type'] == $type) ? 'selected' : ''; ?>>
                                 <?php echo $type; ?>
-                                </option>
+                            </option>
                         <?php endforeach; ?>
                         <option value="others" <?php echo $type_is_other ? 'selected' : ''; ?>>Others</option>
                     </select>
                     <input type="text" name="concrete_type_other" id="concreteTypeOther" class="vb-field required-field"
                         value="<?php echo $type_is_other ? htmlspecialchars($data['cdl_vb_concrete_type']) : ''; ?>"
-                       
                         style="display:<?php echo $type_is_other ? 'block' : 'none'; ?>; margin-top:5px;" <?php echo $type_is_other ? 'required' : ''; ?>>
                 </div>
 
@@ -410,12 +409,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
 
                 <!-- Remarks (if cdl_remarks exists) -->
-            <?php if (isset($data['cdl_remarks'])): ?>
+                <?php if (isset($data['cdl_remarks'])): ?>
                     <div class="form-row">
                         <label>Remarks:</label>
                         <textarea name="cdl_remarks"
                             class="vb-field"><?php echo htmlspecialchars($data['cdl_remarks'] ?? ''); ?></textarea>
-                        </div>
+                    </div>
                 <?php endif; ?>
 
                 <!-- Is Active -->

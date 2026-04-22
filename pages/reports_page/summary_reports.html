@@ -12,8 +12,15 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
       rel="stylesheet"
     />
+
+<!-- PDF Libraries: html2canvas for DOM capture, jsPDF for PDF generation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+
     <style>
-      /* [KEEP ALL YOUR EXISTING STYLES EXACTLY THE SAME - NO CHANGES] */
+      /* ===== GLOBAL STYLES ===== */
+      /* Base styling for body with gradient background and default font */
       body {
         font-family: "Calibri", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
         background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
@@ -23,31 +30,37 @@
         color: #2c3e50;
       }
 
+      /* Heading styles */
       h1 {
         font-size: 2.2em !important;
         font-weight: 600 !important;
       }
 
+      /* Numeric value styling */
       .number {
         font-size: 1.15em !important;
         font-weight: 700;
       }
 
+      /* Total row styling */
       .total-row {
         font-size: 1.2em !important;
         font-weight: 700;
       }
 
+      /* Card header styling */
       .card-header {
         font-size: 1.2em !important;
         font-weight: 600;
       }
 
+      /* Main container - max width 1400px */
       .container {
         max-width: 1400px;
         margin: auto;
       }
 
+      /* Header section with glassmorphism effect */
       .header {
         background: rgba(255, 255, 255, 0.98);
         border: 1px solid #e0e6ed;
@@ -59,6 +72,7 @@
         backdrop-filter: blur(10px);
       }
 
+      /* Card container styling */
       .card {
         background: white;
         border-radius: 8px;
@@ -70,10 +84,12 @@
         max-width: 100%;
       }
 
+      /* Card hover effect */
       .card:hover {
         box-shadow: 0 4px 24px rgba(0, 0, 0, 0.12);
       }
 
+      /* Card header gradient backgrounds */
       .card-header {
         color: white;
         padding: 25px 30px;
@@ -81,6 +97,7 @@
         border: none;
       }
 
+      /* Status badge - High stock (green) */
       .status-high {
         background: #c6efce;
         color: #006100;
@@ -91,6 +108,7 @@
         border: 1px solid #b8dabb;
       }
 
+      /* Status badge - Medium stock (yellow) */
       .status-medium {
         background: #ffeb9c;
         color: #9c6500;
@@ -101,6 +119,7 @@
         border: 1px solid #f0dc82;
       }
 
+      /* Status badge - Low stock (red) */
       .status-low {
         background: #ffc7ce;
         color: #9c0006;
@@ -111,6 +130,7 @@
         border: 1px solid #f4b4b9;
       }
 
+      /* Total row background (blue) */
       .total-row {
         background: #4472c4 !important;
         color: white !important;
@@ -118,12 +138,14 @@
         border-top: 3px solid #365a99;
       }
 
+      /* Numeric value inside number class */
       .number {
         font-size: 1.15em;
         font-weight: 700;
         color: #2c3e50;
       }
 
+      /* Modern button styling */
       .btn-modern {
         border-radius: 4px;
         padding: 14px 32px;
@@ -138,11 +160,13 @@
         min-width: 180px;
       }
 
+      /* Button hover effect */
       .btn-modern:hover {
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
         transform: translateY(-2px);
       }
 
+      /* Primary button (blue) */
       .btn-primary {
         background: #4472c4;
         border-color: #365a99;
@@ -153,6 +177,7 @@
         background: #365a99;
       }
 
+      /* Success button (green) */
       .btn-success {
         background: #70ad47;
         border-color: #5a8f36;
@@ -163,6 +188,7 @@
         background: #5a8f36;
       }
 
+      /* Excel-style table styling */
       .table-excel {
         font-family: "Calibri", "Segoe UI", Arial, sans-serif;
         font-size: 14px;
@@ -173,6 +199,7 @@
         table-layout: fixed;
       }
 
+      /* Table header styling */
       .table-excel thead th {
         background: #4472c4 !important;
         color: white !important;
@@ -186,6 +213,7 @@
         white-space: nowrap;
       }
 
+      /* Table cell styling */
       .table-excel td {
         padding: 16px 16px !important;
         border: 1px solid #d1d5db;
@@ -195,19 +223,23 @@
         word-wrap: break-word;
       }
 
+      /* Table row height */
       .table-excel tbody tr {
         height: 32px;
       }
 
+      /* Zebra striping for table rows */
       .table-excel tbody tr:nth-child(even) {
         background: #f8f9fa;
       }
 
+      /* Row hover effect */
       .table-excel tbody tr:hover {
         background: #e7f3ff !important;
         font-weight: 500;
       }
 
+      /* Ranking cell styling (for sales table) */
       .table-excel .rank-cell {
         background: #f2f2f2;
         font-weight: 700;
@@ -217,42 +249,95 @@
         padding: 16px 8px !important;
       }
 
+      /* ===== PRINT STYLES - EACH TABLE ON ITS OWN PAGE ===== */
       @media print {
         body {
           background: white !important;
-          padding: 10px !important;
+          padding: 0 !important;
+          margin: 0 !important;
           font-size: 11px;
         }
+        
         .no-print {
           display: none !important;
         }
+        
+        .container {
+          padding: 0 !important;
+          margin: 0 !important;
+          max-width: 100% !important;
+        }
+        
+        /* Hide the original header when printing */
         .header {
-          box-shadow: none;
-          border: 1px solid #dee2e6;
-          page-break-inside: avoid;
+          display: none !important;
         }
+        
+        /* Each card starts on a new page */
         .card {
-          box-shadow: none;
-          border: 1px solid #dee2e6;
-          margin-bottom: 15px;
-          page-break-inside: avoid;
+          page-break-before: always !important;
+          break-before: page !important;
+          margin: 0 !important;
+          margin-bottom: 0 !important;
+          box-shadow: none !important;
+          border: 1px solid #dee2e6 !important;
         }
+        
+        /* First card starts on page 1 (no break before) */
+        .card:first-of-type {
+          page-break-before: avoid !important;
+          break-before: auto !important;
+        }
+        
+        /* Add a header to each printed page using CSS */
+        .card::before {
+          content: "Sorcom Summary Report";
+          display: block;
+          text-align: center;
+          font-size: 18px;
+          font-weight: bold;
+          color: #2c3e50;
+          margin-bottom: 15px;
+          padding-bottom: 10px;
+          border-bottom: 2px solid #4472c4;
+        }
+        
+        /* Add date range after title */
+        .card::after {
+          content: "Period: " attr(data-date);
+          display: block;
+          text-align: center;
+          font-size: 12px;
+          color: #6c757d;
+          margin-top: 10px;
+          margin-bottom: 15px;
+        }
+        
         .table-excel {
           font-size: 11px;
           border-collapse: collapse;
         }
+        
         .table-excel th,
         .table-excel td {
           border: 1px solid #000 !important;
           padding: 8px 6px !important;
         }
+        
         .table-excel thead th {
           background: #4472c4 !important;
           color: white !important;
           font-size: 11px !important;
         }
+        
+        /* Prevent orphaned rows */
+        tr, thead, tbody {
+          page-break-inside: avoid !important;
+          break-inside: avoid !important;
+        }
       }
 
+      /* ===== RESPONSIVE STYLES ===== */
       @media (max-width: 992px) {
         .container {
           max-width: 100%;
@@ -285,10 +370,12 @@
         }
       }
     </style>
+
   </head>
 
   <body>
     <div class="container">
+      <!-- Report Header Section -->
       <div class="header">
         <h1 class="mb-4" style="color: #2c3e50">
           <i class="fas fa-chart-pie text-primary me-3"></i>Sorcom Summary
@@ -303,8 +390,8 @@
         </p>
       </div>
 
-      <!-- TABLE 1: READYMIX -->
-      <div class="card">
+      <!-- TABLE 1: READYMIX INVENTORY - PAGE 1 -->
+      <div class="card" id="card-readymix" data-date="">
         <div
           class="card-header"
           style="background: linear-gradient(135deg, #4472c4 0%, #365a99 100%)"
@@ -316,19 +403,19 @@
             <thead>
               <tr>
                 <th style="width: 55%">Design Mix</th>
-                <th style="width: 22%; text-align: right">Stock (m³)</th>
+                <th style="width: 22%; text-align: right">Stocks (kgs/m³)</th>
                 <th style="width: 23%">Status</th>
               </tr>
             </thead>
             <tbody>
-              <!-- DYNAMIC CONTENT -->
+              <!-- Populated dynamically via JavaScript -->
             </tbody>
           </table>
         </div>
       </div>
 
-      <!-- TABLE 2: MIXTURE -->
-      <div class="card">
+      <!-- TABLE 2: MIXTURE INVENTORY - PAGE 2 -->
+      <div class="card" id="card-mixture" data-date="">
         <div
           class="card-header"
           style="background: linear-gradient(135deg, #70ad47 0%, #5a8f36 100%)"
@@ -341,19 +428,19 @@
             <thead>
               <tr>
                 <th style="width: 55%">Material</th>
-                <th style="width: 22%; text-align: right">Stock (T)</th>
+                <th style="width: 22%; text-align: right"> Stocks (kgs/m³)</th>
                 <th style="width: 23%">Status</th>
               </tr>
             </thead>
             <tbody>
-              <!-- DYNAMIC CONTENT -->
+              <!-- Populated dynamically via JavaScript -->
             </tbody>
           </table>
         </div>
       </div>
 
-      <!-- TABLE 3: SALES -->
-      <div class="card">
+      <!-- TABLE 3: TOP 5 SALES - PAGE 3 -->
+      <div class="card" id="card-sales" data-date="">
         <div
           class="card-header"
           style="background: linear-gradient(135deg, #ed7d31 0%, #d65f1a 100%)"
@@ -368,36 +455,39 @@
                   #
                 </th>
                 <th style="width: 53%">Design Mix</th>
-                <th style="width: 35%; text-align: right">Sold (m³)</th>
+                <th style="width: 35%; text-align: right">Sold (kgs/m³)</th>
               </tr>
             </thead>
             <tbody>
-              <!-- DYNAMIC CONTENT -->
+              <!-- Populated dynamically via JavaScript -->
             </tbody>
           </table>
         </div>
       </div>
 
+      <!-- Action Buttons (hidden when printing) -->
       <div class="row mt-5 no-print text-center">
-        <a
-          href="reports_management.php"
-          class="btn btn-primary btn-modern me-4"
-        >
+        <a href="reports_management.php" class="btn btn-primary btn-modern me-4">
           <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
         </a>
+        <button onclick="exportPDF()" class="btn btn-success btn-modern me-4">
+          <i class="fas fa-file-pdf me-2"></i>Export PDF
+        </button>
         <button onclick="window.print()" class="btn btn-success btn-modern">
           <i class="fas fa-print me-2"></i>Print Report
         </button>
       </div>
-    </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <script>
-      // 🔥 COMPLETE WORKING SCRIPT - NO "NO DATA" EVER
-      console.log("🚀 Summary Report Loading...");
+      // =========================================================================
+      // JAVASCRIPT FUNCTIONALITY - DATA FETCHING, TABLE POPULATION, PDF EXPORT
+      // =========================================================================
 
-      // 🔥 SMART PATH DETECTION
+      // === UTILITY FUNCTIONS ===
+      
+      // Determines the correct base path for API calls based on current URL location
       const getBasePath = () => {
         const path = window.location.pathname;
         if (path.includes("summary_reports.html") || path.includes("summary/"))
@@ -407,9 +497,8 @@
       };
 
       const basePath = getBasePath();
-      console.log("📁 Base path:", basePath);
-
-      // 🔥 EXTRACT DATES FROM URL (BACKWARD COMPATIBLE)
+      
+      // Extracts start and end dates from URL parameters or uses defaults
       const urlParams = new URLSearchParams(window.location.search);
       const startDate =
         urlParams.get("start_date") || urlParams.get("start") || "2024-04-01";
@@ -420,24 +509,33 @@
           .toISOString()
           .split("T")[0];
 
-      // 🔥 UPDATE HEADER
+      // Formats a date string into readable format (e.g., "Jan 15, 2024")
       const formatDate = (dateStr) =>
         new Date(dateStr).toLocaleDateString("en-US", {
           month: "short",
           day: "2-digit",
           year: "numeric",
         });
-      document.getElementById("dateRange").textContent =
-        `${formatDate(startDate)} - ${formatDate(endDate)}`;
+      
+      const dateRangeText = `${formatDate(startDate)} - ${formatDate(endDate)}`;
+      
+      // Updates the header with the selected date range
+      document.getElementById("dateRange").textContent = dateRangeText;
+      
+      // Set data-date attribute on cards for print header
+      document.querySelectorAll('.card').forEach(card => {
+        card.setAttribute('data-date', dateRangeText);
+      });
 
-      // 🔥 DATA STORE
+      // Global data store for all three tables
       let chartData = {
         readymix: { labels: [], data: [] },
         mixture: { labels: [], data: [] },
         sales: { labels: [], data: [] },
       };
 
-      // 🔥 STATUS CALCULATION (IDENTICAL TO DASHBOARD)
+      // === STATUS CALCULATION ===
+      // Determines stock status (High/Medium/Low) based on value and dataset thresholds
       function getStatus(value, values, type = "readymix") {
         if (!values.length || values.every((v) => v === 0))
           return { text: "No Data", class: "status-low" };
@@ -462,12 +560,12 @@
         return { text: "Low Stock", class: "status-low" };
       }
 
-      // 🔥 POPULATE SINGLE TABLE (WORKS WITH ANY DATA)
-      // 🔥 REPLACE THE ENTIRE populateTable FUNCTION with this:
+      // === TABLE POPULATION ===
+      // Renders data into the specified table with appropriate formatting and totals
       function populateTable(tableId, data, isSales = false) {
         const tbody = document.querySelector(`#${tableId} tbody`);
 
-        // 🔥 ALWAYS SHOW DATA - NEVER EMPTY
+        // Fallback data if no data is available
         if (!data.labels?.length || !data.data?.length) {
           data = getFallbackData(tableId);
         }
@@ -477,12 +575,12 @@
         const labelsToShow = data.labels.slice(0, maxRows);
         const dataToShow = data.data.slice(0, maxRows);
 
-        // 🔥 GENERATE DATA ROWS
+        // Generate individual data rows
         labelsToShow.forEach((label, i) => {
           const value = dataToShow[i] || 0;
 
           if (isSales) {
-            // 🔥 1st-2nd col empty, TOTAL in 3rd col (LAST COLUMN)
+            // Sales table: shows rank, design mix, and sold quantity
             rows += `
         <tr>
           <td class="rank-cell text-primary">${i + 1}</td>
@@ -490,7 +588,7 @@
           <td class="text-end"><span class="number">${value.toLocaleString()}</span></td>
         </tr>`;
           } else {
-            // 🔥 INVENTORY ROWS
+            // Inventory tables: shows material, stock, and status badge
             const status = getStatus(
               value,
               dataToShow,
@@ -505,12 +603,11 @@
           }
         });
 
-        // 🔥 DYNAMIC TOTAL - CORRECT POSITION
+        // Calculate and add total row
         const total = dataToShow.reduce((a, b) => a + (b || 0), 0);
-        const unit = tableId === "mixtureTable" ? "T" : "m³";
+        const unit = "kgs/m³";
 
         if (isSales) {
-          // 🔥 3rd TABLE: TOTAL in LAST COLUMN (3rd col)
           rows += `
       <tr class="total-row">
         <td><strong>TOTAL</strong></td>
@@ -518,20 +615,18 @@
         <td class="text-end"><span class="number">${total.toLocaleString()} ${unit}</span></td>
       </tr>`;
         } else {
-          // 🔥 1st/2nd TABLES: TOTAL in 2nd COLUMN
           rows += `
       <tr class="total-row">
-        <td><strong>${tableId === "mixtureTable" ? "TOTAL WEIGHT" : "TOTAL VOLUME"}</strong></td>
+        <td><strong>${tableId === "mixtureTable" ? "TOTAL: " : "TOTAL:"}</strong></td>
         <td class="text-end"><span class="number">${total.toLocaleString()} ${unit}</span></td>
         <td></td>
       </tr>`;
         }
 
         tbody.innerHTML = rows;
-        console.log(`✅ ${tableId}: ${total.toLocaleString()} ${unit}`);
       }
 
-      // 🔥 RELIABLE FALLBACK DATA (EXACTLY MATCHES YOUR PHP)
+      // Provides fallback/example data when API data is unavailable
       function getFallbackData(tableId) {
         const fallback = {
           readymix: {
@@ -571,14 +666,15 @@
         );
       }
 
-      // 🔥 POPULATE ALL TABLES
+      // Populates all three tables with current chartData
       function populateAllTables() {
         populateTable("readymixTable", chartData.readymix);
         populateTable("mixtureTable", chartData.mixture);
         populateTable("salesTable", chartData.sales, true);
       }
 
-      // 🔥 MULTI-PATH API FETCH
+      // === API DATA FETCHING ===
+      // Attempts to fetch real data from multiple possible API endpoints
       async function fetchRealData() {
         const apiUrls = [
           `${basePath}reports_data.php?ajax=filter_reports&start_date=${startDate}&end_date=${endDate}`,
@@ -589,48 +685,168 @@
 
         for (let url of apiUrls) {
           try {
-            console.log("🔄 Fetching:", url);
             const response = await fetch(url, { cache: "no-cache" });
             if (response.ok) {
               const data = await response.json();
-              console.log("📊 API Response:", data);
 
               if (data.readymix || data.mixture || data.sales) {
                 chartData.readymix = data.readymix || chartData.readymix;
                 chartData.mixture = data.mixture || chartData.mixture;
                 chartData.sales = data.sales || chartData.sales;
                 populateAllTables();
-                console.log("✅ API SUCCESS");
                 return true;
               }
             }
           } catch (e) {
-            console.log("❌", url, e.message);
+            // Continue to next URL if this one fails
           }
         }
         return false;
       }
 
-      // 🔥 MAIN LOAD SEQUENCE
-      async function init() {
-        console.log("🔥 Initializing with dates:", startDate, endDate);
+      // === PDF EXPORT FUNCTION ===
+      // Captures each table separately - Page 1: Table 1, Page 2: Table 2, Page 3: Table 3
+      async function exportPDF() {
+        // Validate required libraries are loaded
+        if (typeof html2canvas === 'undefined') {
+          alert('PDF library not loaded. Please refresh the page and try again.');
+          return;
+        }
+        if (typeof window.jspdf === 'undefined') {
+          alert('PDF library not loaded. Please refresh the page and try again.');
+          return;
+        }
+        
+        const btn = event ? event.target : document.querySelector('button[onclick="exportPDF()"]');
+        let originalBtnHTML = '';
+        if (btn) {
+          originalBtnHTML = btn.innerHTML;
+          btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Generating PDF...';
+          btn.disabled = true;
+        }
+        
+        try {
+          const { jsPDF } = window.jspdf;
+          
+          // Get all cards (tables)
+          const cards = document.querySelectorAll('.card');
+          
+          let pdf = null;
+          
+          // Process each card separately - each gets its own page
+          for (let i = 0; i < cards.length; i++) {
+            const card = cards[i];
+            const cardTitle = card.querySelector('.card-header').innerText;
+            
+            // Create wrapper for this card with its own header
+            const wrapper = document.createElement('div');
+            wrapper.style.cssText = `
+              position: absolute;
+              top: -9999px;
+              left: 0;
+              width: 800px;
+              background: white;
+              padding: 20px 30px;
+              font-family: 'Calibri', 'Segoe UI', Arial, sans-serif;
+            `;
+            
+            // Create a fresh header for this page
+            const pageHeader = document.createElement('div');
+            pageHeader.style.cssText = `
+              text-align: center;
+              margin-bottom: 25px;
+              padding-bottom: 15px;
+              border-bottom: 2px solid #4472c4;
+            `;
+            pageHeader.innerHTML = `
+              <h1 style="color: #2c3e50; margin-bottom: 10px; font-size: 24px;">Sorcom Summary Report</h1>
+              <p style="color: #6c757d; font-size: 13px; margin: 5px 0;">
+                <strong>Period:</strong> ${dateRangeText}
+              </p>
+              <p style="color: #4472c4; font-size: 14px; margin: 10px 0 0 0; font-weight: bold;">
+                ${cardTitle}
+              </p>
+            `;
+            wrapper.appendChild(pageHeader);
+            
+            // Clone the card
+            const cardClone = card.cloneNode(true);
+            cardClone.style.cssText = `
+              margin-bottom: 0;
+              box-shadow: none;
+              border: 1px solid #dee2e6;
+              page-break-inside: avoid;
+            `;
+            wrapper.appendChild(cardClone);
+            
+            document.body.appendChild(wrapper);
+            await new Promise(r => setTimeout(r, 50));
+            
+            // Capture the wrapper
+            const canvas = await html2canvas(wrapper, {
+              scale: 2.5,
+              useCORS: false,
+              allowTaint: false,
+              backgroundColor: '#ffffff',
+              logging: false
+            });
+            
+            document.body.removeChild(wrapper);
+            
+            const imgWidth = 190;
+            const imgHeight = (canvas.height * imgWidth) / canvas.width;
+            const yPosition = 10;
+            
+            // Create new PDF or add page
+            if (pdf === null) {
+              // First page - initialize PDF with first image
+              pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4'
+              });
+              pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 10, yPosition, imgWidth, imgHeight);
+            } else {
+              // Subsequent pages - add to existing PDF
+              pdf.addPage();
+              pdf.addImage(canvas.toDataURL('image/jpeg', 0.95), 'JPEG', 10, yPosition, imgWidth, imgHeight);
+            }
+          }
+          
+          // Save the PDF
+          if (pdf) {
+            const fileName = `sorcom_report_${startDate}_to_${endDate}.pdf`;
+            pdf.save(fileName);
+          }
+          
+        } catch (error) {
+          console.error('PDF Export Error:', error);
+          alert(`Failed to generate PDF: ${error.message}\n\nPlease try using the Print button instead.`);
+        } finally {
+          if (btn) {
+            btn.innerHTML = originalBtnHTML;
+            btn.disabled = false;
+          }
+        }
+      }
 
-        // TRY API FIRST (3 seconds timeout)
+      // === INITIALIZATION ===
+      // Main entry point - loads data when page loads
+      async function init() {
+        // Try to fetch real API data with 3 second timeout
         const apiSuccess = await Promise.race([
           fetchRealData(),
           new Promise((resolve) => setTimeout(() => resolve(false), 3000)),
         ]);
 
-        // ALWAYS FALLBACK TO SHOW TABLES IMMEDIATELY
+        // Use fallback data if API fails
         if (!apiSuccess) {
-          console.log("📋 Using fallback data");
           populateAllTables();
         }
       }
 
-      // 🔥 START
+      // Start the application when page loads
       window.addEventListener("load", init);
-      console.log("✅ Script loaded");
     </script>
   </body>
 </html>
