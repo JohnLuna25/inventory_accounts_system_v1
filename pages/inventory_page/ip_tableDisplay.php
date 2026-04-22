@@ -179,7 +179,7 @@ if (!$result)
                             <td><?= number_format(floatval($row['current_stock_batch'] ?? 0), 1) ?> kgs/m³</td>
                             <td><?= htmlspecialchars($row['remarks'] ?? '') ?></td>
                             <td>
-                                <a href="ip_editForm.php?id=<?= $row['id'] ?>" class="edit-btn">Edit</a>
+                                <a href="ip_form.php?id=<?= $row['id'] ?>" class="edit-btn">Edit</a>
                                 <form method="POST" style="display:inline;" onsubmit="return confirm('Are you sure?')">
                                     <input type="hidden" name="id" value="<?= $row['id'] ?>">
                                     <input type="hidden" name="action" value="delete">

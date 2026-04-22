@@ -44,20 +44,44 @@ while ($d = $designs_result->fetch_assoc()) {
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .search-container {
+        .button-container {
             display: flex;
-            justify-content: flex-end;
-            gap: 10px;
+            justify-content: space-between;
+            align-items: center;
             flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 15px;
         }
 
-        .search-container a {
+        .btn-add {
+            background-color: #0400ff !important;
+            color: white !important;
             padding: 10px 20px;
-            background: #0b63c4;
-            color: white;
             border-radius: 8px;
             text-decoration: none;
             font-size: 14px;
+            font-weight: bold;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-add:hover {
+            background-color: #1976d2 !important;
+        }
+
+        .btn-back {
+            background-color: #6c757d !important;
+            color: white !important;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-block;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-back:hover {
+            background-color: #5a6268 !important;
         }
 
         .table-container {
@@ -139,9 +163,9 @@ while ($d = $designs_result->fetch_assoc()) {
         <div class="page-title-bar">
             <h2 style="text-align:center; margin:0; font-weight:300;">Mixture Inventory</h2>
 
-            <div class="search-container">
-                <a href="addMixture_inventory.php">+ Add Mixture</a>
-                <a href="../inventory_page/inventory_management.php">← Back</a>
+            <div class="button-container">
+                <a href="mixture_form.php" class="btn-add">+ Add Mixture</a>
+                <a href="../inventory_page/inventory_management.php" class="btn-back">← Back</a>
             </div>
         </div>
 
@@ -149,138 +173,141 @@ while ($d = $designs_result->fetch_assoc()) {
         <div class="table-container">
 
             <table>
-                <tr>
-                    <th>Date</th>
-                    <th>Cement</th>
-                    <th>Fly Ash</th>
-                    <th>Sand</th>
-                    <th>3/4</th>
-                    <th>3/8</th>
-                    <th>G1</th>
-                    <th>Admix</th>
-                    <th>Water</th>
-                    <th>Air</th>
-                    <th>Others</th>
-                    <th>Total</th>
-                    <th>Actions</th>
-                </tr>
-
-                <?php while ($row = $result->fetch_assoc()): ?>
-
+                <thead>
                     <tr>
-                        <td><?= $row['date_added'] ?></td>
-                        <td><?= $row['cement'] ?></td>
-                        <td><?= $row['fly_ash'] ?></td>
-                        <td><?= $row['sand'] ?></td>
-                        <td><?= $row['3_4'] ?></td>
-                        <td><?= $row['3_8'] ?></td>
-                        <td><?= $row['g1'] ?></td>
-                        <td><?= $row['admix'] ?></td>
-                        <td><?= $row['water'] ?></td>
-                        <td><?= $row['air'] ?></td>
-                        <td><?= $row['others'] ?></td>
-                        <td><?= $row['total'] ?> kgs/m³</td>
-
-                        <td>
-                            <button class="btn btn-view" onclick="toggleView(<?= $row['id'] ?>)">View</button>
-                            <button class="btn btn-edit"
-                                onclick="window.location.href='editMixture_Inventory.php?id=<?= $row['id'] ?>'">Edit</button>
-                            <button class="btn btn-del"
-                                onclick="if(confirm('Delete?')) window.location.href='deleteMixture_Inventory.php?id=<?= $row['id'] ?>'">Delete</button>
-                        </td>
+                        <th>Date</th>
+                        <th>Cement</th>
+                        <th>Fly Ash</th>
+                        <th>Sand</th>
+                        <th>3/4</th>
+                        <th>3/8</th>
+                        <th>G1</th>
+                        <th>Admix</th>
+                        <th>Water</th>
+                        <th>Air</th>
+                        <th>Others</th>
+                        <th>Total</th>
+                        <th>Actions</th>
                     </tr>
+                </thead>
 
-                    <!-- VIEW ROW -->
-                    <tr id="view-<?= $row['id'] ?>" class="view-panel">
-                        <td colspan="13">
+                <tbody>
+                    <?php while ($row = $result->fetch_assoc()): ?>
 
-                            <div class="view-box">
-                                <strong>Available Designs (Based on Current Stock):</strong><br><br>
+                        <tr>
+                            <td><?= $row['date_added'] ?></td>
+                            <td><?= $row['cement'] ?></td>
+                            <td><?= $row['fly_ash'] ?></td>
+                            <td><?= $row['sand'] ?></td>
+                            <td><?= $row['3_4'] ?></td>
+                            <td><?= $row['3_8'] ?></td>
+                            <td><?= $row['g1'] ?></td>
+                            <td><?= $row['admix'] ?></td>
+                            <td><?= $row['water'] ?></td>
+                            <td><?= $row['air'] ?></td>
+                            <td><?= $row['others'] ?></td>
+                            <td><?= $row['total'] ?> kgs/m³</td>
 
-                                <?php
-                                $stock = [
-                                    'cement' => floatval($row['cement']),
-                                    'fly_ash' => floatval($row['fly_ash']),
-                                    'sand' => floatval($row['sand']),
-                                    '3_4' => floatval($row['3_4']),
-                                    '3_8' => floatval($row['3_8']),
-                                    'g1' => floatval($row['g1']),
-                                    'admix' => floatval($row['admix']),
-                                    'water' => floatval($row['water']),
-                                    'air' => floatval($row['air'])
-                                ];
+                            <td>
+                                <button class="btn btn-view" onclick="toggleView(<?= $row['id'] ?>)">View</button>
+                                <button class="btn btn-edit"
+                                    onclick="window.location.href='mixture_form.php?id=<?= $row['id'] ?>'">Edit</button>
+                                <button class="btn btn-del"
+                                    onclick="if(confirm('Delete this record?')) window.location.href='mixture_form.php?delete=<?= $row['id'] ?>'">Delete</button>
+                            </td>
+                        </tr>
 
-                                $available_designs = [];
+                        <!-- VIEW ROW -->
+                        <tr id="view-<?= $row['id'] ?>" class="view-panel">
+                            <td colspan="13">
 
-                                foreach ($all_designs as $d) {
+                                <div class="view-box">
+                                    <strong>Available Designs (Based on Current Stock):</strong><br><br>
 
-                                    $can_produce =
-                                        $stock['cement'] >= floatval($d['vb_cement_mix']) &&
-                                        $stock['fly_ash'] >= floatval($d['vb_fly_ash']) &&
-                                        $stock['sand'] >= floatval($d['vb_sand']) &&
-                                        $stock['3_4'] >= floatval($d['vb_three_fourth']) &&
-                                        $stock['3_8'] >= floatval($d['vb_three_eight']) &&
-                                        $stock['g1'] >= floatval($d['vb_G1']) &&
-                                        $stock['admix'] >= floatval($d['vb_admix']) &&
-                                        $stock['water'] >= floatval($d['vb_water']) &&
-                                        $stock['air'] >= floatval($d['vb_air']);
+                                    <?php
+                                    $stock = [
+                                        'cement' => floatval($row['cement']),
+                                        'fly_ash' => floatval($row['fly_ash']),
+                                        'sand' => floatval($row['sand']),
+                                        '3_4' => floatval($row['3_4']),
+                                        '3_8' => floatval($row['3_8']),
+                                        'g1' => floatval($row['g1']),
+                                        'admix' => floatval($row['admix']),
+                                        'water' => floatval($row['water']),
+                                        'air' => floatval($row['air'])
+                                    ];
 
-                                    if ($can_produce) {
-                                        $available_designs[] = $d;
+                                    $available_designs = [];
+
+                                    foreach ($all_designs as $d) {
+
+                                        $can_produce =
+                                            $stock['cement'] >= floatval($d['vb_cement_mix']) &&
+                                            $stock['fly_ash'] >= floatval($d['vb_fly_ash']) &&
+                                            $stock['sand'] >= floatval($d['vb_sand']) &&
+                                            $stock['3_4'] >= floatval($d['vb_three_fourth']) &&
+                                            $stock['3_8'] >= floatval($d['vb_three_eight']) &&
+                                            $stock['g1'] >= floatval($d['vb_G1']) &&
+                                            $stock['admix'] >= floatval($d['vb_admix']) &&
+                                            $stock['water'] >= floatval($d['vb_water']) &&
+                                            $stock['air'] >= floatval($d['vb_air']);
+
+                                        if ($can_produce) {
+                                            $available_designs[] = $d;
+                                        }
                                     }
-                                }
 
-                                if (count($available_designs) > 0):
-                                    ?>
+                                    if (count($available_designs) > 0):
+                                        ?>
 
-                                    <table class="suggestion-table"
-                                        style="width:100%; border-collapse:collapse; margin-top:10px;">
-                                        <thead>
-                                            <tr style="background:#0b63c4; color:white;">
-                                                <th>PSI</th>
-                                                <th>Curation Days</th>
-                                                <th>Type</th>
-                                                <th>Batch (kgs/m³)</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-
-                                        <tbody>
-                                            <?php foreach ($available_designs as $d): ?>
-                                                <tr>
-                                                    <td><?= $d['vb_concrete_psi'] ?></td>
-                                                    <td><?= $d['vb_curation_days'] ?></td>
-                                                    <td><?= $d['vb_concrete_type'] ?></td>
-                                                    <td><?= $d['vb_total'] ?> kgs/m³</td>
-
-                                                    <td>
-                                                        <a href="ip_addForm.php?psi=<?= urlencode($d['vb_concrete_psi']) ?>
-                    &days=<?= urlencode($d['vb_curation_days']) ?>
-                    &type=<?= urlencode($d['vb_concrete_type']) ?>
-                    &batch=<?= urlencode($d['vb_total']) ?>
-                    &mixture_id=<?= $row['id'] ?>"
-                                                            style="padding:3px 8px; background:#4CAF50; color:white; text-decoration:none; border-radius:4px; font-size:10px;">
-                                                            ADD
-                                                        </a>
-                                                    </td>
+                                        <table class="suggestion-table"
+                                            style="width:100%; border-collapse:collapse; margin-top:10px;">
+                                            <thead>
+                                                <tr style="background:#0b63c4; color:white;">
+                                                    <th>PSI</th>
+                                                    <th>Curation Days</th>
+                                                    <th>Type</th>
+                                                    <th>Batch (kgs/m³)</th>
+                                                    <th>Action</th>
                                                 </tr>
-                                            <?php endforeach; ?>
-                                        </tbody>
-                                    </table>
+                                            </thead>
 
-                                <?php else: ?>
+                                            <tbody>
+                                                <?php foreach ($available_designs as $d): ?>
+                                                    <tr>
+                                                        <td><?= $d['vb_concrete_psi'] ?></td>
+                                                        <td><?= $d['vb_curation_days'] ?></td>
+                                                        <td><?= $d['vb_concrete_type'] ?></td>
+                                                        <td><?= $d['vb_total'] ?> kgs/m³</td>
+                                                        <td>
+                                                            <a href="ip_form.php?psi=<?= urlencode($d['vb_concrete_psi']) ?>
+                                                                &days=<?= urlencode($d['vb_curation_days']) ?>
+                                                                &type=<?= urlencode($d['vb_concrete_type']) ?>
+                                                                &batch=<?= urlencode($d['vb_total']) ?>
+                                                                &mixture_id=<?= $row['id'] ?>"
+                                                                style="padding:3px 8px; background:#4CAF50; color:white; text-decoration:none; border-radius:4px; font-size:10px;">
+                                                                ADD
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            </tbody>
+                                        </table>
 
-                                    <p style="text-align:center; font-style:italic;">
-                                        No producible designs for current stock
-                                    </p>
+                                    <?php else: ?>
 
-                                <?php endif; ?>
-                            </div>
+                                        <p style="text-align:center; font-style:italic;">
+                                            No producible designs for current stock
+                                        </p>
 
-                        </td>
-                    </tr>
+                                    <?php endif; ?>
+                                </div>
 
-                <?php endwhile; ?>
+                            </td>
+                        </tr>
+
+                    <?php endwhile; ?>
+                </tbody>
 
             </table>
 

@@ -212,7 +212,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $concrete_psi = $_POST['concrete_psi'] ?? '';
     $curation_days = $_POST['curation_days'] ?? '';
     $concrete_type = $_POST['concrete_type'] ?? '';
-    $sap_units = floatval($_POST['sap_units'] ?? 0);
+    $sap_units = intval($_POST['sap_units'] ?? 0);  // CHANGED: floatval to intval
     $sap_concrete_price = floatval($_POST['sap_concrete_price'] ?? 0);
     $order_status = $_POST['order_status'] ?? 'pending';
 
@@ -451,8 +451,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         </div>
                         <div class="form-group">
                             <label>Units <span style="color: #f44336;">*</span></label>
-                            <input type="number" id="sap_units" name="sap_units" step="0.01" min="0" required
-                                placeholder="Max based on inventory" value="<?= htmlspecialchars($sap_units) ?>">
+                            <!-- CHANGED: step="0.01" to step="1", placeholder "0.00" to "0", and added oninput to prevent decimals -->
+                            <input type="number" id="sap_units" name="sap_units" step="1" min="0" required
+                                placeholder="0" value="<?= intval($sap_units) ?>"
+                                oninput="this.value = Math.floor(this.value)">
                         </div>
                         <div class="form-group">
                             <label>Concrete Price (₱)</label>
@@ -601,8 +603,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // 6. FORM VALIDATION
             const form = document.getElementById('concreteForm');
+            const unitsInput = document.getElementById('sap_units');
+
             form.addEventListener('submit', function (e) {
-                const units = parseFloat(unitsInput.value);
+                const units = parseInt(unitsInput.value);
                 const maxUnits = unitsInput.max || 0;
 
                 if (units > maxUnits) {
@@ -617,7 +621,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             });
 
-            // 7. EDIT MODE: Restore selections
             // 7. EDIT MODE: Handle bad data + restore selections
             <?php if (!empty($concrete_psi)): ?>
                 setTimeout(() => {
