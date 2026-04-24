@@ -20,7 +20,6 @@ function sendResetCode($to_email, $code)
 {
     $mail = new PHPMailer(true);
     try {
-        // Server settings
         $mail->isSMTP();
         $mail->Host = 'smtp.gmail.com';
         $mail->SMTPAuth = true;
@@ -29,11 +28,9 @@ function sendResetCode($to_email, $code)
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port = 587;
 
-        // Recipients
         $mail->setFrom('sorcom.system.00@gmail.com', 'SORCOM System');
         $mail->addAddress($to_email);
 
-        // Content
         $mail->isHTML(true);
         $mail->Subject = 'SORCOM Password Reset Code';
         $mail->Body = "
@@ -75,7 +72,7 @@ if (isset($_GET['resend']) && $_GET['resend'] == 1) {
     }
 }
 
-// STEP 1: Verify Identity (Full Name + Employee Number + Email)
+// STEP 1: Verify Identity
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verify_identity'])) {
     $full_name = trim($_POST['full_name']);
     $employee_number = trim($_POST['employee_number']);
@@ -117,7 +114,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verify_identity'])) {
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verify_code'])) {
     $entered_code = trim($_POST['verification_code']);
 
-    // Check for too many attempts
     if (isset($_SESSION['reset_attempts']) && $_SESSION['reset_attempts'] >= 3) {
         if (isset($_SESSION['reset_lock_time']) && time() < $_SESSION['reset_lock_time']) {
             $remaining = $_SESSION['reset_lock_time'] - time();
@@ -172,7 +168,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset_password'])) {
         $stmt->bind_param("ss", $hashed, $_SESSION['reset_employee']);
 
         if ($stmt->execute()) {
-            // Clear all session variables
             unset(
                 $_SESSION['reset_employee'],
                 $_SESSION['reset_fullname'],
@@ -194,7 +189,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['reset_password'])) {
     }
 }
 
-// Calculate remaining cooldown for resend button
 $resend_remaining = 0;
 if (isset($_SESSION['last_resend_time'])) {
     $resend_remaining = $resend_cooldown - (time() - $_SESSION['last_resend_time']);
@@ -210,6 +204,7 @@ if (isset($_SESSION['last_resend_time'])) {
     <meta charset="UTF-8">
     <title>Forgot Password - SORCOM</title>
     <link rel="stylesheet" href="/Inventory-Accounts-System-v1/assets/bootstrap/css/bootstrap.min.css">
+
     <style>
         body {
             background-color: blue;
@@ -304,7 +299,29 @@ if (isset($_SESSION['last_resend_time'])) {
         .resend-btn:hover {
             background-color: #5a6268;
         }
+
+        /* Make asterisk in placeholder red */
+        input[placeholder*="*"]::-webkit-input-placeholder {
+            color: red;
+            opacity: 0.7;
+        }
+
+        input[placeholder*="*"]::-moz-placeholder {
+            color: red;
+            opacity: 0.7;
+        }
+
+        input[placeholder*="*"]:-ms-input-placeholder {
+            color: red;
+            opacity: 0.7;
+        }
+
+        input[placeholder*="*"]:-moz-placeholder {
+            color: red;
+            opacity: 0.7;
+        }
     </style>
+
 </head>
 
 <body>
@@ -318,9 +335,11 @@ if (isset($_SESSION['last_resend_time'])) {
             <h2>Reset Password</h2>
             <?php if ($error): ?>
                 <div class="error"><?= htmlspecialchars($error) ?></div><?php endif; ?>
-            <form method="POST">
-                <input type="password" name="new_password" placeholder="New Password" required>
-                <input type="password" name="confirm_password" placeholder="Confirm Password" required>
+            <form method="POST" autocomplete="off">
+                <input type="password" name="new_password" placeholder="New Password *" autocomplete="new-password"
+                    required>
+                <input type="password" name="confirm_password" placeholder="Confirm Password *" autocomplete="new-password"
+                    required>
                 <button type="submit" name="reset_password">Reset Password</button>
             </form>
             <a href="forgot_pass.php" class="back-link">← Cancel</a>
@@ -332,8 +351,9 @@ if (isset($_SESSION['last_resend_time'])) {
             <?php if ($success): ?>
                 <div class="success"><?= $success ?></div><?php endif; ?>
             <p>Enter the 6-digit code sent to your email</p>
-            <form method="POST">
-                <input type="text" name="verification_code" placeholder="Enter 6-digit code" maxlength="6" required>
+            <form method="POST" autocomplete="off">
+                <input type="text" name="verification_code" placeholder="Enter 6-digit code *" maxlength="6"
+                    autocomplete="off" required>
                 <button type="submit" name="verify_code">Verify Code</button>
             </form>
             <form method="GET" style="margin-top: 10px;">
@@ -349,15 +369,42 @@ if (isset($_SESSION['last_resend_time'])) {
             <p>Enter your account details to reset your password</p>
             <?php if ($error): ?>
                 <div class="error"><?= htmlspecialchars($error) ?></div><?php endif; ?>
-            <form method="POST">
-                <input type="text" name="full_name" placeholder="Full Name" required>
-                <input type="text" name="employee_number" placeholder="Employee Number" required>
-                <input type="email" name="employee_email" placeholder="Email Address" required>
+
+            <form method="POST" autocomplete="off">
+                <!-- TRAP FIELDS - Hidden off-screen -->
+                <input type="text" name="fakeusername" style="position:absolute; top:-9999px; left:-9999px;" value="">
+                <input type="password" name="fakepassword" style="position:absolute; top:-9999px; left:-9999px;" value="">
+                <input type="email" name="fake_email" style="display:none" value="">
+                <input type="text" name="fake_name" style="display:none" value="">
+
+                <input type="text" name="full_name" placeholder="Full Name *" autocomplete="off" required
+                    onfocus="this.removeAttribute('readonly')" readonly>
+
+                <input type="text" name="employee_number" placeholder="Employee Number *" autocomplete="off" required
+                    onfocus="this.removeAttribute('readonly')" readonly>
+
+                <input type="text" name="employee_email" placeholder="Email Address *" autocomplete="off" required
+                    onfocus="this.removeAttribute('readonly')" readonly>
+
                 <button type="submit" name="verify_identity">Verify Identity</button>
             </form>
             <a href="web_login.php" class="back-link">← Back to Login</a>
         <?php endif; ?>
     </div>
+
+    <script>
+        // Clear any autofilled values immediately
+        window.addEventListener('DOMContentLoaded', function () {
+            var inputs = document.querySelectorAll('input');
+            for (var i = 0; i < inputs.length; i++) {
+                if (inputs[i].type !== 'hidden' && inputs[i].style.position !== 'absolute' && inputs[i].style.display !== 'none') {
+                    if (inputs[i].value !== '') {
+                        inputs[i].value = '';
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 
 </html>

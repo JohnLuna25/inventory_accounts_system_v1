@@ -90,6 +90,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
     <?php else: ?>
         <form class="form-container" action="" method="post">
+            <!-- TRAP AUTO-FILL (Hidden fake fields) -->
+            <input type="text" name="fakeusername" style="display:none" value="">
+            <input type="password" name="fakepassword" style="display:none" value="">
+            <input type="text" name="fakeemail" style="display:none" value="">
+
             <h2 style="color:blue; text-align:center;">Create Employee Account</h2>
 
             <?php if ($createError): ?>
@@ -97,24 +102,59 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
 
             <label for="employee_number">Employee Number <span class="required-field">*</span></label>
-            <input type="text" id="employee_number" name="employee_number" required autocomplete="off">
+            <input type="text" id="employee_number" name="employee_number" autocomplete="new-employee-number" required>
 
             <label for="fullname">Full Name <span class="required-field">*</span></label>
-            <input type="text" id="fullname" name="fullname" required autocomplete="off">
+            <input type="text" id="fullname" name="fullname" autocomplete="new-fullname" required>
 
             <label for="employee_email">Email Address <span class="required-field">*</span></label>
-            <input type="text" id="employee_email" name="employee_email" placeholder="example@gmail.com" required
-                autocomplete="off">
+            <input type="text" id="employee_email" name="employee_email" placeholder="example@gmail.com"
+                autocomplete="new-email" required>
 
             <label for="password">Password <span class="required-field">*</span></label>
-            <input type="password" id="password" name="password" required autocomplete="off">
+            <input type="password" id="password" name="password" autocomplete="new-password" required>
 
             <label for="confirm_password">Confirm Password <span class="required-field">*</span></label>
-            <input type="password" id="confirm_password" name="confirm_password" required autocomplete="off">
+            <input type="password" id="confirm_password" name="confirm_password" autocomplete="new-password" required>
 
             <input type="submit" value="Create Account">
         </form>
     <?php endif; ?>
+
+    <script>
+        // Kill autofill by temporarily setting readonly
+        window.addEventListener('DOMContentLoaded', function () {
+            var inputs = document.querySelectorAll('input');
+            for (var i = 0; i < inputs.length; i++) {
+                inputs[i].readOnly = true;
+            }
+
+            setTimeout(function () {
+                for (var i = 0; i < inputs.length; i++) {
+                    inputs[i].readOnly = false;
+                }
+            }, 50);
+
+            setTimeout(function () {
+                var fullname = document.getElementById('fullname');
+                if (fullname && fullname.value !== '') {
+                    fullname.value = '';
+                }
+
+                var email = document.getElementById('employee_email');
+                if (email && email.value !== '') {
+                    email.value = '';
+                }
+            }, 100);
+        });
+
+        document.querySelector('form')?.addEventListener('submit', function (e) {
+            var fullname = document.getElementById('fullname');
+            if (fullname && fullname.value === 'John Villaluna') {
+                fullname.value = '';
+            }
+        });
+    </script>
 
 </body>
 
