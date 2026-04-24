@@ -351,7 +351,7 @@ setInterval(() => {
     if (clock) {
         const now = new Date();
         clock.textContent = now.toLocaleDateString("en-US", {month:"short",day:"2-digit",year:"numeric"}).replace(",", ".") + 
-                           " || " + now.toLocaleTimeString("en-US", {hour12:false});
+                           " | " + now.toLocaleTimeString("en-US", {hour12:false});
     }
 }, 1000);
     

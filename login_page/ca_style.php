@@ -15,7 +15,7 @@
         background-color: lightgray;
         padding: 50px;
         border-radius: 40px;
-        width: 340px;
+        width: 470px;
         box-sizing: border-box;
         text-align: left;
     }
@@ -42,7 +42,7 @@
 
     input[type="submit"]:hover {
         background-color: #0000ff;
-        color: #ffff00;
+        color: #ffffff;
     }
 
     .message {
@@ -66,6 +66,13 @@
         font-weight: bold;
         color: blue;
         text-align: center;
+    }
+
+    .required-field {
+        color: red;
+        font-size: 16px;
+        font-weight: bold;
+        margin-left: 2px;
     }
 
     /* ========== RESPONSIVE STYLES ========== */
