@@ -172,10 +172,11 @@ $conn->close();
         }
 
         body {
-            font-family: Arial;
+            font-family: 'Inter' sans-serif;
             background: #BFC3AA;
             margin-top: 40px;
             padding-bottom: 60px;
+            font-family: 'Inter' sans-serif;
         }
 
         .form-container {
@@ -184,6 +185,7 @@ $conn->close();
             background: white;
             padding: 30px;
             border-radius: 10px;
+            font-family: 'Lexend Giga', sans-serif;
         }
 
         /* HEADER TITLE (UNCHANGED) */
@@ -195,6 +197,7 @@ $conn->close();
             color: #333;
             padding: 17px;
             border-radius: 8px;
+
         }
 
         /* MOVE CARDS SLIGHTLY DOWN */

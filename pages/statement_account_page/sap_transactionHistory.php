@@ -55,7 +55,7 @@ $doneOrders = getDoneOrders($conn);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transaction History</title>
-    <link rel="stylesheet" href="/Inventory-Accounts-System-v1/assets/bootstrap/css/bootstrap.min.css">
+    <?php include '../../assets/resources.php'; ?>
     <link rel="stylesheet" href="sap_accountsManagement.css">
     <link rel="stylesheet" href="sap_transactionHistory.css">
 
@@ -64,13 +64,13 @@ $doneOrders = getDoneOrders($conn);
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 
-<body>
+<body style="background: #bfc3aa !important;">
 
     <?php showHeader(); ?>
     <div class="main-content">
 
         <div class="page-title-bar">
-            <h2>Transaction History</h2>
+            <h2 style="font-family: 'Poppins', sans-serif;">Transaction History</h2>
             <div class="button-container">
                 <a href="sap_accountsManagement.php" class="btn btn-primary btn-back">← Back to Orders</a>
                 <div class="search-container">

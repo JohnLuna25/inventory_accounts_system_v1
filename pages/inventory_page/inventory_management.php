@@ -48,12 +48,14 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inventory Management</title>
     <link rel="stylesheet" href="inventory_management.css">
+    <?php include '../../assets/resources.php'; ?>
 </head>
 
 <body>
     <div class="main-content">
         <div class="page-title-bar">
-            <h2 class="text-center mb-3" style="font-weight: 300; font-size: 32px; margin-top: auto;">Ready-Mix
+            <h2 class="text-center mb-3" style="font-family: 'Poppins', sans-serif; font-size: 32px; margin-top: auto;">
+                Ready-Mix
                 Inventory</h2>
             <div class="search-container">
                 <a href="ip_addForm.php" class="btn">+ Add Inventory</a>

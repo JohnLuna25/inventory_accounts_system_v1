@@ -143,7 +143,8 @@
   }
 
   body {
-    background: white !important;
+    background: #a2a595 !important;
+    font-family: "Inter", Arial, sans-serif;
     margin: 0 !important;
     padding: 0 !important;
   }

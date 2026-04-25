@@ -20,12 +20,12 @@ while ($d = $designs_result->fetch_assoc()) {
 <head>
     <meta charset="UTF-8">
     <title>SORCOM Mixture Inventory</title>
-    <link rel="stylesheet" href="/Inventory-Accounts-System-v1/assets/bootstrap/css/bootstrap.min.css">
+    <?php include '../../assets/resources.php'; ?>
     <?php showHeader(); ?>
 
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Inter' sans-serif;
             background: #BFC3AA;
             margin: 0;
             padding: 0;
@@ -161,7 +161,8 @@ while ($d = $designs_result->fetch_assoc()) {
 
         <!-- HEADER -->
         <div class="page-title-bar">
-            <h2 style="text-align:center; margin:0; font-weight:300;">Mixture Inventory</h2>
+            <h2 style="font-family: 'Poppins', sans-serif; text-align:center; margin:0; font-weight:300;">Mixture
+                Inventory</h2>
 
             <div class="button-container">
                 <a href="mixture_form.php" class="btn-add">+ Add Mixture</a>

@@ -48,12 +48,14 @@ if (!$customized_result) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Concrete Design Masterlist</title>
-    <link rel="stylesheet" href="/Inventory-Accounts-System-v1/assets/bootstrap/css/bootstrap.min.css">
+    <?php include '../../assets/resources.php'; ?>
     <?php showHeader() ?>
+
+
     <style>
         /* ==== ALL ORIGINAL STYLES KEPT ==== */
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Inter' sans-serif;
             background: #BFC3AA;
             margin: 0;
             padding: 0;
@@ -298,6 +300,8 @@ if (!$customized_result) {
             }
         }
     </style>
+
+
 </head>
 
 <body>
@@ -305,7 +309,9 @@ if (!$customized_result) {
     <div class="main-content">
 
         <div class="page-title-bar">
-            <h2 class="text-center mb-3">Concrete Design Masterlist</h2>
+            <h2 class="text-center mb-3" style="font-family: 'Poppins', sans-serif;">
+                Concrete Design Masterlist
+            </h2>
             <div class="search-container">
                 <input type="text" id="vbSearchInput" placeholder="   Search PSI, Days, Type... (VB Table)">
                 <button onclick="filterVBTable()" class="btn btn-primary" style="padding: 10px 20px;">Search</button>
@@ -423,7 +429,7 @@ if (!$customized_result) {
     <!-- ========== CUSTOMIZED CONCRETE DESIGN SECTION ========== -->
     <div class="main-content">
         <div class="page-title-bar">
-            <h2 class="text-center mb-3">Customized Concrete Design</h2>
+            <h2 class="text-center mb-3 style=font-family: 'Poppins', sans-serif;">Customized Concrete Design</h2>
             <div class="search-container">
                 <a href="cdl_customizedMix.php" class="btn"
                     style="background: #0b63c4; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-size: 14px;">+
@@ -444,7 +450,7 @@ if (!$customized_result) {
                         <th>Concrete PSI</th>
                         <th>Curation Days</th>
                         <th>Concrete Type</th>
-                        <th>Experiment Notes</th>
+                        <th>Remarks</th>
                         <th>Is Active</th>
                         <th>Created At</th>
                         <th>Concrete Price</th>

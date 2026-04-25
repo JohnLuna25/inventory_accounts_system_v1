@@ -48,6 +48,7 @@ if (!$result)
         body {
             font-family: Arial;
             padding: 15px;
+            font-family: 'Inter' sans-serif;
         }
 
         table {
