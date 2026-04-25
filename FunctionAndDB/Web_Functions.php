@@ -4,28 +4,22 @@ function showHeader()
     echo '
 <div class="main-header">
     <div class="header-grid">
-        <!-- Left: Burger Menu + Home Button -->
+        <!-- Left: Burger Menu -->
         <div class="header-left">
-            <!-- 🔥 BULLETPROOF BURGER -->
             <button class="burger-menu" id="burgerMenuBtn" aria-label="Toggle Menu">
                 <span></span>
                 <span></span>
                 <span></span>
             </button>
-            
-            <a href="/Inventory-Accounts-System-v1/pages/home_page/home.php"
-            style="color: yellow;font-size: 12px;font-weight: bold;text-decoration: none;background: transparent;border: 2px solid yellow;padding: 4px 10px;border-radius: 20px;display: inline-block;margin-left: 12px;">
-                Go to Home
-            </a>
         </div>
 
         <!-- Center: Title -->
-        <a href="/Inventory-Accounts-System-v1/pages/home_page/home.php">
+        <a href="/Inventory-Accounts-System-v1/pages/home_page/home.php" style="text-decoration: none;">
             <div class="header-center">
                 <h1 class="header-title">SORCOM READY-MIX CONCRETE</h1>
                 <p class="header-subtitle">Inventory and Accounts Management System</p>
             </div>
-        </a>    
+        </a> 
 
         <!-- Right: Clock -->
         <div class="header-right">
@@ -33,45 +27,59 @@ function showHeader()
         </div>
     </div>
 </div>
-
-<!-- 🔥 MENU -->
 <nav class="slide-menu" id="slideMenuNav">
-    <button class="close-menu" id="closeMenuBtn">&times;</button>
     <ul class="menu-list">
         <li class="dashboard-title">
-            <p>
-                Main Menu
-            </p>
+            <a href="/Inventory-Accounts-System-v1/pages/home_page/home.php" style="text-decoration: none; color: white; display: block; text-align: center;">
+                <i class="fas fa-home"></i> Home Page
+            </a>
         </li>
-        <li><a href="/Inventory-Accounts-System-v1/pages/concrete_design_page/concrete_design_list.php">Concrete Design List</a></li>
-        <li><a href="/Inventory-Accounts-System-v1/pages/inventory_page/inventory_management.php">Inventory Management</a></li>
-        <li><a href="/Inventory-Accounts-System-v1/pages/statement_account_page/sap_accountsManagement.php">Transaction Records</a></li>
-        <li><a href="/Inventory-Accounts-System-v1/pages/reports_page/reports_management.php">Reports</a></li>
-        <li class="logout-item"><a href="/Inventory-Accounts-System-v1/login_page/web_login.php" onclick="return confirmLogout()">Log out</a></li>
+        <li><a href="/Inventory-Accounts-System-v1/pages/concrete_design_page/concrete_design_list.php">
+            <i class="fas fa-list"></i> Concrete Design List
+        </a></li>
+        <li><a href="/Inventory-Accounts-System-v1/pages/inventory_page/inventory_management.php">
+            <i class="fas fa-box"></i> Inventory
+        </a></li>
+        <li><a href="/Inventory-Accounts-System-v1/pages/statement_account_page/sap_accountsManagement.php">
+            <i class="fas fa-dollar-sign"></i> Transaction
+        </a></li>
+        <li><a href="/Inventory-Accounts-System-v1/pages/reports_page/reports_management.php">
+            <i class="fas fa-chart-line"></i> Reports
+        </a></li>
+        <li class="logout-item"><a href="/Inventory-Accounts-System-v1/login_page/web_login.php" onclick="return confirmLogout()">
+            <i class="fas fa-sign-out-alt"></i> Log out
+        </a></li>
     </ul>
 </nav>
 <div class="menu-overlay" id="menuOverlayDiv"></div>
 
-<style>
-/* 🔥 Z-INDEX WAR - BULLETPROOF */
+<head>
+    <link href="/Inventory-Accounts-System-v1/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lexend+Giga:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&family=Iosevka+Charon+Mono&family=Lexend+Mega:wght@400;500;600;700&family=Lexend+Meta:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 
-li.dashboard-title > p {
-    color: yellow;
-    font-size: 22px;
-    margin-top: -53px;
-    margin-bottom: 20px;
-          
-    /* ✅ FIXED: Center text INSIDE p */
-    text-align: center;
-    display: block;  /* p is block by default */
-    
-    /* ✅ OPTIONAL: Perfect width control */
-    max-width: 400px;
-    margin-left: auto;
-    margin-right: auto;
+</head>
+
+<style>
+/* ALL HEADER TEXT WHITE */
+.main-header,
+.main-header *,
+.header-left a,
+.header-title,
+.header-subtitle,
+.clock-text {
+    color: white !important;
 }
 
-/* ===== BURGER MENU - CLEAN 3 LINES (POSITION UNCHANGED) ===== */
+
+
+
+
+/* Burger Menu Button - No border, white lines */
 #burgerMenuBtn {
     display: inline-flex !important;
     flex-direction: column !important;
@@ -84,132 +92,143 @@ li.dashboard-title > p {
     width: 28px !important;
     height: 22px !important;
     background: transparent !important;
-    border: 2px solid yellow !important;
-    border-radius: 6px !important;
+    border: none !important;
     cursor: pointer !important;
     z-index: 9999 !important;
     pointer-events: auto !important;
     touch-action: manipulation !important;
 }
 
-#burgerMenuBtn:hover {
-    background: rgba(255, 255, 0, 0.15) !important;
-}
-
 #burgerMenuBtn span {
     display: block !important;
     width: 100% !important;
     height: 2px !important;
-    background: #ffff00 !important;
+    background: white !important;
     border-radius: 2px !important;
     margin: 0 !important;
     transition: all 0.3s ease !important;
 }
 
-/* Transform to X when active */
-#burgerMenuBtn.active span:first-child {
-    transform: translateY(6px) rotate(45deg) !important;
-}
-
-#burgerMenuBtn.active span:nth-child(2) {
-    opacity: 0 !important;
-    transform: scale(0) !important;
-}
-
-#burgerMenuBtn.active span:last-child {
-    transform: translateY(-6px) rotate(-45deg) !important;
-}
-
+/* SLIDE MENU - From home.php */
 #slideMenuNav {
     position: fixed !important;
     top: 0 !important;
-    left: -300px !important;
-    width: 300px !important;
-    background: linear-gradient(180deg, #0d6efd 0%, #1e40af 100%) !important;
-    z-index: 9998 !important;
-    transition: left 0.4s ease !important;
-    padding: 80px 20px 20px !important;
-    box-shadow: 4px 0 25px rgba(0,0,0,0.5) !important;
+    left: -250px !important;
+    width: 230px !important;
+    height: 100% !important;
+    background: #094372 !important;
+    z-index: 999 !important;
+    transition: left 0.35s ease !important;
+    padding: 20px 20px 20px !important;
+    box-shadow: 4px 0 25px rgba(0, 0, 0, 0.4) !important;
+    overflow-y: auto !important;
+    box-sizing: border-box !important;
 }
-#slideMenuNav.active { left: 0 !important; }
 
-#closeMenuBtn {
-    position: absolute !important;
-    top: 15px !important;
-    right: 15px !important;
-    background: rgba(255,255,255,0.1) !important;
-    border: 2px solid rgba(255,255,255,0.3) !important;
-    color: white !important;
-    font-size: 22px !important;
-    cursor: pointer !important;
-    padding: 8px 12px !important;
-    border-radius: 50% !important;
-    width: 42px !important;
-    height: 42px !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    z-index: 9999 !important;
+#slideMenuNav.active { 
+    left: 0 !important; 
 }
-#closeMenuBtn:hover { background: rgba(255,255,0,0.2) !important; transform: rotate(90deg) !important; }
 
+/* MENU OVERLAY - From home.php */
 #menuOverlayDiv {
     position: fixed !important;
     top: 0 !important;
     left: 0 !important;
-    width: 100vw !important;
-    height: 100vh !important;
-    background: rgba(0,0,0,0.6) !important;
-    z-index: 9997 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(0, 0, 0, 0.6) !important;
+    z-index: 9999 !important;
     opacity: 0 !important;
     visibility: hidden !important;
-    transition: all 0.3s ease !important;
+    transition: opacity 0.3s ease, visibility 0.3s ease !important;
+    pointer-events: none !important;
 }
+
 #menuOverlayDiv.active {
-    opacity: 1 !important;
     visibility: visible !important;
 }
 
+/* MENU LIST - From home.php */
 .menu-list {
     list-style: none !important;
     padding: 0 !important;
-    margin: 0 !important;
+    margin-top: 100px !important;
+    
 }
-.menu-list li { margin-bottom: 8px !important; }
+
+.menu-list li { 
+    margin-bottom: 8px !important; 
+    
+}
+
 .menu-list a {
+    
     display: block !important;
     color: white !important;
     text-decoration: none !important;
-    padding: 16px 20px !important;
-    border-radius: 8px !important;
+    padding: 14px 20px !important;
+    border-radius: 10px !important;
     font-weight: 500 !important;
-    transition: all 0.3s ease !important;
+    transition: all 0.25s ease !important;
     border-left: 3px solid transparent !important;
-}
-.menu-list a:hover {
-    background: rgba(255,255,0,0.15) !important;
-    color: yellow !important;
-    transform: translateX(8px) !important;
-    border-left-color: #ffff00 !important;
-}
-.menu-list li:last-child a { border-left-color: #ff4444 !important; }
-.menu-list li:last-child a:hover {
-    background: linear-gradient(90deg, #ff4444, #dc2626) !important;
-    border-left-color: white !important;
+    border-right: 3px solid transparent !important;
 }
 
-/* BASE STYLES - UNCHANGED */
-body, html { overflow-x: hidden; margin: 0; padding: 0; }
+.menu-list a:hover {
+    background: #f1b33f !important;
+    color: #303030 !important;
+    transform: translateX(5px) !important;
+    border-left-color: #ffffff !important;
+    border-right-color: #ffffff !important;
+}
+
+.menu-list li:last-child a {
+    border-left-color: #ff4444 !important;
+}
+
+.menu-list li:last-child a:hover {
+    background: rgb(255, 49, 70) !important;
+    border-left-color: white !important;
+    border-right-color: white !important;
+}
+
+/* WELCOME MESSAGE - From home.php */
+.welcome-message {
+    margin-bottom: 20px !important;
+}
+
+.welcome-message p {
+    color: white !important;
+    font-size: 16px !important;
+    font-weight: bold !important;
+    text-align: center !important;
+    padding: 10px !important;
+    background: #1e2460 !important;
+    border-radius: 8px !important;
+}
+
+/* BASE HEADER STYLES */
+body, html { 
+    overflow-x: hidden; 
+    margin: 0; 
+    padding: 0; 
+}
+
+.main-content {
+    padding-top: 80px !important;
+}
+
 .main-header {
-    background-color: #0d6efd;
-    padding: 8px 15px;
+    background-color: #2e3590;
     width: 100%;
     position: fixed;
     top: 0;
     left: 0;
+    right: 0;
     z-index: 1000;
     box-sizing: border-box;
 }
+
 .header-grid {
     display: flex;
     justify-content: space-between;
@@ -218,49 +237,67 @@ body, html { overflow-x: hidden; margin: 0; padding: 0; }
     margin: 0 auto;
     padding: 0 15px;
 }
-.header-left, .header-center, .header-right { flex: 0 0 auto; }
-.header-center { text-align: center; }
+
+.header-left, .header-center, .header-right { 
+    flex: 0 0 auto; 
+}
+
+.header-center { 
+    text-align: center; 
+}
+
+/* HEADER TITLE FONT */
 .header-title {
-    font-family: Arial, sans-serif;
-    font-size: 16px;
+    margin-top: 5px;
     font-weight: bold;
-    color: #ffff00;
-    margin: 0;
-    white-space: nowrap;
+    font-size: 18px;
+    color: white;
+    font-family: "Iosevka Charon Mono", monospace;
+    letter-spacing: 4px;
+    margin-bottom: 5px;
 }
+
+/* HEADER SUBTITLE FONT */
 .header-subtitle {
-    font-family: Arial, sans-serif;
-    font-size: 10px;
-    font-weight: 600;
-    color: #ffff00;
-    margin: 2px 0 0 0;
-    white-space: nowrap;
+    font-size: 16px;
+    color: white;
+    font-family: "Lexend Giga", sans-serif;
+    letter-spacing: 4px;
+    margin-top: 0;
 }
+
+/* CLOCK FONT */
 .clock-text {
-    font-family: Arial, sans-serif;
-    font-weight: 600;
-    font-size: 12px;
-    color: #ffff00;
-    margin: 0;
+    font-family: "JetBrains Mono", "Roboto Mono", "Courier New", monospace;
+    font-weight: bold;
+    font-size: 0.9rem;
+    color: white;
     white-space: nowrap;
+    margin: 0;
+    text-align: right;  
+    margin-left: -50vw;
 }
+
+/* Responsive */
 @media (max-width: 768px) {
     .header-grid { padding: 0 10px; }
-    .header-title { font-size: 13px; }
-    .header-subtitle { font-size: 9px; }
-    .clock-text { font-size: 10px; }
+    .header-title { font-size: 13px; letter-spacing: 2px; }
+    .header-subtitle { font-size: 10px; }
+    .clock-text { font-size: 0.7rem; margin-left: -20vw; }
 }
+
 @media (max-width: 576px) {
-    .main-header { padding: 5px 10px; }
+    .main-header { padding: 10px 0; }
     .header-grid { flex-direction: column; gap: 5px; }
     .header-center { order: 1; }
     .header-left { order: 2; }
     .header-right { order: 3; }
-    .header-title { font-size: 12px; }
+    .header-title { font-size: 12px; letter-spacing: 1px; }
     .header-subtitle { font-size: 8px; }
-    .clock-text { font-size: 10px; }
+    .clock-text { font-size: 0.6rem; margin-left: 0; text-align: center; }
 }
 </style>
+
 <script>
 (function(){
     let isMenuOpen = false;
@@ -270,9 +307,8 @@ body, html { overflow-x: hidden; margin: 0; padding: 0; }
         const burger = document.getElementById("burgerMenuBtn");
         const menu = document.getElementById("slideMenuNav");
         const overlay = document.getElementById("menuOverlayDiv");
-        const closeBtn = document.getElementById("closeMenuBtn");
         
-        if (!burger || !menu || !overlay || !closeBtn) return;
+        if (!burger || !menu || !overlay) return;
         
         isMenuOpen = !isMenuOpen;
         
@@ -280,13 +316,11 @@ body, html { overflow-x: hidden; margin: 0; padding: 0; }
             burger.classList.add("active");
             menu.classList.add("active");
             overlay.classList.add("active");
-            closeBtn.classList.add("active");
             document.body.classList.add("menu-open");
         } else {
             burger.classList.remove("active");
             menu.classList.remove("active");
             overlay.classList.remove("active");
-            closeBtn.classList.remove("active");
             document.body.classList.remove("menu-open");
         }
     }
@@ -297,78 +331,60 @@ body, html { overflow-x: hidden; margin: 0; padding: 0; }
         const burger = document.getElementById("burgerMenuBtn");
         const menu = document.getElementById("slideMenuNav");
         const overlay = document.getElementById("menuOverlayDiv");
-        const closeBtn = document.getElementById("closeMenuBtn");
         
-        if (!burger || !menu || !overlay || !closeBtn) return;
+        if (!burger || !menu || !overlay) return;
         
-        // 🛡️ CLEAN PREVIOUS
-        burger.onclick = null;
-        closeBtn.onclick = null;
-        overlay.onclick = null;
-        
-        // 🔒 NEW HANDLERS
         burger.onclick = toggleMenu;
-        closeBtn.onclick = toggleMenu;
         overlay.onclick = toggleMenu;
         
-        // LINKS
         document.querySelectorAll(".menu-list a").forEach(link => {
-            link.onclick = function(e) {
+            link.onclick = function() {
                 setTimeout(toggleMenu, 10);
             };
         });
         
         handlersAttached = true;
-        console.log("🔥 Burger menu locked in - 100% reliable");
     }
     
-    // INIT MULTIPLE TIMES
-    // 🔥 FORCE RESET FIRST
-function init() { 
-    // FORCE RESET FIRST
-    const burger = document.getElementById("burgerMenuBtn");
-    if (burger) {
-        burger.classList.remove("active");
-        burger.style.zIndex = "99999";
-        burger.style.pointerEvents = "auto";
-    }
-    attachHandlers(); 
-}
-
-document.addEventListener("DOMContentLoaded", init);
-setTimeout(init, 100);  // FASTER
-setTimeout(init, 500);
-setTimeout(init, 1500);
-
-// 🔥 ESCAPE - FORCE CLOSE
-document.addEventListener("keydown", e => {
-    if (e.key === "Escape") {
+    function init() { 
         const burger = document.getElementById("burgerMenuBtn");
-        const menu = document.getElementById("slideMenuNav");
-        const overlay = document.getElementById("menuOverlayDiv");
-        const closeBtn = document.getElementById("closeMenuBtn");
-        if (burger) burger.classList.remove("active");
-        if (menu) menu.classList.remove("active");
-        if (overlay) overlay.classList.remove("active");
-        if (closeBtn) closeBtn.classList.remove("active");
-        document.body.classList.remove("menu-open");
-        isMenuOpen = false;
+        if (burger) {
+            burger.classList.remove("active");
+        }
+        attachHandlers(); 
     }
-});
-
-window.confirmLogout = () => {
-    return confirm("Did you save all changes?") && confirm("Are you sure?");
-};
-
-// CLOCK
-setInterval(() => {
-    const clock = document.getElementById("clock");
-    if (clock) {
-        const now = new Date();
-        clock.textContent = now.toLocaleDateString("en-US", {month:"short",day:"2-digit",year:"numeric"}).replace(",", ".") + 
-                           " | " + now.toLocaleTimeString("en-US", {hour12:false});
-    }
-}, 1000);
+    
+    document.addEventListener("DOMContentLoaded", init);
+    setTimeout(init, 100);
+    setTimeout(init, 500);
+    setTimeout(init, 1500);
+    
+    document.addEventListener("keydown", e => {
+        if (e.key === "Escape") {
+            const burger = document.getElementById("burgerMenuBtn");
+            const menu = document.getElementById("slideMenuNav");
+            const overlay = document.getElementById("menuOverlayDiv");
+            if (burger) burger.classList.remove("active");
+            if (menu) menu.classList.remove("active");
+            if (overlay) overlay.classList.remove("active");
+            document.body.classList.remove("menu-open");
+            isMenuOpen = false;
+        }
+    });
+    
+    window.confirmLogout = () => {
+        return confirm("Did you save all changes?") && confirm("Are you sure?");
+    };
+    
+    // CLOCK
+    setInterval(() => {
+        const clock = document.getElementById("clock");
+        if (clock) {
+            const now = new Date();
+            clock.textContent = now.toLocaleDateString("en-US", {month:"short",day:"2-digit",year:"numeric"}).replace(",", ".") + 
+                               " | " + now.toLocaleTimeString("en-US", {hour12:false});
+        }
+    }, 1000);
     
 })();
 </script>
