@@ -71,8 +71,11 @@ li.dashboard-title > p {
     margin-right: auto;
 }
 
+/* ===== BURGER MENU - CLEAN 3 LINES (POSITION UNCHANGED) ===== */
 #burgerMenuBtn {
     display: inline-flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
     position: relative !important;
     top: -5px !important;
     left: -14px !important;
@@ -80,29 +83,42 @@ li.dashboard-title > p {
     padding: 4px 3px !important;
     width: 28px !important;
     height: 22px !important;
-    background: none !important;
+    background: transparent !important;
     border: 2px solid yellow !important;
-    border-radius: 4px !important;
+    border-radius: 6px !important;
     cursor: pointer !important;
-    flex-direction: column !important;
-    justify-content: space-around !important;
     z-index: 9999 !important;
     pointer-events: auto !important;
     touch-action: manipulation !important;
 }
-#burgerMenuBtn:hover { background: rgba(255,255,0,0.1) !important; }
+
+#burgerMenuBtn:hover {
+    background: rgba(255, 255, 0, 0.15) !important;
+}
+
 #burgerMenuBtn span {
+    display: block !important;
+    width: 100% !important;
     height: 2px !important;
-    width: 24px !important;
     background: #ffff00 !important;
-    border-radius: 1px !important;
+    border-radius: 2px !important;
     margin: 0 !important;
     transition: all 0.3s ease !important;
-    display: block !important;
 }
-#burgerMenuBtn.active span:nth-child(1) { transform: rotate(45deg) translate(6px, 6px) !important; }
-#burgerMenuBtn.active span:nth-child(2) { opacity: 0 !important; }
-#burgerMenuBtn.active span:nth-child(3) { transform: rotate(-45deg) translate(6px, -6px) !important; }
+
+/* Transform to X when active */
+#burgerMenuBtn.active span:first-child {
+    transform: translateY(6px) rotate(45deg) !important;
+}
+
+#burgerMenuBtn.active span:nth-child(2) {
+    opacity: 0 !important;
+    transform: scale(0) !important;
+}
+
+#burgerMenuBtn.active span:last-child {
+    transform: translateY(-6px) rotate(-45deg) !important;
+}
 
 #slideMenuNav {
     position: fixed !important;
@@ -245,7 +261,6 @@ body, html { overflow-x: hidden; margin: 0; padding: 0; }
     .clock-text { font-size: 10px; }
 }
 </style>
-
 <script>
 (function(){
     let isMenuOpen = false;
@@ -360,6 +375,283 @@ setInterval(() => {
 ';
 }
 
+
+
+
+/*====================================================================================================================*/
+
+
+
+
+
+function showMenuOnly()
+{
+    echo '
+<!-- MENU ONLY (No Header) -->
+<nav class="slide-menu" id="slideMenuNav">
+    <button class="close-menu" id="closeMenuBtn">&times;</button>
+    <ul class="menu-list">
+        <li class="dashboard-title">
+            <p>
+                Main Menu
+            </p>
+        </li>
+        <li><a href="/Inventory-Accounts-System-v1/pages/concrete_design_page/concrete_design_list.php">Concrete Design List</a></li>
+        <li><a href="/Inventory-Accounts-System-v1/pages/inventory_page/inventory_management.php">Inventory Management</a></li>
+        <li><a href="/Inventory-Accounts-System-v1/pages/statement_account_page/sap_accountsManagement.php">Transaction Records</a></li>
+        <li><a href="/Inventory-Accounts-System-v1/pages/reports_page/reports_management.php">Reports</a></li>
+        <li class="logout-item"><a href="/Inventory-Accounts-System-v1/login_page/web_login.php" onclick="return confirmLogout()">Log out</a></li>
+    </ul>
+</nav>
+<div class="menu-overlay" id="menuOverlayDiv"></div>
+
+<!-- Burger Button (Floating) -->
+<button class="burger-menu" id="burgerMenuBtn" aria-label="Toggle Menu" style="position: fixed; top: 15px; left: 15px; z-index: 10001;">
+    <span></span>
+    <span></span>
+    <span></span>
+</button>
+
+<style>
+/* Burger Menu Button - Floating */
+#burgerMenuBtn {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    width: 30px !important;
+    height: 24px !important;
+    background: transparent !important;
+    border: 2px solid yellow !important;
+    border-radius: 6px !important;
+    padding: 5px !important;
+    cursor: pointer !important;
+    z-index: 10001 !important;
+    background-color: #0d6efd !important;
+}
+
+#burgerMenuBtn span {
+    display: block !important;
+    width: 100% !important;
+    height: 2px !important;
+    background: #ffff00 !important;
+    border-radius: 2px !important;
+    transition: all 0.3s ease !important;
+}
+
+#burgerMenuBtn.active span:first-child {
+    transform: translateY(6px) rotate(45deg) !important;
+}
+
+#burgerMenuBtn.active span:nth-child(2) {
+    opacity: 0 !important;
+    transform: scale(0) !important;
+}
+
+#burgerMenuBtn.active span:last-child {
+    transform: translateY(-6px) rotate(-45deg) !important;
+}
+
+/* Slide Menu */
+#slideMenuNav {
+    position: fixed !important;
+    top: 0 !important;
+    left: -300px !important;
+    width: 300px !important;
+    height: 100% !important;
+    background: linear-gradient(180deg, #0d6efd 0%, #1e40af 100%) !important;
+    z-index: 10000 !important;
+    transition: left 0.35s ease !important;
+    padding: 80px 20px 20px !important;
+    box-shadow: 4px 0 25px rgba(0,0,0,0.4) !important;
+}
+
+#slideMenuNav.active {
+    left: 0 !important;
+}
+
+#closeMenuBtn {
+    position: absolute !important;
+    top: 15px !important;
+    right: 15px !important;
+    background: rgba(255,255,255,0.1) !important;
+    border: 2px solid rgba(255,255,255,0.3) !important;
+    color: white !important;
+    font-size: 24px !important;
+    cursor: pointer !important;
+    width: 42px !important;
+    height: 42px !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 10001 !important;
+}
+
+#closeMenuBtn:hover {
+    background: rgba(255,255,0,0.2) !important;
+    transform: rotate(90deg) !important;
+}
+
+#menuOverlayDiv {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    background: rgba(0,0,0,0.6) !important;
+    z-index: 9999 !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transition: opacity 0.3s ease, visibility 0.3s ease !important;
+}
+
+#menuOverlayDiv.active {
+    opacity: 1 !important;
+    visibility: visible !important;
+}
+
+.menu-list {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.menu-list li {
+    margin-bottom: 8px !important;
+}
+
+.menu-list a {
+    display: block !important;
+    color: white !important;
+    text-decoration: none !important;
+    padding: 14px 20px !important;
+    border-radius: 10px !important;
+    font-weight: 500 !important;
+    transition: all 0.25s ease !important;
+    border-left: 3px solid transparent !important;
+}
+
+.menu-list a:hover {
+    background: rgba(255,255,0,0.15) !important;
+    color: #ffff00 !important;
+    transform: translateX(5px) !important;
+    border-left-color: #ffff00 !important;
+}
+
+.menu-list li:last-child a {
+    border-left-color: #ff4444 !important;
+}
+
+.menu-list li:last-child a:hover {
+    background: rgba(220, 53, 69, 0.8) !important;
+    border-left-color: white !important;
+}
+
+.dashboard-title p {
+    color: yellow;
+    font-size: 22px;
+    margin-top: -53px;
+    margin-bottom: 20px;
+    text-align: center;
+    display: block;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+</style>
+
+<script>
+(function(){
+    let isMenuOpen = false;
+    let handlersAttached = false;
+    
+    function toggleMenu() {
+        const burger = document.getElementById("burgerMenuBtn");
+        const menu = document.getElementById("slideMenuNav");
+        const overlay = document.getElementById("menuOverlayDiv");
+        const closeBtn = document.getElementById("closeMenuBtn");
+        
+        if (!burger || !menu || !overlay || !closeBtn) return;
+        
+        isMenuOpen = !isMenuOpen;
+        
+        if (isMenuOpen) {
+            burger.classList.add("active");
+            menu.classList.add("active");
+            overlay.classList.add("active");
+            closeBtn.classList.add("active");
+            document.body.classList.add("menu-open");
+        } else {
+            burger.classList.remove("active");
+            menu.classList.remove("active");
+            overlay.classList.remove("active");
+            closeBtn.classList.remove("active");
+            document.body.classList.remove("menu-open");
+        }
+    }
+    
+    function attachHandlers() {
+        if (handlersAttached) return;
+        
+        const burger = document.getElementById("burgerMenuBtn");
+        const menu = document.getElementById("slideMenuNav");
+        const overlay = document.getElementById("menuOverlayDiv");
+        const closeBtn = document.getElementById("closeMenuBtn");
+        
+        if (!burger || !menu || !overlay || !closeBtn) return;
+        
+        burger.onclick = toggleMenu;
+        closeBtn.onclick = toggleMenu;
+        overlay.onclick = toggleMenu;
+        
+        document.querySelectorAll(".menu-list a").forEach(link => {
+            link.onclick = function(e) {
+                setTimeout(toggleMenu, 10);
+            };
+        });
+        
+        handlersAttached = true;
+    }
+    
+    function init() { 
+        const burger = document.getElementById("burgerMenuBtn");
+        if (burger) {
+            burger.classList.remove("active");
+        }
+        attachHandlers(); 
+    }
+    
+    document.addEventListener("DOMContentLoaded", init);
+    setTimeout(init, 100);
+    setTimeout(init, 500);
+    
+    document.addEventListener("keydown", e => {
+        if (e.key === "Escape") {
+            const burger = document.getElementById("burgerMenuBtn");
+            const menu = document.getElementById("slideMenuNav");
+            const overlay = document.getElementById("menuOverlayDiv");
+            const closeBtn = document.getElementById("closeMenuBtn");
+            if (burger) burger.classList.remove("active");
+            if (menu) menu.classList.remove("active");
+            if (overlay) overlay.classList.remove("active");
+            if (closeBtn) closeBtn.classList.remove("active");
+            document.body.classList.remove("menu-open");
+            isMenuOpen = false;
+        }
+    });
+    
+    window.confirmLogout = () => {
+        return confirm("Did you save all changes?") && confirm("Are you sure?");
+    };
+})();
+</script>
+';
+}
+
+
+
+
+/*=================================================================================================================*/
 
 
 

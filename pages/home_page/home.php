@@ -13,193 +13,15 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Employee';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SORCOM Inventory and Accounts Management System</title>
-
-    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="home.css">
     <link href="/Inventory-Accounts-System-v1/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lexend+Giga:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&family=Iosevka+Charon+Mono&family=Lexend+Mega:wght@400;500;600;700&family=Lexend+Meta:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <style>
-        /* Background with overlay for better readability */
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-                url('/Inventory-Accounts-System-v1/assets/images/SBP.png') no-repeat center center fixed;
-            background-size: cover;
-            min-height: 100vh;
-        }
 
-        /* Header styling */
-        .main-header {
-            background: #0d6efd;
-            color: #ffff00;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1040;
-            padding: 10px 0;
-        }
 
-        .main-header img {
-            max-height: 70px;
-            width: auto;
-        }
-
-        .header-title {
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
-
-        .header-subtitle {
-            font-size: 0.85rem;
-        }
-
-        .clock-display {
-            font-weight: bold;
-            letter-spacing: 0.05em;
-            font-size: 0.9rem;
-        }
-
-        /* Main content */
-        .main-content {
-            padding-top: 140px;
-            padding-bottom: 80px;
-            min-height: 100vh;
-        }
-
-        /* Welcome message */
-        .welcome-message {
-            color: #ffff00;
-            font-weight: bold;
-            font-size: 1.3rem;
-            text-shadow: 1px 1px 2px black;
-            margin-bottom: 30px;
-        }
-
-        /* Dashboard buttons container */
-        .dashboard-container {
-            max-width: 800px;
-            margin: 0 auto;
-        }
-
-        /* Button styling */
-        .dashboard-btn {
-            margin-top: 20px;
-            width: 100%;
-            max-width: 300px;
-            padding: 15px 20px;
-            font-size: 1rem;
-            border-radius: 50px;
-            white-space: normal;
-            word-wrap: break-word;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-
-        .dashboard-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .btn-primary-custom {
-            background-color: #6ea4f5;
-            border: none;
-        }
-
-        .btn-primary-custom:hover {
-            background-color: #0b5ed7;
-        }
-
-        .btn-danger-custom {
-            background-color: #dc3545;
-            border: none;
-        }
-
-        .btn-danger-custom:hover {
-            background-color: #c82333;
-        }
-
-        /* Footer */
-        .main-footer {
-            background: #0d6efd;
-            color: #ffd34e;
-            text-align: center;
-            padding: 10px;
-            font-size: 0.8rem;
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .main-content {
-                padding-top: 180px;
-            }
-
-            .header-title {
-                font-size: 0.9rem;
-            }
-
-            .header-subtitle {
-                font-size: 0.75rem;
-            }
-
-            .clock-display {
-                font-size: 0.75rem;
-            }
-
-            .welcome-message {
-                font-size: 1.1rem;
-                padding: 0 10px;
-            }
-
-            .dashboard-btn {
-                max-width: 100%;
-                padding: 12px 15px;
-                font-size: 0.9rem;
-            }
-        }
-
-        @media (max-width: 576px) {
-            .main-header img {
-                max-height: 50px;
-            }
-
-            .header-title {
-                font-size: 0.8rem;
-            }
-
-            .main-content {
-                padding-top: 140px;
-                padding-bottom: 70px;
-            }
-
-            .welcome-message {
-                font-size: 1rem;
-            }
-
-            .dashboard-btn {
-                font-size: 0.85rem;
-                padding: 10px 12px;
-            }
-        }
-
-        @media (max-width: 400px) {
-            .main-content {
-                padding-top: 140px;
-            }
-
-            .welcome-message {
-                font-size: 1rem;
-                padding-bottom: 0px;
-            }
-
-            .dashboard-btn {
-                font-size: 0.8rem;
-            }
-        }
-    </style>
 </head>
 
 <body>
@@ -208,9 +30,18 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Employee';
     <header class="main-header">
         <div class="container-fluid">
             <div class="row align-items-center">
+                <!-- Burger Menu Button -->
+                <div class="col-1 col-md-1 text-center">
+                    <button class="burger-menu" id="burgerMenuBtn" aria-label="Toggle Menu">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </button>
+                </div>
+
                 <!-- Logo -->
-                <div class="col-3 col-md-2 text-center">
-                    <img src="/Inventory-Accounts-System-v1/assets/images/SRMCP.jpg" alt="SORCOM Logo"
+                <div class="col-2 col-md-1 text-center">
+                    <img src="/Inventory-Accounts-System-v1/assets/images/SRMCP.png" alt="SORCOM Logo"
                         class="img-fluid rounded">
                 </div>
 
@@ -228,66 +59,42 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Employee';
         </div>
     </header>
 
+    <!-- Slide Menu (hidden until button clicked) -->
+    <nav class="slide-menu" id="slideMenuNav">
+
+        <ul class="menu-list">
+            <li class="dashboard-title">
+                <p>Main Menu</p>
+            </li>
+            <li><a href="/Inventory-Accounts-System-v1/pages/concrete_design_page/concrete_design_list.php">
+                    <i class="fas fa-list me-2"></i> Concrete Design List
+                </a></li>
+            <li><a href="/Inventory-Accounts-System-v1/pages/inventory_page/inventory_management.php">
+                    <i class="fas fa-box me-2"></i> Inventory
+                </a></li>
+            <li><a href="/Inventory-Accounts-System-v1/pages/statement_account_page/sap_accountsManagement.php">
+                    <i class="fas fa-dollar-sign me-2"></i> Transaction
+                </a></li>
+            <li><a href="/Inventory-Accounts-System-v1/pages/reports_page/reports_management.php">
+                    <i class="fas fa-chart-line me-2"></i> Reports
+                </a></li>
+            <li class="logout-item"><a href="/Inventory-Accounts-System-v1/login_page/web_login.php"
+                    onclick="return confirmLogout()">
+                    <i class="fas fa-sign-out-alt me-2"></i> Log out
+                </a></li>
+        </ul>
+
+    </nav>
+    <div class="menu-overlay" id="menuOverlayDiv"></div>
+
     <!-- Main Content -->
     <main class="main-content">
         <div class="container">
             <div class="text-center">
-                <span class="welcome-message d-inline-block">
-                    Welcome, <?php echo $employee_name; ?>!
-                </span>
+
             </div>
 
-            <!-- Dashboard Buttons -->
-            <div class="dashboard-container">
-                <div class="row g-3 justify-content-center">
 
-                    <!-- Concrete Design List -->
-                    <div class="col-12 col-sm-6 col-md-4 d-flex justify-content-center">
-                        <button class="btn btn-primary-custom dashboard-btn"
-                            onclick="window.location.href='/Inventory-Accounts-System-v1/pages/concrete_design_page/concrete_design_list.php'">
-                            Concrete Design List
-                        </button>
-                    </div>
-
-                    <!-- Inventory Management: Manager only -->
-                    <?php if ($role === 'Manager'): ?>
-                        <div class="col-12 col-sm-6 col-md-4 d-flex justify-content-center">
-                            <button class="btn btn-primary-custom dashboard-btn"
-                                onclick="window.location.href='/Inventory-Accounts-System-v1/pages/inventory_page/inventory_management.php'">
-                                Inventory Management
-                            </button>
-                        </div>
-                    <?php endif; ?>
-
-                    <!-- User Accounts -->
-                    <div class="col-12 col-sm-6 col-md-4 d-flex justify-content-center">
-                        <button class="btn btn-primary-custom dashboard-btn"
-                            onclick="window.location.href='/Inventory-Accounts-System-v1/pages/statement_account_page/sap_accountsManagement.php'">
-                            Transaction Records
-                        </button>
-                    </div>
-
-                    <!-- Reports: Manager only -->
-                    <?php if ($role === 'Manager'): ?>
-                        <div class="col-12 col-sm-6 col-md-4 d-flex justify-content-center">
-                            <button class="btn btn-primary-custom dashboard-btn"
-                                onclick="window.location.href='/Inventory-Accounts-System-v1/pages/reports_page/reports_management.php'">
-                                Reports
-                            </button>
-                        </div>
-                    <?php endif; ?>
-
-
-                    <!-- Logout -->
-                    <div class="col-12 col-sm-6 col-md-4 d-flex justify-content-center">
-                        <button id="logout-button" class="btn btn-danger-custom dashboard-btn"
-                            onclick="if(confirm('Did you save all changes?')){if(confirm('Are you sure you want to log out?')){window.location.href='/Inventory-Accounts-System-v1/login_page/web_login.php';}};">
-                            Logout
-                        </button>
-                    </div>
-
-                </div>
-            </div>
         </div>
     </main>
 
@@ -298,21 +105,82 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Employee';
 
     <!-- Scripts -->
     <script>
-        // Clock
+
         function realClockTime() {
             const now = new Date();
-            const options = { month: 'short', day: '2-digit', year: 'numeric' };
-            const dateStr = now.toLocaleDateString('en-US', options).replace(',', '.');
-            const hours = now.getHours().toString().padStart(2, '0');
+            const options = { month: 'long', day: '2-digit', year: 'numeric' };
+            const dateStr = now.toLocaleDateString('en-US', options).replace(',', ',');
+            let hours = now.getHours();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12;
             const minutes = now.getMinutes().toString().padStart(2, '0');
             const seconds = now.getSeconds().toString().padStart(2, '0');
-            const clockEl = document.getElementById('clock');
-            if (clockEl) {
-                clockEl.textContent = `${dateStr} || ${hours}:${minutes}:${seconds}`;
+            document.getElementById('clock').textContent = `${dateStr} || ${hours}:${minutes}:${seconds} ${ampm}`;
+        }
+        realClockTime();
+        setInterval(realClockTime, 1000);
+
+    </script>
+
+    <script>
+        (function () {
+            let isMenuOpen = false;
+
+            function toggleMenu() {
+                const burger = document.getElementById("burgerMenuBtn");
+                const menu = document.getElementById("slideMenuNav");
+                const overlay = document.getElementById("menuOverlayDiv");
+
+                if (!burger || !menu || !overlay) return;
+
+                isMenuOpen = !isMenuOpen;
+
+                if (isMenuOpen) {
+                    burger.classList.add("active");
+                    menu.classList.add("active");
+                    overlay.classList.add("active");
+                    document.body.classList.add("menu-open");
+                } else {
+                    burger.classList.remove("active");
+                    menu.classList.remove("active");
+                    overlay.classList.remove("active");
+                    document.body.classList.remove("menu-open");
+                }
+            }
+
+            const burger = document.getElementById("burgerMenuBtn");
+            const closeBtn = document.getElementById("closeMenuBtn");
+            const overlay = document.getElementById("menuOverlayDiv");
+
+            if (burger) burger.onclick = toggleMenu;
+            if (overlay) overlay.onclick = toggleMenu;
+
+            document.querySelectorAll(".menu-list a").forEach(link => {
+                link.onclick = function () {
+                    setTimeout(toggleMenu, 10);
+                };
+            });
+
+            window.confirmLogout = () => {
+                return confirm("Did you save all changes?") && confirm("Are you sure?");
+            };
+        })();
+    </script>
+
+    <script>
+        function setMenuPosition() {
+            const header = document.querySelector('.main-header');
+            const menu = document.querySelector('.slide-menu');
+            if (header && menu) {
+                const headerHeight = header.offsetHeight;
+                menu.style.top = headerHeight + 'px';
+                // DO NOT set height — let it be auto based on content
             }
         }
-        setInterval(realClockTime, 1000);
-        realClockTime();
+
+        window.addEventListener('load', setMenuPosition);
+        window.addEventListener('resize', setMenuPosition);
     </script>
 
     <!-- Bootstrap JS -->
