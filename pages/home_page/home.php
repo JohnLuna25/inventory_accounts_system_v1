@@ -20,6 +20,7 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Employee';
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 
 
 
@@ -91,15 +92,16 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Employee';
     </nav>
     <div class="menu-overlay" id="menuOverlayDiv"></div>
 
-    <!-- Main Content -->
-    <main class="main-content">
+    <div class="main-content">
         <div class="container">
-
-            <!-- Widget -->
-            <?php include 'listOrder_widget.php'; ?>
-
+            <div class="left-widget">
+                <?php include 'listOrder_widget.php'; ?>
+            </div>
+            <div class="right-widget">
+                <?php include 'stocks_widget.php'; ?>
+            </div>
         </div>
-    </main>
+    </div>
 
     <!-- Footer -->
     <footer class="main-footer">

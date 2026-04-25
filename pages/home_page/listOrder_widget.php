@@ -18,7 +18,7 @@ $add_order_url = "/Inventory-Accounts-System-v1/pages/statement_account_page/sap
     /* ===== WIDGET CONTAINER ===== */
     .widget-container {
         width: 45vw !important;
-        margin-left: -100px;
+        margin-left: -55px;
         margin-top: -20px;
         padding: 0;
     }
@@ -148,7 +148,9 @@ $add_order_url = "/Inventory-Accounts-System-v1/pages/statement_account_page/sap
 
 <div class="widget-container">
     <div class="widget-sidebar">
-        <div class="widget-header">
+        <div class="widget-header"
+            onclick="window.location.href='/Inventory-Accounts-System-v1/pages/concrete_design_page/concrete_design_list.php'"
+            style="cursor: pointer;">
             <i class="fas fa-cube"></i> Concrete Design List
         </div>
 
