@@ -63,8 +63,11 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Employee';
     <nav class="slide-menu" id="slideMenuNav">
 
         <ul class="menu-list">
-            <li class="dashboard-title">
-                <p>Main Menu</p>
+            <!-- Welcome Message inside menu -->
+            <li class="welcome-message">
+                <p>Welcome,
+                    <?php echo $employee_name; ?>!
+                </p>
             </li>
             <li><a href="/Inventory-Accounts-System-v1/pages/concrete_design_page/concrete_design_list.php">
                     <i class="fas fa-list me-2"></i> Concrete Design List
