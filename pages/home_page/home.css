@@ -35,7 +35,7 @@ body {
   margin-top: 7px;
   margin-left: 30px;
   border-radius: 10px;
-  transform: scale(1.2);
+  transform: scale(0.8);
   transform-origin: left center;
 }
 
@@ -43,7 +43,7 @@ body {
 .header-title {
   margin-top: 15px;
   font-weight: bold;
-  font-size: 22px;
+  font-size: 20px;
   color: white;
   font-family: "Iosevka Charon Mono", monospace;
   letter-spacing: 4px;
@@ -51,7 +51,7 @@ body {
 
 /* Header Subtitle - Lexend Giga */
 .header-subtitle {
-  font-size: 20px;
+  font-size: 18px;
   color: white;
   font-family: "Lexend Giga", sans-serif;
 }
@@ -798,4 +798,36 @@ body {
   max-width: 400px;
   margin-left: auto;
   margin-right: auto;
+}
+
+.main-content .container {
+  display: flex;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  transition: transform 0.35s ease; /* Smooth both ways */
+}
+
+@media (max-width: 992px) {
+  .main-content .container {
+    display: block;
+  }
+}
+
+/* When menu opens, shift the main content right */
+body.menu-open .main-content .container {
+  transform: translateX(250px);
+  transition: transform 0.35s ease;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  body.menu-open .main-content .container {
+    transform: translateX(220px);
+  }
+}
+
+@media (max-width: 576px) {
+  body.menu-open .main-content .container {
+    transform: translateX(200px);
+  }
 }

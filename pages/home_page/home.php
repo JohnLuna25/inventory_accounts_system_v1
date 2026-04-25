@@ -19,6 +19,7 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Employee';
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lexend+Giga:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&family=Iosevka+Charon+Mono&family=Lexend+Mega:wght@400;500;600;700&family=Lexend+Meta:wght@400;500;600;700&display=swap"
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
 
 
@@ -93,10 +94,9 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Employee';
     <!-- Main Content -->
     <main class="main-content">
         <div class="container">
-            <div class="text-center">
 
-            </div>
-
+            <!-- Widget -->
+            <?php include 'listOrder_widget.php'; ?>
 
         </div>
     </main>
@@ -143,12 +143,12 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Employee';
                     burger.classList.add("active");
                     menu.classList.add("active");
                     overlay.classList.add("active");
-                    document.body.classList.add("menu-open");
+                    document.body.classList.add("menu-open");  // ← This line
                 } else {
                     burger.classList.remove("active");
                     menu.classList.remove("active");
                     overlay.classList.remove("active");
-                    document.body.classList.remove("menu-open");
+                    document.body.classList.remove("menu-open");  // ← This line
                 }
             }
 
