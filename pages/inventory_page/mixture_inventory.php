@@ -279,7 +279,7 @@ while ($d = $designs_result->fetch_assoc()) {
                                                         <td><?= $d['vb_concrete_psi'] ?></td>
                                                         <td><?= $d['vb_curation_days'] ?></td>
                                                         <td><?= $d['vb_concrete_type'] ?></td>
-                                                        <td><?= $d['vb_total'] ?> kgs/m³</td>
+                                                        <td><?= $d['vb_total'] ?></td>
                                                         <td>
                                                             <a href="ip_form.php?psi=<?= urlencode($d['vb_concrete_psi']) ?>
                                                                 &days=<?= urlencode($d['vb_curation_days']) ?>

@@ -58,7 +58,7 @@ $conn->close();
                 Ready-Mix
                 Inventory</h2>
             <div class="search-container">
-                <a href="ip_addForm.php" class="btn">+ Add Inventory</a>
+                <a href="ip_form.php" class="btn">+ Add Inventory</a>
                 <a href="mixture_inventory.php" class="btn">Open Mixture Inventory</a>
             </div>
         </div>
