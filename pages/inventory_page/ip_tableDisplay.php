@@ -158,10 +158,10 @@ if (!$result)
                     <th>Design Mix</th>
                     <th>Curation Days</th>
                     <th>Concrete Type</th>
-                    <th>Batch</th>
+                    <th>Batch (kgs/m³)</th>
                     <th>Stocks In</th>
                     <th>Stock Out</th>
-                    <th>Current Stock</th>
+                    <th>Current Stock (kgs/m³)</th>
                     <th>Remarks</th>
                     <th>Table Actions</th>
                 </tr>
@@ -174,10 +174,10 @@ if (!$result)
                             <td><?= htmlspecialchars($row['design_mix_id'] ?? '') ?></td>
                             <td><?= htmlspecialchars($row['curation_days'] ?? '') ?></td>
                             <td><?= htmlspecialchars($row['concrete_type'] ?? '') ?></td>
-                            <td><?= number_format(floatval($row['batch'] ?? 0), 1) ?> kgs/m³</td>
+                            <td><?= number_format(floatval($row['batch'] ?? 0), 1) ?></td>
                             <td><?= intval($row['stocks_in'] ?? 0) ?></td>
                             <td><?= intval($row['stocks_out'] ?? 0) ?></td>
-                            <td><?= number_format(floatval($row['current_stock_batch'] ?? 0), 1) ?> kgs/m³</td>
+                            <td><?= number_format(floatval($row['current_stock_batch'] ?? 0), 1) ?></td>
                             <td><?= htmlspecialchars($row['remarks'] ?? '') ?></td>
                             <td>
                                 <a href="ip_form.php?id=<?= $row['id'] ?>" class="edit-btn">Edit</a>

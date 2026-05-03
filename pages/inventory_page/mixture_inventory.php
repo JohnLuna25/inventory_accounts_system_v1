@@ -20,139 +20,12 @@ while ($d = $designs_result->fetch_assoc()) {
 <head>
     <meta charset="UTF-8">
     <title>SORCOM Mixture Inventory</title>
+    <link rel="stylesheet" href="/Inventory-Accounts-System-v1/assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="mixture_inventory.css">
     <?php include '../../assets/resources.php'; ?>
     <?php showHeader(); ?>
 
-    <style>
-        body {
-            font-family: 'Inter' sans-serif;
-            background: #BFC3AA;
-            margin: 0;
-            padding: 0;
-            padding-bottom: 60px;
-        }
 
-        .main-content {
-            padding-top: 70px;
-        }
-
-        .page-title-bar {
-            background: white;
-            margin: 15px;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .button-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-top: 15px;
-        }
-
-        .btn-add {
-            background-color: #0400ff !important;
-            color: white !important;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 14px;
-            font-weight: bold;
-            display: inline-block;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-add:hover {
-            background-color: #1976d2 !important;
-        }
-
-        .btn-back {
-            background-color: #6c757d !important;
-            color: white !important;
-            padding: 10px 20px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 14px;
-            display: inline-block;
-            transition: background-color 0.3s ease;
-        }
-
-        .btn-back:hover {
-            background-color: #5a6268 !important;
-        }
-
-        .table-container {
-            background: rgb(197, 197, 197);
-            margin: 15px;
-            padding: 15px;
-            border-radius: 15px;
-            box-shadow: 0 2px 4px rgba(161, 11, 11, 0.1);
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 900px;
-            background: #e2e2e2;
-        }
-
-        th {
-            background: #0b63c4;
-            color: white;
-            padding: 12px 8px;
-            font-size: 14px;
-            text-align: center;
-        }
-
-        td {
-            border: 1px solid #000;
-            padding: 10px 8px;
-            text-align: center;
-            font-size: 13px;
-        }
-
-        /* VIEW PANEL */
-        .view-panel {
-            display: none;
-            background: #f3f3f3;
-            padding: 12px;
-        }
-
-        .view-box {
-            background: white;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #b4b4b4;
-            margin-top: 8px;
-        }
-
-        .btn {
-            padding: 5px 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 11px;
-        }
-
-        .btn-view {
-            background: #28a745;
-            color: white;
-        }
-
-        .btn-edit {
-            background: #fd7e14;
-            color: white;
-        }
-
-        .btn-del {
-            background: #dc3545;
-            color: white;
-        }
-    </style>
 </head>
 
 <body>
@@ -281,7 +154,7 @@ while ($d = $designs_result->fetch_assoc()) {
                                                         <td><?= $d['vb_concrete_type'] ?></td>
                                                         <td><?= $d['vb_total'] ?></td>
                                                         <td>
-                                                            <a href="ip_form.php?psi=<?= urlencode($d['vb_concrete_psi']) ?>
+                                                            <a href="mi_form.php?psi=<?= urlencode($d['vb_concrete_psi']) ?>
                                                                 &days=<?= urlencode($d['vb_curation_days']) ?>
                                                                 &type=<?= urlencode($d['vb_concrete_type']) ?>
                                                                 &batch=<?= urlencode($d['vb_total']) ?>

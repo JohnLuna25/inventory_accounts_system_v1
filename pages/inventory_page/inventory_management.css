@@ -2,67 +2,67 @@
 
 /* Inventory Buttons - Fixed to match HTML class="btn" */
 .btn {
-  display: inline-block;
-  padding: 5px 10px;
-  font-weight: bold;
-  border-radius: 5px;
-  text-decoration: none;
-  color: white;
-  transition: background-color 0.3s ease;
-  background-color: #0400ff;
+  display: inline-block !important;
+  padding: 5px 10px !important;
+  font-weight: bold !important;
+  border-radius: 5px !important;
+  text-decoration: none !important;
+  color: white !important;
+  transition: background-color 0.3s ease !important;
+  background-color: #0400ff !important;
 }
 
 .btn:hover {
-  background-color: #1976d2;
+  background-color: #1976d2 !important;
 }
 
 /* Responsive styles */
 @media (max-width: 768px) {
   .header-grid {
-    padding: 0 10px;
+    padding: 0 10px !important;
   }
   .header-title {
-    font-size: 13px;
+    font-size: 13px !important;
   }
   .header-subtitle {
-    font-size: 9px;
+    font-size: 9px !important;
   }
   .clock-text {
-    font-size: 10px;
+    font-size: 10px !important;
   }
 }
 
 @media (max-width: 576px) {
   .main-header {
-    padding: 5px 10px;
+    padding: 5px 10px !important;
   }
   .header-grid {
-    flex-direction: column;
-    gap: 5px;
+    flex-direction: column !important;
+    gap: 5px !important;
   }
   .header-center {
-    order: 1;
+    order: 1 !important;
   }
   .header-left {
-    order: 2;
+    order: 2 !important;
   }
   .header-right {
-    order: 3;
+    order: 3 !important;
   }
   .header-title {
-    font-size: 12px;
+    font-size: 12px !important;
   }
   .header-subtitle {
-    font-size: 8px;
+    font-size: 8px !important;
   }
   .clock-text {
-    font-size: 10px;
+    font-size: 10px !important;
   }
 }
 
 /* ==== SAME STYLING AS CONCRETE DESIGN MASTERLIST ==== */
 body {
-  font-family: "Inter" sans-serif !important;
+  font-family: "Inter", sans-serif !important;
   background: #bfc3aa !important;
   margin: 0 !important;
   padding: 0 !important;
@@ -70,169 +70,168 @@ body {
 }
 
 .main-content {
-  padding-top: 70px;
+  padding-top: 70px !important;
 }
 
 .page-title-bar {
-  background: white;
-  margin: 15px;
-  padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  background: white !important;
+  margin: 15px !important;
+  padding: 20px !important;
+  border-radius: 15px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
 }
 
 .search-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  gap: 10px !important;
+  flex-wrap: wrap !important;
 }
 
 .search-container a {
-  padding: 10px 20px;
-  background: #0b63c4;
-  color: white;
-  border-radius: 8px;
-  text-decoration: none;
-  font-size: 14px;
+  padding: 10px 20px !important;
+  background: #0b63c4 !important;
+  color: white !important;
+  border-radius: 8px !important;
+  text-decoration: none !important;
+  font-size: 14px !important;
 }
 
 .search-container input {
-  flex: 1;
-  min-width: 150px;
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 14px;
+  flex: 1 !important;
+  min-width: 150px !important;
+  padding: 10px !important;
+  border: 1px solid #ccc !important;
+  border-radius: 8px !important;
+  font-size: 14px !important;
 }
 
 .search-container button {
-  padding: 10px 20px;
-  background: #0b63c4;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
+  padding: 10px 20px !important;
+  background: #0b63c4 !important;
+  color: white !important;
+  border: none !important;
+  border-radius: 8px !important;
+  cursor: pointer !important;
+  font-size: 14px !important;
 }
 
 .search-container .btn-success {
-  background: #4caf50;
+  background: #4caf50 !important;
 }
 
 .search-container .btn-secondary {
-  background: #6c757d;
+  background: #6c757d !important;
 }
 
 .table-container {
-  background: white;
-  margin: 15px;
-  padding: 15px;
-  border-radius: 15px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  overflow-x: auto;
+  background: white !important;
+  margin: 15px !important;
+  padding: 15px !important;
+  border-radius: 15px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  overflow-x: auto !important;
 }
 
 table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 600px;
+  width: 100% !important;
+  border-collapse: collapse !important;
+  min-width: 600px !important;
 }
 
 th {
-  background: #0b63c4;
-  color: white;
-  padding: 12px 8px;
-  text-align: center;
-  font-size: 14px;
-  white-space: nowrap;
+  background: #0b63c4 !important;
+  color: white !important;
+  padding: 12px 8px !important;
+  text-align: center !important;
+  font-size: 14px !important;
+  white-space: nowrap !important;
 }
 
 td {
-  border: 1px solid #000000;
-  padding: 10px 8px;
-  text-align: center;
-  font-size: 13px;
+  border: 1px solid #000000 !important;
+  padding: 10px 8px !important;
+  text-align: center !important;
+  font-size: 13px !important;
 }
 
 .btn-view {
-  background: #4caf50;
-  color: white;
-  padding: 6px 12px;
-  text-decoration: none;
-  border-radius: 4px;
-  font-size: 12px;
-  display: inline-block;
-  margin-right: 5px;
+  background: #4caf50 !important;
+  color: white !important;
+  padding: 6px 12px !important;
+  text-decoration: none !important;
+  border-radius: 4px !important;
+  font-size: 12px !important;
+  display: inline-block !important;
+  margin-right: 5px !important;
 }
 
 .btn-edit {
-  background: #2196f3;
-  color: white;
-  padding: 6px 12px;
-  text-decoration: none;
-  border-radius: 4px;
-  font-size: 12px;
-  display: inline-block;
+  background: #2196f3 !important;
+  color: white !important;
+  padding: 6px 12px !important;
+  text-decoration: none !important;
+  border-radius: 4px !important;
+  font-size: 12px !important;
+  display: inline-block !important;
 }
 
 .error {
-  color: red;
-  text-align: center;
-  font-weight: bold;
-  margin: 10px 15px;
+  color: red !important;
+  text-align: center !important;
+  font-weight: bold !important;
+  margin: 10px 15px !important;
 }
 
 @media (max-width: 576px) {
   .main-content {
-    padding-top: 70px;
+    padding-top: 70px !important;
   }
 
   .page-title-bar {
-    background: white;
-    height: 90px;
-    margin: 15px;
-    padding: 20px;
-    border-radius: 15px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: white !important;
+    height: 90px !important;
+    margin: 15px !important;
+    padding: 20px !important;
+    border-radius: 15px !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
   }
 
   .page-title-bar h2 {
-    font-size: 24px;
-
-    text-align: center;
-    margin: 0;
-    color: black;
-    margin-bottom: 20px;
+    font-size: 24px !important;
+    text-align: center !important;
+    margin: 0 !important;
+    color: black !important;
+    margin-bottom: 20px !important;
   }
 
   .search-container {
-    flex-direction: row;
-    position: absolute;
-    margin-left: -70px;
-    margin: 0 auto;
+    flex-direction: row !important;
+    position: absolute !important;
+    margin-left: -70px !important;
+    margin: 0 auto !important;
   }
 
   .search-container input,
   .search-container button {
-    width: 100%;
+    width: 100% !important;
   }
 
   .table-container {
-    margin: 10px;
-    padding: 10px;
+    margin: 10px !important;
+    padding: 10px !important;
   }
 
   th,
   td {
-    padding: 8px 5px;
-    font-size: 12px;
+    padding: 8px 5px !important;
+    font-size: 12px !important;
   }
 
   .btn-view,
   .btn-edit {
-    padding: 5px 8px;
-    font-size: 11px;
+    padding: 5px 8px !important;
+    font-size: 11px !important;
   }
 }
