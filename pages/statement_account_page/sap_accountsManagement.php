@@ -109,13 +109,10 @@ $result = $conn->query($sql);
                             <?php $row_index++; ?>
 
                             <?php
-                            // ✅ ADDRESS CALCULATION FIRST (BEFORE HTML)
-                            $raw_address = $row['full_address'] ?? '';
-                            $clean_address = preg_replace('/^\s*[,|\s]+|^\s*House\s*\/\s*Block\s*\/\s*Lot\s*[:\s]*\s*/i', '', trim($raw_address));
-                            $clean_address = ltrim($clean_address, ', |');
-                            $clean_address = rtrim($clean_address, ', |');
-                            $parts = array_filter(array_map('trim', explode(' || ', $clean_address)));
-                            $final_address = !empty($parts) ? implode(', ', $parts) : 'No address';
+                            // ✅ SHOW FULL ADDRESS (NO TRIMMING)
+                            $raw_address = $row['full_address'] ?? 'No address';
+                            $full_address = str_replace(' || ', ', ', $raw_address);
+                            $full_address = trim($full_address, ', |');
                             ?>
 
                             <!-- Main Row (8 columns) -->
@@ -126,8 +123,8 @@ $result = $conn->query($sql);
                                 <td><?= htmlspecialchars($row['customer_name']) ?></td>
 
                                 <!-- ✅ FIXED ADDRESS CELL -->
-                                <td class="address-cell" data-full-address="<?= htmlspecialchars($final_address) ?>">
-                                    <?= htmlspecialchars($final_address) ?>
+                                <td class="address-cell">
+                                    <?= htmlspecialchars($full_address) ?>
                                 </td>
 
                                 <td>₱<?= number_format($row['sap_concrete_price'] ?? 0, 2) ?></td>

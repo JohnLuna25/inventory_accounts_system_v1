@@ -15,6 +15,22 @@ if ($conn->connect_error) {
 // 🔥 FIX UTF-8 ENCODING FOR SPECIAL CHARACTERS (ñ, é, etc.)
 $conn->set_charset("utf8mb4");
 
+// Helper function to format address correctly
+function formatAddress($full_address)
+{
+    if (empty($full_address)) {
+        return 'No address';
+    }
+
+    // Replace ' || ' with ', '
+    $formatted = str_replace(' || ', ', ', $full_address);
+
+    // Remove leading comma or space if any
+    $formatted = ltrim($formatted, ', ');
+
+    return $formatted;
+}
+
 // Fetch done orders (newest to oldest)
 function getDoneOrders($conn)
 {
@@ -107,6 +123,7 @@ $doneOrders = getDoneOrders($conn);
 
                             $orderDate = $order['order_date'] ?? '';
                             $monthLabel = date("F Y", strtotime($orderDate));
+                            $formatted_address = formatAddress($order['full_address'] ?? '');
                             ?>
 
                             <?php if ($monthLabel !== $currentMonth): ?>
@@ -120,8 +137,7 @@ $doneOrders = getDoneOrders($conn);
                                 <td><?= htmlspecialchars($order['sap_id'] ?? 'N/A', ENT_QUOTES, 'UTF-8') ?></td>
                                 <td><?= htmlspecialchars($order['order_date'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
                                 <td><?= htmlspecialchars($order['customer_name'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
-                                <td><?= htmlspecialchars(substr($order['full_address'] ?? '', 0, 40), ENT_QUOTES, 'UTF-8') ?><?= strlen($order['full_address'] ?? '') > 40 ? '...' : '' ?>
-                                </td>
+                                <td><?= htmlspecialchars($formatted_address, ENT_QUOTES, 'UTF-8') ?></td>
                                 <td><?= htmlspecialchars($order['concrete_psi'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
                                 <td><?= htmlspecialchars($order['curation_days'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
                                 <td><?= htmlspecialchars(substr($order['concrete_type'] ?? '', 0, 12), ENT_QUOTES, 'UTF-8') ?><?= strlen($order['concrete_type'] ?? '') > 12 ? '...' : '' ?>

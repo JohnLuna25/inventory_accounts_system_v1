@@ -1,6 +1,10 @@
 <?php
 function showHeader()
 {
+    // Get session variables for role-based access
+    $user_type = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : 'regular';
+    $employee_name = isset($_SESSION['employee_name']) ? $_SESSION['employee_name'] : 'User';
+
     echo '
 <div class="main-header">
     <div class="header-grid">
@@ -29,40 +33,50 @@ function showHeader()
 </div>
 <nav class="slide-menu" id="slideMenuNav">
     <ul class="menu-list">
-        <li class="dashboard-title">
-            <a href="/Inventory-Accounts-System-v1/pages/home_page/home.php" style="text-decoration: none; color: white; display: block; text-align: center;">
-                <i class="fas fa-home"></i> Home Page
-            </a>
-        </li>
+        <!-- Home Page link -->
+<li class="dashboard-title">
+    <a href="/Inventory-Accounts-System-v1/pages/home_page/home.php" style="text-decoration: none; color: white; display: block; text-align: center;">
+        <i class="fas fa-home"></i> Home Page
+    </a>
+</li>
         <li><a href="/Inventory-Accounts-System-v1/pages/concrete_design_page/concrete_design_list.php">
-            <i class="fas fa-list"></i> Concrete Design List
-        </a></li>
+            <i class="fas fa-list me-2"></i> Concrete Design List
+        </a></li>';
+
+    // Inventory: Visible ONLY to master users (Plant Managers)
+    if ($user_type === 'master') {
+        echo '
         <li><a href="/Inventory-Accounts-System-v1/pages/inventory_page/inventory_management.php">
-            <i class="fas fa-box"></i> Inventory
-        </a></li>
+            <i class="fas fa-box me-2"></i> Inventory
+        </a></li>';
+    }
+
+    echo '
         <li><a href="/Inventory-Accounts-System-v1/pages/statement_account_page/sap_accountsManagement.php">
-            <i class="fas fa-dollar-sign"></i> Transaction
-        </a></li>
+            <i class="fas fa-dollar-sign me-2"></i> Transaction
+        </a></li>';
+
+    // Reports: Visible ONLY to master users (Plant Managers)
+    if ($user_type === 'master') {
+        echo '
         <li><a href="/Inventory-Accounts-System-v1/pages/reports_page/reports_management.php">
-            <i class="fas fa-chart-line"></i> Reports
-        </a></li>
+            <i class="fas fa-chart-line me-2"></i> Reports
+        </a></li>';
+    }
+
+    echo '
         <li class="logout-item"><a href="/Inventory-Accounts-System-v1/login_page/web_login.php" onclick="return confirmLogout()">
-            <i class="fas fa-sign-out-alt"></i> Log out
+            <i class="fas fa-sign-out-alt me-2"></i> Log out
         </a></li>
     </ul>
 </nav>
 <div class="menu-overlay" id="menuOverlayDiv"></div>
 
-<head>
-    <link href="/Inventory-Accounts-System-v1/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
-    <link
-        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lexend+Giga:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&family=Iosevka+Charon+Mono&family=Lexend+Mega:wght@400;500;600;700&family=Lexend+Meta:wght@400;500;600;700&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
-
-</head>
+<link href="/Inventory-Accounts-System-v1/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lexend+Giga:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&family=Iosevka+Charon+Mono&family=Lexend+Mega:wght@400;500;600;700&family=Lexend+Meta:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
 
 <style>
 /* ALL HEADER TEXT WHITE */
@@ -74,10 +88,6 @@ function showHeader()
 .clock-text {
     color: white !important;
 }
-
-
-
-
 
 /* Burger Menu Button - No border, white lines */
 #burgerMenuBtn {
@@ -153,16 +163,13 @@ function showHeader()
     list-style: none !important;
     padding: 0 !important;
     margin-top: 100px !important;
-    
 }
 
 .menu-list li { 
     margin-bottom: 8px !important; 
-    
 }
 
 .menu-list a {
-    
     display: block !important;
     color: white !important;
     text-decoration: none !important;
@@ -394,29 +401,51 @@ body, html {
 
 
 
-/*====================================================================================================================*/
-
-
+/*
 
 
 
 function showMenuOnly()
 {
+    // Get session variables for role-based access
+    $user_type = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : 'regular';
+
     echo '
 <!-- MENU ONLY (No Header) -->
 <nav class="slide-menu" id="slideMenuNav">
-    <button class="close-menu" id="closeMenuBtn">&times;</button>
     <ul class="menu-list">
         <li class="dashboard-title">
-            <p>
-                Main Menu
-            </p>
+            <p>Main Menu</p>
         </li>
-        <li><a href="/Inventory-Accounts-System-v1/pages/concrete_design_page/concrete_design_list.php">Concrete Design List</a></li>
-        <li><a href="/Inventory-Accounts-System-v1/pages/inventory_page/inventory_management.php">Inventory Management</a></li>
-        <li><a href="/Inventory-Accounts-System-v1/pages/statement_account_page/sap_accountsManagement.php">Transaction Records</a></li>
-        <li><a href="/Inventory-Accounts-System-v1/pages/reports_page/reports_management.php">Reports</a></li>
-        <li class="logout-item"><a href="/Inventory-Accounts-System-v1/login_page/web_login.php" onclick="return confirmLogout()">Log out</a></li>
+        <li><a href="/Inventory-Accounts-System-v1/pages/concrete_design_page/concrete_design_list.php">
+            <i class="fas fa-list"></i> Concrete Design List
+        </a></li>';
+
+    // Inventory Management: Visible ONLY to master users (Plant Managers)
+    if ($user_type === 'master') {
+        echo '
+        <li><a href="/Inventory-Accounts-System-v1/pages/inventory_page/inventory_management.php">
+            <i class="fas fa-box"></i> Inventory Management
+        </a></li>';
+    }
+
+    echo '
+        <li><a href="/Inventory-Accounts-System-v1/pages/statement_account_page/sap_accountsManagement.php">
+            <i class="fas fa-dollar-sign"></i> Transaction Records
+        </a></li>';
+
+    // Reports: Visible ONLY to master users (Plant Managers)
+    if ($user_type === 'master') {
+        echo '
+        <li><a href="/Inventory-Accounts-System-v1/pages/reports_page/reports_management.php">
+            <i class="fas fa-chart-line"></i> Reports
+        </a></li>';
+    }
+
+    echo '
+        <li class="logout-item"><a href="/Inventory-Accounts-System-v1/login_page/web_login.php" onclick="return confirmLogout()">
+            <i class="fas fa-sign-out-alt"></i> Log out
+        </a></li>
     </ul>
 </nav>
 <div class="menu-overlay" id="menuOverlayDiv"></div>
@@ -429,7 +458,7 @@ function showMenuOnly()
 </button>
 
 <style>
-/* Burger Menu Button - Floating */
+
 #burgerMenuBtn {
     display: flex !important;
     flex-direction: column !important;
@@ -467,7 +496,7 @@ function showMenuOnly()
     transform: translateY(-6px) rotate(-45deg) !important;
 }
 
-/* Slide Menu */
+
 #slideMenuNav {
     position: fixed !important;
     top: 0 !important;
@@ -580,17 +609,17 @@ function showMenuOnly()
 (function(){
     let isMenuOpen = false;
     let handlersAttached = false;
-    
+
     function toggleMenu() {
         const burger = document.getElementById("burgerMenuBtn");
         const menu = document.getElementById("slideMenuNav");
         const overlay = document.getElementById("menuOverlayDiv");
         const closeBtn = document.getElementById("closeMenuBtn");
-        
+
         if (!burger || !menu || !overlay || !closeBtn) return;
-        
+
         isMenuOpen = !isMenuOpen;
-        
+
         if (isMenuOpen) {
             burger.classList.add("active");
             menu.classList.add("active");
@@ -605,30 +634,30 @@ function showMenuOnly()
             document.body.classList.remove("menu-open");
         }
     }
-    
+
     function attachHandlers() {
         if (handlersAttached) return;
-        
+
         const burger = document.getElementById("burgerMenuBtn");
         const menu = document.getElementById("slideMenuNav");
         const overlay = document.getElementById("menuOverlayDiv");
         const closeBtn = document.getElementById("closeMenuBtn");
-        
+
         if (!burger || !menu || !overlay || !closeBtn) return;
-        
+
         burger.onclick = toggleMenu;
         closeBtn.onclick = toggleMenu;
         overlay.onclick = toggleMenu;
-        
+
         document.querySelectorAll(".menu-list a").forEach(link => {
             link.onclick = function(e) {
                 setTimeout(toggleMenu, 10);
             };
         });
-        
+
         handlersAttached = true;
     }
-    
+
     function init() { 
         const burger = document.getElementById("burgerMenuBtn");
         if (burger) {
@@ -636,11 +665,11 @@ function showMenuOnly()
         }
         attachHandlers(); 
     }
-    
+
     document.addEventListener("DOMContentLoaded", init);
     setTimeout(init, 100);
     setTimeout(init, 500);
-    
+
     document.addEventListener("keydown", e => {
         if (e.key === "Escape") {
             const burger = document.getElementById("burgerMenuBtn");
@@ -655,7 +684,7 @@ function showMenuOnly()
             isMenuOpen = false;
         }
     });
-    
+
     window.confirmLogout = () => {
         return confirm("Did you save all changes?") && confirm("Are you sure?");
     };
@@ -666,8 +695,7 @@ function showMenuOnly()
 
 
 
-
-/*=================================================================================================================*/
+*/
 
 
 
