@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $currentTime = time();
 
     // --- Increment failed attempts only after login fails ---
-    $waitMap = [3 => 30, 6 => 60, 9 => 90]; // attempt number => wait seconds
+    $waitMap = [3 => 30, 6 => 60, 9 => 90];
 
     // --- Check wait timer ---
     if (isset($_SESSION['next_attempt_time']) && $currentTime < $_SESSION['next_attempt_time']) {
@@ -28,37 +28,73 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
 
-    // --- Check credentials (fetch user by employee_number ONLY) ---
+    $user_found = false;
+    $user_data = null;
+    $user_table = null; // 'sorcom_users' or 'sorcom_master_user'
+
+    // --- STEP 1: Check sorcom_users (Accountants, Managers) ---
     $stmt = $conn->prepare("SELECT * FROM sorcom_users WHERE employee_number = ?");
     $stmt->bind_param("s", $username);
     $stmt->execute();
     $result = $stmt->get_result();
 
-    // -------------------------
-    // VALID USER RECORD FOUND
-    // -------------------------
     if ($result->num_rows === 1) {
         $user = $result->fetch_assoc();
 
-        // --- Verify password using bcrypt ---
+        // Verify password using bcrypt
         if (password_verify($password, $user['password'])) {
+            $user_found = true;
+            $user_data = $user;
+            $user_table = 'sorcom_users';
+        }
+    }
+    $stmt->close();
 
-            // SUCCESSFUL LOGIN
-            $_SESSION['username'] = $user['employee_number'];
-            $_SESSION['employee_name'] = $user['employee_name'];
+    // --- STEP 2: If not found in sorcom_users, check sorcom_master_user (Plant Managers) ---
+    if (!$user_found) {
+        $stmt = $conn->prepare("SELECT * FROM sorcom_master_user WHERE master_id = ?");
+        $stmt->bind_param("s", $username);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-            // ---- NEW: STORE ROLE ----
-            $_SESSION['role'] = $user['role'];  // Assuming you have a 'role' column in sorcom_users: 'Manager' or 'Employee'
+        if ($result->num_rows === 1) {
+            $user = $result->fetch_assoc();
 
-            // Reset counters
-            $_SESSION['failed_attempts'] = 0;
-            $_SESSION['last_attempt_time'] = 0;
-            unset($_SESSION['next_attempt_time'], $_SESSION['login_error'], $_SESSION['error_type'], $_SESSION['locked_employee_id']);
+            // Verify password using bcrypt
+            if (password_verify($password, $user['master_password'])) {
+                $user_found = true;
+                $user_data = $user;
+                $user_table = 'sorcom_master_user';
+            }
+        }
+        $stmt->close();
+    }
 
-            header("Location: /Inventory-Accounts-System-v1/pages/home_page/home.php");
-            exit();
+    // -------------------------
+    // VALID USER RECORD FOUND
+    // -------------------------
+    if ($user_found) {
+        // Set common session variables
+        $_SESSION['username'] = $username;
+
+        if ($user_table === 'sorcom_users') {
+            $_SESSION['employee_name'] = $user_data['employee_name'];
+            $_SESSION['role'] = $user_data['role']; // 'Accountant' or 'Manager'
+            $_SESSION['user_type'] = 'regular';
+        } else {
+            // Plant Manager from sorcom_master_user
+            $_SESSION['employee_name'] = $user_data['master_name'];
+            $_SESSION['role'] = 'Plant Manager';
+            $_SESSION['user_type'] = 'master';
         }
 
+        // Reset counters
+        $_SESSION['failed_attempts'] = 0;
+        $_SESSION['last_attempt_time'] = 0;
+        unset($_SESSION['next_attempt_time'], $_SESSION['login_error'], $_SESSION['error_type'], $_SESSION['locked_employee_id']);
+
+        header("Location: /Inventory-Accounts-System-v1/pages/home_page/home.php");
+        exit();
     }
 
     // -------------------------
@@ -67,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $_SESSION['failed_attempts']++;
     $_SESSION['last_attempt_time'] = $currentTime;
 
-    // --- Lock account on 10th failed attempt ---
+    // --- Lock account on 10th failed attempt (only for regular users, not master) ---
     if ($_SESSION['failed_attempts'] >= 10) {
         $_SESSION['locked_employee_id'] = $username;
         $_SESSION['error_type'] = 'lock';
