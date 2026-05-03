@@ -3,7 +3,7 @@ session_start();
 require_once __DIR__ . '/../../FunctionAndDB/Web_Functions.php';
 
 $employee_name = isset($_SESSION['employee_name']) ? htmlspecialchars($_SESSION['employee_name']) : 'User';
-$role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Employee';
+$user_type = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : 'regular'; // 'regular' or 'master'
 ?>
 
 <!DOCTYPE html>
@@ -74,15 +74,25 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Employee';
             <li><a href="/Inventory-Accounts-System-v1/pages/concrete_design_page/concrete_design_list.php">
                     <i class="fas fa-list me-2"></i> Concrete Design List
                 </a></li>
-            <li><a href="/Inventory-Accounts-System-v1/pages/inventory_page/inventory_management.php">
-                    <i class="fas fa-box me-2"></i> Inventory
-                </a></li>
+
+            <!-- Inventory Management: Visible ONLY to master users (Plant Managers) -->
+            <?php if ($user_type === 'master'): ?>
+                <li><a href="/Inventory-Accounts-System-v1/pages/inventory_page/inventory_management.php">
+                        <i class="fas fa-box me-2"></i> Inventory
+                    </a></li>
+            <?php endif; ?>
+
             <li><a href="/Inventory-Accounts-System-v1/pages/statement_account_page/sap_accountsManagement.php">
                     <i class="fas fa-dollar-sign me-2"></i> Transaction
                 </a></li>
-            <li><a href="/Inventory-Accounts-System-v1/pages/reports_page/reports_management.php">
-                    <i class="fas fa-chart-line me-2"></i> Reports
-                </a></li>
+
+            <!-- Reports: Visible ONLY to master users (Plant Managers) -->
+            <?php if ($user_type === 'master'): ?>
+                <li><a href="/Inventory-Accounts-System-v1/pages/reports_page/reports_management.php">
+                        <i class="fas fa-chart-line me-2"></i> Reports
+                    </a></li>
+            <?php endif; ?>
+
             <li class="logout-item"><a href="/Inventory-Accounts-System-v1/login_page/web_login.php"
                     onclick="return confirmLogout()">
                     <i class="fas fa-sign-out-alt me-2"></i> Log out
@@ -145,12 +155,12 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Employee';
                     burger.classList.add("active");
                     menu.classList.add("active");
                     overlay.classList.add("active");
-                    document.body.classList.add("menu-open");  // ← This line
+                    document.body.classList.add("menu-open");
                 } else {
                     burger.classList.remove("active");
                     menu.classList.remove("active");
                     overlay.classList.remove("active");
-                    document.body.classList.remove("menu-open");  // ← This line
+                    document.body.classList.remove("menu-open");
                 }
             }
 
@@ -180,7 +190,6 @@ $role = isset($_SESSION['role']) ? $_SESSION['role'] : 'Employee';
             if (header && menu) {
                 const headerHeight = header.offsetHeight;
                 menu.style.top = headerHeight + 'px';
-                // DO NOT set height — let it be auto based on content
             }
         }
 
