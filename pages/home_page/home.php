@@ -1,5 +1,11 @@
 <?php
+
 session_start();
+
+echo '<pre>';
+print_r($_SESSION);
+echo '</pre>';
+
 require_once __DIR__ . '/../../FunctionAndDB/Web_Functions.php';
 
 $employee_name = isset($_SESSION['employee_name']) ? htmlspecialchars($_SESSION['employee_name']) : 'User';

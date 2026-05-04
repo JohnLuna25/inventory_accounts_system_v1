@@ -1,7 +1,12 @@
 <?php
 function showHeader()
 {
-    // Get session variables for role-based access
+    // Start session if not already started
+    if (session_status() === PHP_SESSION_NONE) {
+        session_start();
+    }
+
+    // Get session variables for role-based access (INSIDE the function)
     $user_type = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : 'regular';
     $employee_name = isset($_SESSION['employee_name']) ? $_SESSION['employee_name'] : 'User';
 
