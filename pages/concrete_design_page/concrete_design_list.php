@@ -1,12 +1,17 @@
 <?php
+session_start();  // ← MUST be FIRST
+
 // Include DB connection and functions
 include __DIR__ . '/../../FunctionAndDB/db_connect.php';
 include __DIR__ . '/../../FunctionAndDB/Web_Functions.php';
 
+// Get user type for role-based access
+$user_type = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : 'regular';
+
 // Fetch all VB data
 $vb_result = $conn->query("SELECT * FROM scd_vb_list ORDER BY sort_order ASC");
 
-// Fetch customized mix data (ADDED HERE)
+// Fetch customized mix data
 $customized_result = $conn->query("SELECT * FROM cdl_customized_mix_list ORDER BY created_at DESC");
 
 // Fetch all SSD data into an array
@@ -48,264 +53,27 @@ if (!$customized_result) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Concrete Design Masterlist</title>
-    <?php include '../../assets/resources.php'; ?>
-    <?php showHeader() ?>
 
+    <!-- Bootstrap CSS -->
+    <link href="/Inventory-Accounts-System-v1/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 
-    <style>
-        /* ==== ALL ORIGINAL STYLES KEPT ==== */
-        body {
-            font-family: 'Inter' sans-serif;
-            background: #BFC3AA;
-            margin: 0;
-            padding: 0;
-            padding-bottom: 60px;
-        }
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lexend+Giga:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&family=Iosevka+Charon+Mono&family=Lexend+Mega:wght@400;500;600;700&family=Lexend+Meta:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 
-        .main-content {
-            padding-top: 70px;
-        }
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-        .page-title-bar {
-            background: white;
-            margin: 15px;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .search-container {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-
-        .search-container input {
-            flex: 1;
-            min-width: 150px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-
-        .search-container button {
-            padding: 10px 20px;
-            background: #0b63c4;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .table-container {
-            background: white;
-            margin: 15px;
-            padding: 15px;
-            border-radius: 15px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            overflow-x: auto;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            min-width: 600px;
-        }
-
-        th {
-            background: #0b63c4;
-            color: white;
-            padding: 12px 8px;
-            text-align: center;
-            font-size: 14px;
-            white-space: nowrap;
-        }
-
-        td {
-            border: 1px solid #000000;
-            padding: 10px 8px;
-            text-align: center;
-            font-size: 13px;
-        }
-
-        .btn-view {
-            background: #4CAF50;
-            color: white;
-            padding: 6px 12px;
-            text-decoration: none;
-            border-radius: 4px;
-            font-size: 12px;
-            display: inline-block;
-            margin-right: 5px;
-        }
-
-        .btn-edit {
-            background: #2196F3;
-            color: white;
-            padding: 6px 12px;
-            text-decoration: none;
-            border-radius: 4px;
-            font-size: 12px;
-            display: inline-block;
-        }
-
-        .btn-delete {
-            background: #dc3545;
-            color: white;
-            padding: 6px 12px;
-            border-radius: 4px;
-            text-decoration: none;
-            font-size: 12px;
-            display: inline-block;
-            margin-left: 4px;
-        }
-
-        .btn-delete:hover {
-            background: #c82333;
-            color: white;
-        }
-
-        .dropbar-row {
-            display: none;
-            background: #f9f9f9;
-        }
-
-        .dropbar-row td {
-            background: #0b63c4;
-            text-align: left;
-            padding: 10px;
-        }
-
-        .dropbar-inner {
-            width: 100%;
-            border-collapse: collapse;
-
-            border-radius: 40px;
-            overflow: hidden;
-        }
-
-        /* Whole Table Except Merged rows */
-        .dropbar-inner td {
-            text-align: center;
-            font-weight: bold;
-            background: #becedb;
-        }
-
-        .dropbar-inner td:first-child {
-            width: 20%;
-            min-width: 120px;
-        }
-
-        /* SSD and VB row */
-        .dropbar-inner td.ssd-col,
-        .dropbar-inner td.vb-col {
-            width: 40%;
-            min-width: 150px;
-            background: #becedb;
-        }
-
-        .dropbar-inner td.ssd-data,
-        .dropbar-inner td.vb-data {
-            background: #fff;
-        }
-
-
-        .dropbar-inner td.merged-cell {
-            background: #ffffff;
-            text-align: center;
-            width: 80%;
-        }
-
-        .dropbar-inner>tr:first-child td {
-            background: #add8e6;
-        }
-
-        @media (max-width:576px) {
-            .main-content {
-                padding-top: 95px;
-            }
-
-            .page-title-bar {
-                margin: 10px;
-                padding: 15px;
-            }
-
-            .page-title-bar h2 {
-                font-size: 18px;
-                margin-bottom: 12px;
-            }
-
-            .search-container {
-                flex-direction: column;
-            }
-
-            .search-container input,
-            .search-container button {
-                width: 100%;
-            }
-
-            .table-container {
-                margin: 10px;
-                padding: 10px;
-            }
-
-            th,
-            td {
-                padding: 8px 5px;
-                font-size: 12px;
-            }
-
-            .btn-view,
-            .btn-edit {
-                padding: 5px 8px;
-                font-size: 11px;
-            }
-
-            .dropbar-inner td {
-                text-align: center;
-                font-weight: bold;
-                background: #e0e0e0;
-            }
-
-            .dropbar-inner td:first-child {
-                width: 25%;
-                min-width: 100px;
-            }
-
-            .dropbar-inner td.ssd-col,
-            .dropbar-inner td.vb-col {
-                width: 37.5%;
-                min-width: 100px;
-                background: #add8e6;
-            }
-
-            .dropbar-inner td.merged-cell {
-                background: #fff;
-                text-align: center;
-                width: 80%;
-            }
-
-            .dropbar-inner>tr:first-child td {
-                background: #add8e6;
-            }
-
-        }
-
-        @media (max-width:400px) {
-            .main-content {
-                padding-top: 230px;
-            }
-        }
-    </style>
+    <!-- Page Specific CSS -->
+    <link rel="stylesheet" href="cdl_style.css">
 
 
 </head>
 
 <body>
-
+    <?php showHeader() ?>
     <div class="main-content">
 
         <div class="page-title-bar">
@@ -313,15 +81,15 @@ if (!$customized_result) {
                 Concrete Design Masterlist
             </h2>
             <div class="search-container">
-                <input type="text" id="vbSearchInput" placeholder="   Search PSI, Days, Type... (VB Table)">
+                <input type="text" id="vbSearchInput" placeholder="   Search PSI, Days, Type...">
                 <button onclick="filterVBTable()" class="btn btn-primary" style="padding: 10px 20px;">Search</button>
             </div>
         </div>
 
         <div class="table-container">
-            <table>
+            <table id="vbTable">
                 <thead>
-                    <tr>
+                    <tr class="list-row">
                         <th>Concrete PSI</th>
                         <th>Curation Days</th>
                         <th>Concrete Type</th>
@@ -353,7 +121,15 @@ if (!$customized_result) {
                         echo "<td>" . ($vb_row['vb_concrete_price'] ?? '') . "</td>";
                         echo "<td>";
                         echo "<a href='#' class='btn-view' onclick='toggleDropbar($row_index); return false;'>View</a>";
-                        echo "<a href=\"edit_design.php?id=" . $vb_row['vb_id'] . "\" class=\"btn-edit\">Edit</a>";
+
+                        // Check user type from session
+                        $user_type = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : 'regular';
+
+                        // Only show Edit button for master users (Plant Managers)
+                        if ($user_type === 'master') {
+                            echo "<a href='edit_design.php?id=" . $vb_row['vb_id'] . "' class=\"btn-edit\">Edit</a>";
+                        }
+
                         echo "</td>";
                         echo "</tr>";
 
@@ -434,8 +210,7 @@ if (!$customized_result) {
                 <a href="cdl_customizedMix.php" class="btn"
                     style="background: #0b63c4; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-size: 14px;">+
                     Add Customized Mix</a>
-                <input type="text" id="customizedSearchInput"
-                    placeholder="🔍 Search Client, PSI, Notes... (Custom Table)">
+                <input type="text" id="customizedSearchInput" placeholder="Search Client, PSI, Remarks...">
                 <button onclick="filterCustomizedTable()" class="btn btn-primary"
                     style="padding: 10px 20px;">Search</button>
             </div>
@@ -443,7 +218,7 @@ if (!$customized_result) {
 
         <!-- Customized Mix Table -->
         <div class="table-container">
-            <table>
+            <table id="customizedTable">
                 <thead>
                     <tr>
                         <th>Client Name</th>
@@ -479,8 +254,13 @@ if (!$customized_result) {
                         echo "<td>" . htmlspecialchars($customized_row['cdl_concrete_price'] ?? '') . "</td>";
                         echo "<td>";
                         echo "<a href='#' class='btn-view' onclick='toggleCustomizedDropbar($customized_row_index); return false;'>View</a>";
-                        echo "<a href='edit_customized_mix.php?id=" . $customized_row['id'] . "' class='btn-edit'>Edit</a>";
-                        echo "<a href='delete_customized_mix.php?id=" . $customized_row['id'] . "' class='btn-delete' onclick='return confirm(\"Are you sure you want to delete this customized mix?\");'>Delete</a>";
+
+                        // Only show Edit and Delete buttons for master users (Plant Managers)
+                        if ($user_type === 'master') {
+                            echo "<a href='edit_customized_mix.php?id=" . $customized_row['id'] . "' class='btn-edit'>Edit</a>";
+                            echo "<a href='delete_customized_mix.php?id=" . $customized_row['id'] . "' class='btn-delete' onclick='return confirm(\"Are you sure you want to delete this customized mix?\");'>Delete</a>";
+                        }
+
                         echo "</td>";
                         echo "</tr>";
 
@@ -616,7 +396,9 @@ if (!$customized_result) {
         function filterCustomizedTable() {
             const input = customizedSearchInput;
             const filter = input.value.toLowerCase().trim();
-            const table = document.querySelectorAll(".table-container table")[1]; // Second table
+            const table = document.getElementById("customizedTable"); // ← FIXED
+            if (!table) return;
+
             const tr = table.getElementsByTagName("tr");
 
             for (let i = 1; i < tr.length; i++) {
@@ -649,7 +431,9 @@ if (!$customized_result) {
         }
 
         function showAllCustomizedTable() {
-            const table = document.querySelectorAll(".table-container table")[1];
+            const table = document.getElementById("customizedTable"); // ← FIXED
+            if (!table) return;
+
             const tr = table.getElementsByTagName("tr");
             for (let i = 1; i < tr.length; i++) {
                 tr[i].style.display = "";

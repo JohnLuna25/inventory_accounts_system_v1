@@ -143,85 +143,24 @@ $conn->close();
 
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= $isEditMode ? 'Edit Mixture' : 'Add Mixture' ?></title>
-    <link rel="stylesheet" href="/Inventory-Accounts-System-v1/assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../assets/css/style.css">
-    <link rel="stylesheet" href="../inventory_page/mixture_inventory.css">
-    <link rel="stylesheet" href="../inventory_page/mixture_form.css">
+
+    <!-- Bootstrap CSS -->
+    <link href="/Inventory-Accounts-System-v1/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Lexend+Giga:wght@400;500;600;700&family=Nunito:wght@400;500;600;700&family=Iosevka+Charon+Mono&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Page Specific CSS -->
+    <link rel="stylesheet" href="mixture_form.css">
+
     <?php showHeader(); ?>
-
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #BFC3AA;
-            margin: 0;
-            padding: 0;
-            padding-bottom: 60px;
-        }
-
-        .form-container {
-            background: white;
-            width: 450px;
-            margin: 50px auto;
-            padding: 20px;
-            border-radius: 5px;
-        }
-
-        .form-container h2 {
-            text-align: center;
-            margin-top: 0;
-            color: black;
-        }
-
-        .form-row {
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .form-row label {
-            width: 120px;
-            text-align: left;
-            font-weight: bold;
-        }
-
-        .form-row input[type="date"],
-        .form-row input[type="number"],
-        .form-row input[type="text"] {
-            flex: 1;
-            padding: 8px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .form-row button,
-        .form-row a {
-            padding: 10px 20px;
-            margin-right: 10px;
-            border-radius: 4px;
-            text-decoration: none;
-            cursor: pointer;
-            border: none;
-        }
-
-        .form-row button[type="submit"] {
-            background: #37dd37;
-            color: white;
-        }
-
-        .form-row a {
-            background: #ccc;
-            color: #333;
-        }
-
-        .error-message {
-            color: red;
-            text-align: center;
-            font-weight: bold;
-            margin: 10px;
-        }
-    </style>
 </head>
 
 <body>

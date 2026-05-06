@@ -1,7 +1,7 @@
 /* mixture_form.css - Mixture Inventory Add/Edit Form */
 
 body {
-  font-family: Arial, sans-serif !important;
+  font-family: "Inter", sans-serif !important;
   background: #bfc3aa !important;
   margin: 0 !important;
   padding: 0 !important;
@@ -13,36 +13,39 @@ body {
   background: white !important;
   width: 500px !important;
   max-width: 90% !important;
-  margin: 100px auto !important;
-  padding: 25px 30px !important;
-  border-radius: 16px !important;
+  margin: 50px auto !important;
+  padding: 20px !important;
+  border-radius: 5px !important;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15) !important;
 }
 
 .form-container h2 {
   text-align: center !important;
-  color: #2e3590 !important;
   margin-top: 0 !important;
   margin-bottom: 25px !important;
   font-family: "Poppins", sans-serif !important;
   font-weight: 600 !important;
+  color: #2e3590 !important;
 }
 
 /* Form Rows */
 .form-row {
   display: flex !important;
   align-items: center !important;
-  margin-bottom: 18px !important;
+  margin-bottom: 15px !important;
   flex-wrap: wrap !important;
 }
 
 .form-row label {
-  width: 140px !important;
+  width: 120px !important;
   font-weight: bold !important;
+  text-align: left !important;
   color: #333 !important;
 }
 
-.form-row input,
+.form-row input[type="date"],
+.form-row input[type="number"],
+.form-row input[type="text"],
 .form-row select,
 .form-row textarea {
   flex: 1 !important;
@@ -72,6 +75,13 @@ body {
   cursor: not-allowed !important;
 }
 
+/* Button Row - Last row */
+.form-row:last-child {
+  justify-content: center !important;
+  margin-top: 20px !important;
+  gap: 15px !important;
+}
+
 /* Buttons */
 .form-row button,
 .form-row .cancel-btn {
@@ -83,6 +93,8 @@ body {
   font-weight: bold !important;
   font-size: 14px !important;
   transition: all 0.2s ease !important;
+  display: inline-block !important;
+  text-align: center !important;
 }
 
 .form-row button[type="submit"] {
@@ -97,7 +109,7 @@ body {
 .form-row .cancel-btn {
   background: #6c757d !important;
   color: white !important;
-  margin-left: 10px !important;
+  margin-left: 0 !important;
 }
 
 .form-row .cancel-btn:hover {
@@ -106,13 +118,14 @@ body {
 
 /* Error message */
 .error-message {
+  color: red !important;
+  text-align: center !important;
+  font-weight: bold !important;
+  margin: 10px !important;
   background: #f8d7da !important;
-  color: #721c24 !important;
   padding: 12px !important;
   border-radius: 8px !important;
-  text-align: center !important;
   margin-bottom: 20px !important;
-  font-weight: bold !important;
 }
 
 /* Stock warning message */
@@ -152,8 +165,22 @@ body {
     margin: 5px 0 !important;
     text-align: center !important;
   }
+}
 
-  .form-row .cancel-btn {
-    margin-left: 0 !important;
-  }
+.cancel-btn {
+  background: white;
+  border: 1.5px solid #e5e7eb;
+  color: #6b7280;
+  padding: 8px 20px;
+  border-radius: 40px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.cancel-btn:hover {
+  background: #f9fafb;
+  border-color: #9ca3af;
+  color: #374151;
 }
