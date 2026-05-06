@@ -91,7 +91,7 @@ body {
 
 .search-container a {
   padding: 10px 20px !important;
-  background: #0b63c4 !important;
+  background: #2e3590 !important;
   color: white !important;
   border-radius: 8px !important;
   text-decoration: none !important;
@@ -109,7 +109,7 @@ body {
 
 .search-container button {
   padding: 10px 20px !important;
-  background: #0b63c4 !important;
+  background: #2e3590 !important;
   color: white !important;
   border: none !important;
   border-radius: 8px !important;
@@ -141,7 +141,7 @@ table {
 }
 
 th {
-  background: #0b63c4 !important;
+  background: #2e3590 !important;
   color: white !important;
   padding: 12px 8px !important;
   text-align: center !important;
@@ -168,7 +168,7 @@ td {
 }
 
 .btn-edit {
-  background: #2196f3 !important;
+  background: #2e3590 !important;
   color: white !important;
   padding: 6px 12px !important;
   text-decoration: none !important;

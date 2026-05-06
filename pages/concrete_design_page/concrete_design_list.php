@@ -208,7 +208,7 @@ if (!$customized_result) {
             <h2 class="text-center mb-3 style=font-family: 'Poppins', sans-serif;">Customized Concrete Design</h2>
             <div class="search-container">
                 <a href="cdl_customizedMix.php" class="btn"
-                    style="background: #0b63c4; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-size: 14px;">+
+                    style="background: #2e3590; color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-size: 14px;">+
                     Add Customized Mix</a>
                 <input type="text" id="customizedSearchInput" placeholder="Search Client, PSI, Remarks...">
                 <button onclick="filterCustomizedTable()" class="btn btn-primary"

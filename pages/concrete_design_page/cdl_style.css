@@ -37,7 +37,7 @@ body {
 
 .search-container button {
   padding: 10px 20px !important;
-  background: #0b63c4 !important;
+  background: #2e3590 !important;
   color: white !important;
   border: none !important;
   border-radius: 8px !important;
@@ -63,7 +63,7 @@ table {
 }
 
 th {
-  background: #0b63c4 !important;
+  background: #2e3590 !important;
   color: white !important;
   padding: 12px 8px !important;
   text-align: center !important;
@@ -96,7 +96,7 @@ td {
 }
 
 .btn-view {
-  background: #4caf50 !important;
+  background: #29922d !important;
   color: white !important;
   padding: 6px 12px !important;
   text-decoration: none !important;
@@ -107,7 +107,7 @@ td {
 }
 
 .btn-edit {
-  background: #2196f3 !important;
+  background: #2e3590 !important;
   color: white !important;
   padding: 6px 12px !important;
   text-decoration: none !important;
@@ -133,12 +133,12 @@ td {
 }
 
 .dropbar-row {
-  display: none !important;
+  display: none;
   background: #f9f9f9 !important;
 }
 
 .dropbar-row td {
-  background: #0b63c4 !important;
+  background: #2e3590 !important;
   text-align: left !important;
   padding: 10px !important;
 }

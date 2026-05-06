@@ -211,8 +211,8 @@ $doneOrders = getDoneOrders($conn);
 
         });
 
-        // PDF Export Function - WITH UTF-8 FIX
-        async function exportPDF() {
+        // PDF Export Function - WITH UTF-8 FIX (FIXED event parameter)
+        async function exportPDF(event) {
             if (typeof html2canvas === 'undefined') {
                 alert('PDF library not loaded. Please refresh the page.');
                 return;
@@ -222,7 +222,7 @@ $doneOrders = getDoneOrders($conn);
                 return;
             }
 
-            const btn = event.target;
+            const btn = event ? event.currentTarget : document.querySelector('.btn-pdf');
             let originalBtnHTML = '';
             if (btn) {
                 originalBtnHTML = btn.innerHTML;
@@ -236,32 +236,32 @@ $doneOrders = getDoneOrders($conn);
 
                 const wrapper = document.createElement('div');
                 wrapper.style.cssText = `
-                    position: absolute;
-                    top: -9999px;
-                    left: 0;
-                    width: 195mm;
-                    background: white;
-                    padding: 12px 15px;
-                    font-family: Arial, sans-serif;
-                `;
+            position: absolute;
+            top: -9999px;
+            left: 0;
+            width: 210mm;
+            background: white;
+            padding: 12px 15px;
+            font-family: Arial, sans-serif;
+            `;
 
-                // 🔥 FORCE UTF-8 ENCODING FOR SPECIAL CHARACTERS (ñ, é, etc.)
+                // FORCE UTF-8 ENCODING FOR SPECIAL CHARACTERS (ñ, é, etc.)
                 const meta = document.createElement('meta');
                 meta.setAttribute('charset', 'UTF-8');
                 wrapper.appendChild(meta);
 
                 const header = document.createElement('div');
                 header.style.cssText = `
-                    text-align: center;
-                    margin-bottom: 12px;
-                    padding-bottom: 6px;
-                    border-bottom: 2px solid #4472c4;
-                `;
+            text-align: center;
+            margin-bottom: 12px;
+            padding-bottom: 6px;
+            border-bottom: 2px solid #2e3590;
+            `;
                 header.innerHTML = `
-                    <h1 style="color: #2c3e50; margin: 0 0 3px 0; font-size: 16px;">SORCOM READY-MIX CONCRETE</h1>
-                    <h2 style="color: #4472c4; margin: 0; font-size: 14px;">${title}</h2>
-                    <p style="color: #666; margin: 5px 0 0 0; font-size: 9px;">Generated: ${new Date().toLocaleString()}</p>
-                `;
+            <h1 style="color: #2c3e50; margin: 0 0 3px 0; font-size: 16px;">SORCOM READY-MIX CONCRETE</h1>
+            <h2 style="color: #2e3590; margin: 0; font-size: 14px;">${title}</h2>
+            <p style="color: #666; margin: 5px 0 0 0; font-size: 9px;">Generated: ${new Date().toLocaleString()}</p>
+            `;
                 wrapper.appendChild(header);
 
                 const tableClone = table.cloneNode(true);
@@ -281,7 +281,7 @@ $doneOrders = getDoneOrders($conn);
                 // Style headers
                 const headers = tableClone.querySelectorAll('th');
                 headers.forEach(th => {
-                    th.style.backgroundColor = '#4472c4';
+                    th.style.backgroundColor = '#2e3590';
                     th.style.color = 'white';
                     th.style.fontWeight = 'bold';
                     th.style.textAlign = 'center';
@@ -291,7 +291,7 @@ $doneOrders = getDoneOrders($conn);
                 // Style month separators
                 const separators = tableClone.querySelectorAll('.month-separator td');
                 separators.forEach(td => {
-                    td.style.backgroundColor = '#386da1';
+                    td.style.backgroundColor = '#2e3590';
                     td.style.color = 'white';
                     td.style.fontWeight = 'bold';
                     td.style.textAlign = 'center';

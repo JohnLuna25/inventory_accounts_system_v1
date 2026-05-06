@@ -84,7 +84,7 @@ body {
 
 /* Buttons */
 .form-row button,
-.form-row .cancel-btn {
+.form-row a {
   padding: 10px 24px !important;
   border-radius: 8px !important;
   text-decoration: none !important;
@@ -106,13 +106,13 @@ body {
   background: #1e2460 !important;
 }
 
-.form-row .cancel-btn {
+.form-row a {
   background: #6c757d !important;
   color: white !important;
   margin-left: 0 !important;
 }
 
-.form-row .cancel-btn:hover {
+.form-row a:hover {
   background: #5a6268 !important;
 }
 
@@ -160,27 +160,9 @@ body {
   }
 
   .form-row button,
-  .form-row .cancel-btn {
+  .form-row a {
     width: 100% !important;
     margin: 5px 0 !important;
     text-align: center !important;
   }
-}
-
-.cancel-btn {
-  background: white;
-  border: 1.5px solid #e5e7eb;
-  color: #6b7280;
-  padding: 8px 20px;
-  border-radius: 40px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.cancel-btn:hover {
-  background: #f9fafb;
-  border-color: #9ca3af;
-  color: #374151;
 }

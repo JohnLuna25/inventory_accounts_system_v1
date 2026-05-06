@@ -1,154 +1,166 @@
 /* ==== SAME STYLE AS CONCRETE DESIGN LIST ==== */
 body {
-  font-family: "Inter", Arial, sans-serif;
-  background: #bfc3aa;
-  margin: 0;
-  padding: 0;
-  padding-bottom: 60px;
+  font-family: "Inter", Arial, sans-serif !important;
+  background: #bfc3aa !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  padding-bottom: 60px !important;
 }
 
 .main-content {
-  padding-top: 70px;
-  max-width: 1400px;
-  margin: 0 auto;
+  padding-top: 70px !important;
+  max-width: 1400px !important;
+  margin: 0 auto !important;
 }
 
 .page-title-bar {
-  background: white;
-  margin: 15px 10px;
-  padding: 20px;
-  border-radius: 15px;
-  box-shadow: 0 2px 4px;
+  background: white !important;
+  margin: 15px 10px !important;
+  padding: 20px !important;
+  border-radius: 15px !important;
+  box-shadow: 0 2px 4px !important;
 }
 
 .page-title-bar h2 {
-  text-align: center;
-  margin-top: 0;
-  margin-bottom: 15px;
-  color: #333;
-  font-weight: 300;
+  text-align: center !important;
+  margin-top: 0 !important;
+  margin-bottom: 15px !important;
+  color: #333 !important;
+  font-weight: 300 !important;
 }
 
 .left-buttons {
-  display: flex;
-  gap: 10px;
-  align-items: center;
+  display: flex !important;
+  gap: 10px !important;
+  align-items: center !important;
 }
 
 /* RIGHT SIDE SEARCH */
 .search-container {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 10px;
+  display: flex !important;
+  justify-content: flex-end !important;
+  align-items: center !important;
+  gap: 10px !important;
 }
 
 #searchInput {
-  width: 400px;
-  padding: 10px;
-  border-radius: 20px;
-  border: 1px solid #ccc;
+  width: 400px !important;
+  padding: 10px !important;
+  border-radius: 20px !important;
+  border: 1px solid #ccc !important;
 }
 
 #searchInput:focus {
-  outline: none;
-  border-color: #007bff;
+  outline: none !important;
+  border-color: #2e3590 !important;
 }
 
 .search-container button {
-  padding: 10px 15px;
-  border-radius: 20px;
+  padding: 10px 15px !important;
+  border-radius: 20px !important;
 }
 
 .button-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 10px;
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  flex-wrap: wrap !important;
+  gap: 10px !important;
 }
 
 .button-container .btn {
-  padding: 10px 20px;
-  font-weight: bold;
-  border-radius: 8px;
-  text-decoration: none;
-  color: white;
-  transition: background-color 0.3s ease;
+  padding: 10px 20px !important;
+  font-weight: bold !important;
+  border-radius: 8px !important;
+  text-decoration: none !important;
+  color: white !important;
+  transition: background-color 0.3s ease !important;
 }
 
 .button-container .btn-primary {
-  background-color: #0b63c4;
+  background-color: #2e3590 !important;
 }
 
 .button-container .btn-primary:hover {
-  background-color: #0a4a8f;
+  background-color: #0a4a8f !important;
 }
 
 .table-container {
-  background: white;
-  margin: 15px 10px;
-  padding: 10px;
-  border-radius: 15px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  overflow-x: auto;
+  background: white !important;
+  margin: 15px 10px !important;
+  padding: 10px !important;
+  border-radius: 15px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  overflow-x: auto !important;
 }
 
 table {
-  width: 100%;
-  border-collapse: collapse;
-  min-width: 600px;
+  width: 100% !important;
+  border-collapse: collapse !important;
+  min-width: 600px !important;
+  border-radius: 10px 10px 0 0 !important;
+  overflow: hidden !important;
 }
 
 /* ==== BIGGER TEXT - MAIN TABLE ==== */
 th {
-  background: #0b63c4;
-  color: white;
-  padding: 10px 8px; /* Bigger padding */
-  text-align: center;
-  font-size: 14px !important; /* WAS 12px */
-  white-space: nowrap;
-  font-weight: 700;
+  background: #2e3590 !important;
+  color: white !important;
+  padding: 10px 8px !important;
+  text-align: center !important;
+  font-size: 14px !important;
+  white-space: nowrap !important;
+  font-weight: 700 !important;
+}
+
+/* First th - Upper Left corner */
+th:first-child {
+  border-top-left-radius: 10px !important;
+}
+
+/* Last th - Upper Right corner */
+th:last-child {
+  border-top-right-radius: 10px !important;
 }
 
 td {
-  border: 1px solid #888;
-  padding: 10px 8px; /* Bigger padding */
-  text-align: center;
-  font-size: 13px !important; /* WAS 11px */
-  background-color: #ffffff;
+  border: 1px solid #888 !important;
+  padding: 10px 8px !important;
+  text-align: center !important;
+  font-size: 13px !important;
+  background-color: #ffffff !important;
 }
 
 td.order-status {
-  background-color: #ffffff;
+  background-color: #ffffff !important;
 }
 
 tr:nth-child(even) {
-  background-color: #f2f2f2;
+  background-color: #f2f2f2 !important;
 }
 
 tr:hover {
-  background-color: #696969;
-  color: rgb(25, 0, 255);
+  background-color: #696969 !important;
+  color: rgb(25, 0, 255) !important;
 }
 
 /* ==== BIGGER BUTTONS ==== */
 .btn-view,
 .btn-edit,
 .btn-delete {
-  background: #4caf50;
-  color: white;
-  padding: 6px 10px; /* Bigger */
-  text-decoration: none;
-  border-radius: 4px;
-  font-size: 12px !important; /* WAS 10px */
-  display: inline-block;
-  margin-right: 4px;
-  font-weight: 600;
+  background: #4caf50 !important;
+  color: white !important;
+  padding: 6px 10px !important;
+  text-decoration: none !important;
+  border-radius: 4px !important;
+  font-size: 12px !important;
+  display: inline-block !important;
+  margin-right: 4px !important;
+  font-weight: 600 !important;
 }
 
 .btn-view:hover {
-  background: #45a049;
+  background: #45a049 !important;
 }
 
 .btn-edit {
@@ -160,90 +172,90 @@ tr:hover {
 }
 
 .btn-delete {
-  background: #f44336;
+  background: #f44336 !important;
 }
 
 .btn-delete:hover {
-  background: #d32f2f;
+  background: #d32f2f !important;
 }
 
 .no-orders {
-  text-align: center;
-  font-style: italic;
-  color: #555;
-  padding: 20px 0;
-  font-size: 14px;
+  text-align: center !important;
+  font-style: italic !important;
+  color: #555 !important;
+  padding: 20px 0 !important;
+  font-size: 14px !important;
 }
 
 /* Scrollable Address Column Only */
 td.address-cell {
-  max-width: 180px; /* Fixed width */
-  white-space: nowrap; /* No wrapping */
-  overflow: hidden; /* Hide overflow */
-  text-overflow: ellipsis; /* "..." at end */
-  position: relative; /* For hover effect */
-  cursor: pointer;
+  max-width: 180px !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  position: relative !important;
+  cursor: pointer !important;
 }
 
 /* Hover: Full scrollable view */
 td.address-cell:hover {
-  white-space: nowrap;
-  overflow-x: auto; /* Horizontal scroll */
-  background: #e9ecef; /* Hover background */
-  max-width: 250px; /* Slightly wider on hover */
-  padding-right: 10px; /* Space for scrollbar */
+  white-space: nowrap !important;
+  overflow-x: auto !important;
+  background: #e9ecef !important;
+  max-width: 250px !important;
+  padding-right: 10px !important;
 }
 
 /* Hide scrollbar but keep scrollable */
 td.address-cell::-webkit-scrollbar {
-  height: 4px;
+  height: 4px !important;
 }
 
 td.address-cell::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: #f1f1f1 !important;
 }
 
 td.address-cell::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 2px;
+  background: #888 !important;
+  border-radius: 2px !important;
 }
 
 td.address-cell::-webkit-scrollbar-thumb:hover {
-  background: #555;
+  background: #555 !important;
 }
 
 /* ==== BIGGER STATUS BADGES ==== */
 .pending {
-  background-color: #0084ff;
-  color: #ffffff;
-  padding: 12px 18px; /* Bigger */
-  border-radius: 6px;
-  font-weight: 700;
-  font-size: 12px !important; /* Explicit size */
+  background-color: #2e3590 !important;
+  color: #ffffff !important;
+  padding: 12px 18px !important;
+  border-radius: 6px !important;
+  font-weight: 700 !important;
+  font-size: 12px !important;
 }
 
 .in-transit {
-  background-color: #ff7300;
-  color: #ffffff;
-  padding: 12px 18px;
-  border-radius: 6px;
-  font-weight: 700;
+  background-color: #ff7300 !important;
+  color: #ffffff !important;
+  padding: 12px 18px !important;
+  border-radius: 6px !important;
+  font-weight: 700 !important;
   font-size: 12px !important;
 }
 
 .done {
-  background-color: #00ff3c;
-  color: #ffffff;
-  padding: 12px 18px;
-  border-radius: 6px;
-  font-weight: 700;
+  background-color: #00ff3c !important;
+  color: #ffffff !important;
+  padding: 12px 18px !important;
+  border-radius: 6px !important;
+  font-weight: 700 !important;
   font-size: 12px !important;
 }
 
 /* ==== DROPDOWN 2x4 GRID (HEADERS TOP ROW) ==== */
 .dropbar-row {
-  display: none;
-  background-color: #f2f2f2;
+  display: none !important;
+  background-color: #f2f2f2 !important;
 }
 
 .dropbar-row.show {
@@ -251,114 +263,114 @@ td.address-cell::-webkit-scrollbar-thumb:hover {
 }
 
 .dropbar-inner {
-  width: 100%;
-  border-collapse: collapse;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  margin: 6px 0;
-  border: 1px solid #888;
+  width: 100% !important;
+  border-collapse: collapse !important;
+  background: white !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+  overflow: hidden !important;
+  margin: 6px 0 !important;
+  border: 1px solid #888 !important;
 }
 
 /* Dropbar ROW 1: HEADERS (Blue like th) */
 .dropbar-header {
-  font-weight: 700;
-  color: white;
-  padding: 12px 14px; /* Bigger */
-  background: #0b63c4;
-  text-align: center;
-  font-size: 13px !important; /* BIGGER */
-  border-right: 1px solid #888;
-  border-bottom: 2px solid #888;
+  font-weight: 700 !important;
+  color: white !important;
+  padding: 12px 14px !important;
+  background: #2e3590 !important;
+  text-align: center !important;
+  font-size: 13px !important;
+  border-right: 1px solid #888 !important;
+  border-bottom: 2px solid #888 !important;
 }
 
 .dropbar-header:last-child {
-  border-right: none;
+  border-right: none !important;
 }
 
 /* Dropbar ROW 2: DETAILS */
 .dropbar-detail {
-  padding: 12px 14px; /* Bigger */
-  font-size: 13px !important; /* BIGGER */
-  font-weight: 600;
-  text-align: center;
-  background-color: #ffffff;
-  border-right: 1px solid #888;
-  color: #333;
+  padding: 12px 14px !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  text-align: center !important;
+  background-color: #ffffff !important;
+  border-right: 1px solid #888 !important;
+  color: #333 !important;
 }
 
 .dropbar-detail:last-child {
-  border-right: none;
+  border-right: none !important;
 }
 
 /* ==== MOBILE - STILL BIGGER THAN ORIGINAL ==== */
 @media (max-width: 768px) {
   .main-content {
-    padding-top: 95px;
-    padding-bottom: 95px;
+    padding-top: 95px !important;
+    padding-bottom: 95px !important;
   }
 
   .page-title-bar {
-    margin: 10px 8px;
-    padding: 15px;
+    margin: 10px 8px !important;
+    padding: 15px !important;
   }
 
   .page-title-bar h2 {
-    font-size: 20px; /* Bigger */
-    margin-bottom: 12px;
+    font-size: 20px !important;
+    margin-bottom: 12px !important;
   }
 
   td.address-cell {
-    max-width: 120px;
+    max-width: 120px !important;
   }
   td.address-cell:hover {
-    max-width: 160px;
+    max-width: 160px !important;
   }
 
   .button-container {
-    flex-direction: column;
+    flex-direction: column !important;
   }
 
   .button-container .btn {
-    width: 100%;
-    text-align: center;
+    width: 100% !important;
+    text-align: center !important;
   }
 
   .table-container {
-    margin: 10px 8px;
-    padding: 8px;
+    margin: 10px 8px !important;
+    padding: 8px !important;
   }
 
   th,
   td {
-    padding: 8px 6px;
-    font-size: 12px !important; /* WAS 10px - NOW BIGGER */
+    padding: 8px 6px !important;
+    font-size: 12px !important;
   }
 
   .dropbar-header,
   .dropbar-detail {
-    padding: 10px 8px;
-    font-size: 12px !important; /* WAS 10px - NOW BIGGER */
+    padding: 10px 8px !important;
+    font-size: 12px !important;
   }
 
   .btn-view,
   .btn-edit,
   .btn-delete {
-    padding: 5px 8px;
-    font-size: 11px !important; /* WAS 9px - NOW BIGGER */
+    padding: 5px 8px !important;
+    font-size: 11px !important;
   }
 
   .pending,
   .in-transit,
   .done {
-    padding: 10px 14px;
+    padding: 10px 14px !important;
     font-size: 11px !important;
   }
 }
 
 @media (max-width: 400px) {
   .main-content {
-    padding-top: 230px;
+    padding-top: 230px !important;
   }
 }

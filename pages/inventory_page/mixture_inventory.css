@@ -76,7 +76,7 @@ body {
 }
 
 .btn-add {
-  background-color: #0400ff !important;
+  background-color: #2e3590 !important;
   color: white !important;
   padding: 10px 20px !important;
   border-radius: 8px !important;
@@ -88,11 +88,11 @@ body {
 }
 
 .btn-add:hover {
-  background-color: #8ab4dd !important;
+  background-color: #869eb3 !important;
 }
 
 .btn-back {
-  background-color: #869eb3 !important;
+  background-color: #2e3590 !important;
   color: white !important;
   padding: 10px 20px !important;
   border-radius: 8px !important;
@@ -103,7 +103,7 @@ body {
 }
 
 .btn-back:hover {
-  background-color: #5a6268 !important;
+  background-color: #869eb3 !important;
 }
 
 .table-container {
@@ -119,15 +119,27 @@ table {
   width: 100% !important;
   border-collapse: collapse !important;
   min-width: 900px !important;
-  background: #e2e2e2 !important;
+  background: #ffffff !important;
+  border-radius: 10px 10px 0 0 !important;
+  overflow: hidden !important;
 }
 
 th {
-  background: #0b63c4 !important;
+  background: #2e3590 !important;
   color: white !important;
   padding: 12px 8px !important;
   font-size: 14px !important;
   text-align: center !important;
+}
+
+/* First th - Upper Left corner */
+th:first-child {
+  border-top-left-radius: 10px !important;
+}
+
+/* Last th - Upper Right corner */
+th:last-child {
+  border-top-right-radius: 10px !important;
 }
 
 td {

@@ -131,7 +131,7 @@ function showHeader()
     left: -250px !important;
     width: 230px !important;
     height: 100% !important;
-    background: #094372 !important;
+    background: #2e3590 !important;
     z-index: 999 !important;
     transition: left 0.35s ease !important;
     padding: 20px 20px 20px !important;
@@ -476,7 +476,7 @@ function showMenuOnly()
     padding: 5px !important;
     cursor: pointer !important;
     z-index: 10001 !important;
-    background-color: #0d6efd !important;
+    background-color: #2e3590 !important;
 }
 
 #burgerMenuBtn span {

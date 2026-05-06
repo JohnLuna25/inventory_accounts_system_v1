@@ -8,7 +8,7 @@
 .mixture-header,
 .sales-header,
 .card-header {
-  background: #3b82f6 !important;
+  background: #2e3590 !important;
   color: #fef3c7 !important;
   border: none !important;
   position: relative !important;
@@ -22,7 +22,7 @@
 
 body {
   min-height: 100vh !important;
-  font-family: Arial, sans-serif !important;
+  font-family: "Inter", sans-serif !important;
   background: #bfc3aa !important;
   margin: 0 !important;
   padding: 0 !important;
@@ -78,6 +78,21 @@ body {
   color: #fef3c7 !important;
 }
 
+/* Date labels color */
+label[for="startDate"],
+label[for="endDate"],
+.form-label:contains("Date From"),
+.form-label:contains("Date To") {
+  color: #2e3590 !important;
+}
+
+/* Target date labels specifically */
+.input-group-text,
+label.form-label,
+.col-form-label {
+  color: #2e3590 !important;
+}
+
 @media (max-width: 768px) {
   .chart-container {
     height: 320px !important;
@@ -107,20 +122,20 @@ body {
 }
 
 .chart-container canvas line {
-  stroke: #3b82f6 !important;
+  stroke: #2e3590 !important;
   stroke-width: 3px !important;
 }
 
 /* Chart.js line datasets */
 .chart-container .chartjs-render-monitor line {
-  stroke: #3b82f6 !important;
+  stroke: #2e3590 !important;
 }
 
 /* Direct dataset stroke */
 #readymixChart,
 #mixtureChart,
 #salesChart {
-  --line-color: #3b82f6 !important;
+  --line-color: #2e3590 !important;
 }
 
 /* BUTTONS */
@@ -141,7 +156,7 @@ body {
 }
 
 .btn-primary {
-  background: #1565c0 !important;
+  background: #2e3590 !important;
   color: white !important;
 }
 
@@ -168,8 +183,8 @@ body {
 }
 
 .input-group .form-control:focus {
-  border-color: #60a5fa !important;
-  box-shadow: 0 0 0 0.2rem rgba(96, 165, 250, 0.25) !important;
+  border-color: #2e3590 !important;
+  box-shadow: 0 0 0 0.2rem rgba(46, 53, 144, 0.25) !important;
 }
 
 /* RESPONSIVE */
