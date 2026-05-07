@@ -176,6 +176,12 @@ $doneOrders = getDoneOrders($conn);
 
             const input = document.getElementById("searchInput");
 
+            // 🔥 REAL-TIME SEARCH while typing
+            input.addEventListener("input", function () {
+                filterOrders();
+            });
+
+            // Enter key also works
             input.addEventListener("keyup", function (event) {
                 if (event.key === "Enter") {
                     filterOrders();

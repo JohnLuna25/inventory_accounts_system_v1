@@ -164,7 +164,7 @@ $conn->close();
 </head>
 
 <body>
-
+    <div style="height: 60px;"></div>
     <div class="form-container">
         <h2><?= $isEditMode ? 'Edit Mixture' : 'Add New Mixture' ?></h2>
 

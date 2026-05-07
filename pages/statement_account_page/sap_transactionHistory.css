@@ -124,173 +124,188 @@
   min-width: 150px;
 }
 
-/* ===== PRINT STYLES - SHRINK TABLE, WIDER WIDTH, BLACK TEXT ===== */
 @media print {
-  /* Hide UI elements */
-  .main-header,
-  .burger-menu,
-  #burgerMenuBtn,
-  #slideMenuNav,
-  #menuOverlayDiv,
+  /* ✅ FIX 1 & 2: @page moved to TOP — sets white bg + top margin for page 2+ gap */
+  @page {
+    size: portrait;
+    margin: 16mm 12mm 12mm 12mm;
+    background: #ffffff;
+
+    /* ✅ Blank out browser-injected header and footer */
+    @top-center {
+      content: "";
+    }
+    @top-left {
+      content: "";
+    }
+    @top-right {
+      content: "";
+    }
+    @bottom-center {
+      content: "";
+    }
+    @bottom-left {
+      content: "";
+    }
+    @bottom-right {
+      content: "Page " counter(page) " of " counter(pages);
+      font-size: 9pt;
+      color: #555;
+    }
+  }
+
+  /* ✅ FIX 1: Cover *::before and *::after which can bleed gray on page 2 */
+  *,
+  *::before,
+  *::after {
+    background-color: white !important;
+    background: white !important;
+    box-shadow: none !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  .small,
+  .text-muted,
+  small,
+  .file-path,
+  .breadcrumb,
+  .location {
+    display: none !important;
+  }
+
+  html,
+  body,
+  .main-content,
+  .table-container,
+  .page-title-bar,
+  div,
+  section,
+  article {
+    background-color: white !important;
+    background: white !important;
+  }
+
+  .card,
+  .table-container,
+  .page-title-bar {
+    box-shadow: none !important;
+    -webkit-box-shadow: none !important;
+  }
+
+  /* Hide ALL buttons and controls */
   .button-container,
   .search-container,
   .action-buttons,
   .btn-back,
   .btn-pdf,
   .btn-print,
-  .no-print {
+  button,
+  .btn,
+  .btn-primary,
+  .search-container button,
+  #searchInput {
+    display: none !important;
+  }
+
+  /* ✅ FIX 3: Hide header nav — removes the misaligned "Transaction History" header text */
+  .main-header,
+  .burger-menu,
+  #burgerMenuBtn,
+  #slideMenuNav,
+  #menuOverlayDiv,
+  header,
+  nav,
+  .navbar {
     display: none !important;
   }
 
   body {
-    background: #bfc3aa !important;
-    font-family: "Inter", Arial, sans-serif;
+    overflow: visible !important;
+    background: white !important;
     margin: 0 !important;
     padding: 0 !important;
   }
 
   .main-content {
-    padding-top: 0 !important;
-    margin: 0 !important;
-  }
-
-  .page-title-bar {
-    margin: 0 0 10px 0 !important;
-    padding: 5px !important;
-    box-shadow: none !important;
-    border: none !important;
-    background: none !important;
-  }
-
-  .page-title-bar h2 {
-    margin: 0 !important;
+    background: white !important;
     padding: 0 !important;
-    font-size: 16px !important;
+    margin: 0 !important;
+  }
+
+  /* Title bar — borderline only, no box */
+  .page-title-bar {
+    margin-top: -80 !important;
+    padding: 0 0 10px 0 !important;
+    background: none !important;
+    box-shadow: none !important;
+    border-bottom: 1.45px solid #2e3590 !important;
+    border-radius: 0 !important;
+  }
+
+  /* ✅ FIX 3: Force the page title to be truly centered */
+  .page-title-bar h2 {
     text-align: center !important;
-    color: black !important;
+    width: 100% !important;
+    display: block !important;
+    margin: 0 auto 8px auto !important;
   }
 
   .table-container {
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow-x: visible !important;
+    margin-top: 20px !important;
+    overflow: visible !important;
   }
 
-  /* SHRINK TABLE VERTICALLY - smaller padding, smaller font */
   table {
+    display: table !important;
     width: 100% !important;
-    border-collapse: collapse !important;
-    font-size: 8px !important;
-    margin-bottom: 50px !important;
+  }
+
+  thead {
+    display: table-header-group !important;
+  }
+
+  tbody {
+    display: table-row-group !important;
+  }
+
+  tr {
+    display: table-row !important;
     page-break-inside: avoid !important;
   }
 
-  /* SMALLER PADDING = SHRINK VERTICALLY */
   th,
   td {
-    border: 1px solid #000 !important;
-    padding: 2px 4px !important;
-    text-align: left !important;
-    vertical-align: top !important;
-    color: black !important;
+    display: table-cell !important;
   }
 
-  /* HEADER - keep blue background, black text */
-  th {
-    background-color: #4472c4 !important;
-    color: black !important;
-    font-weight: bold !important;
-    text-align: center !important;
-    font-size: 8px !important;
-    padding: 3px 4px !important;
-  }
-
-  /* Month separator - keep blue background, black text */
   .month-separator {
-    margin-top: 30px !important;
-  }
-
-  .month-separator:first-of-type {
-    margin-top: 0 !important;
+    display: table-row !important;
+    page-break-after: avoid !important;
+    break-after: avoid !important;
   }
 
   .month-separator td {
-    background-color: #386da1 !important;
-    color: black !important;
+    background-color: #2e3590 !important;
+    color: white !important;
     font-weight: bold !important;
     text-align: center !important;
-    padding: 4px !important;
+    padding: 5px !important;
     font-size: 10px !important;
-  }
-
-  /* FORCE ALL TEXT BLACK */
-  * {
-    color: black !important;
-  }
-
-  /* Keep background colors for headers */
-  th,
-  .month-separator td {
-    background-color: #4472c4 !important;
-  }
-
-  /* WIDER TABLE - use full page width */
-  table {
-    width: 100% !important;
-    max-width: 100% !important;
-  }
-
-  /* Allow columns to expand */
-  th,
-  td {
-    white-space: normal !important;
-    word-break: break-word !important;
-  }
-
-  /* Make address column wider */
-  .table-container td:nth-child(4),
-  .table-container th:nth-child(4) {
-    max-width: 250px !important;
-    min-width: 150px !important;
-  }
-
-  /* Make customer column wider */
-  .table-container td:nth-child(3),
-  .table-container th:nth-child(3) {
-    min-width: 180px !important;
-  }
-
-  /* Prevent page breaks */
-  tbody tr {
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
-  }
-
-  @page {
-    margin: 1cm;
-    size: portrait;
-  }
-
-  div:empty,
-  span:empty,
-  p:empty {
-    display: none !important;
+    border: 1px solid #000 !important;
   }
 }
 
 /* ===== SIMPLE ROW BORDERS ===== */
 
-/* Horizontal lines between rows */
 #ordersTable tbody tr {
   border-bottom: 1px solid #aeaeae !important;
 }
 
-/* Remove all cell borders */
 #ordersTable tbody td {
   border: none !important;
 }
 
-/* Keep header bottom border */
 #ordersTable thead th {
   border-bottom: 2px solid #0b63c4 !important;
   border-top: none !important;
