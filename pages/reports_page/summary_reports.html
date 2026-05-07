@@ -248,93 +248,157 @@
         padding: 16px 8px !important;
       }
 
-      /* ===== PRINT STYLES - EACH TABLE ON ITS OWN PAGE ===== */
-      @media print {
-        body {
-          background: white !important;
-          padding: 0 !important;
-          margin: 0 !important;
-          font-size: 11px;
-        }
-        
-        .no-print {
-          display: none !important;
-        }
-        
-        .container {
-          padding: 0 !important;
-          margin: 0 !important;
-          max-width: 100% !important;
-        }
-        
-        /* Hide the original header when printing */
-        .header {
-          display: none !important;
-        }
-        
-        /* Each card starts on a new page */
-        .card {
-          page-break-before: always !important;
-          break-before: page !important;
-          margin: 0 !important;
-          margin-bottom: 0 !important;
-          box-shadow: none !important;
-          border: 1px solid #dee2e6 !important;
-        }
-        
-        /* First card starts on page 1 (no break before) */
-        .card:first-of-type {
-          page-break-before: avoid !important;
-          break-before: auto !important;
-        }
-        
-        /* Add a header to each printed page using CSS */
-        .card::before {
-          content: "Sorcom Summary Report";
-          display: block;
-          text-align: center;
-          font-size: 18px;
-          font-weight: bold;
-          color: #2c3e50;
-          margin-bottom: 15px;
-          padding-bottom: 10px;
-          border-bottom: 2px solid #4472c4;
-        }
-        
-        /* Add date range after title */
-        .card::after {
-          content: "Period: " attr(data-date);
-          display: block;
-          text-align: center;
-          font-size: 12px;
-          color: #6c757d;
-          margin-top: 10px;
-          margin-bottom: 15px;
-        }
-        
-        .table-excel {
-          font-size: 11px;
-          border-collapse: collapse;
-        }
-        
-        .table-excel th,
-        .table-excel td {
-          border: 1px solid #000 !important;
-          padding: 8px 6px !important;
-        }
-        
-        .table-excel thead th {
-          background: #4472c4 !important;
-          color: white !important;
-          font-size: 11px !important;
-        }
-        
-        /* Prevent orphaned rows */
-        tr, thead, tbody {
-          page-break-inside: avoid !important;
-          break-inside: avoid !important;
-        }
-      }
+      /* ===== PRINT STYLES - MATCHING EXPORTPDF APPROACH ===== */
+/* ===== PRINT STYLES - MATCHING EXPORTPDF APPROACH ===== */
+@media print {
+  body {
+    background: white !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    font-size: 11px;
+  }
+  
+  /* Remove default browser print headers and footers */
+  @page {
+    margin: 1.5cm;
+    size: portrait;
+  }
+  
+  /* Hide page headers and footers from browser */
+  @page :header {
+    display: none;
+  }
+  
+  @page :footer {
+    display: none;
+  }
+  
+  /* Alternatively, use margin boxes to control headers/footers */
+  @page {
+    @top-center {
+      content: none;
+    }
+    @bottom-center {
+      content: none;
+    }
+    @top-left {
+      content: none;
+    }
+    @top-right {
+      content: none;
+    }
+    @bottom-left {
+      content: none;
+    }
+    @bottom-right {
+      content: none;
+    }
+  }
+  
+  .no-print {
+    display: none !important;
+  }
+  
+  .container {
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: 100% !important;
+  }
+  
+  /* Hide the original header section */
+  .header {
+    display: none !important;
+  }
+  
+  /* Each card starts on a new page */
+  .card {
+    page-break-before: always !important;
+    break-before: page !important;
+    margin: 0 !important;
+    margin-bottom: 0 !important;
+    box-shadow: none !important;
+    border: 1px solid #dee2e6 !important;
+    position: relative !important;
+  }
+  
+  /* First card starts on page 1 (no break before) */
+  .card:first-of-type {
+    page-break-before: avoid !important;
+    break-before: auto !important;
+  }
+  
+  /* Show the print header we added via JavaScript */
+  .print-header {
+    display: block !important;
+  }
+  
+  .table-excel {
+    font-size: 11px;
+    border-collapse: collapse;
+    width: 100%;
+  }
+  
+  .table-excel th,
+  .table-excel td {
+    border: 1px solid #000 !important;
+    padding: 8px 6px !important;
+  }
+  
+  .table-excel thead th {
+    background: #4472c4 !important;
+    color: white !important;
+    font-size: 11px !important;
+  }
+  
+  /* Prevent orphaned rows */
+  tr, thead, tbody {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+  
+  /* Card header styling for print */
+  .card-header {
+    background: #4472c4 !important;
+    color: white !important;
+    padding: 15px 20px !important;
+    font-size: 14px !important;
+    font-weight: bold !important;
+  }
+  
+  /* Add page numbers at the bottom center */
+  @page {
+    @bottom-center {
+      content: counter(page);
+      font-family: Arial, sans-serif;
+      font-size: 10px;
+      color: #6c757d;
+    }
+  }
+  
+  /* Or use this alternative if the above doesn't work */
+  body {
+    counter-reset: page;
+  }
+  
+  .card {
+    counter-increment: page;
+  }
+  
+  /* Add page number to each page using positioned element */
+  .card::after {
+    content: "Page " counter(page);
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 10px;
+    color: #6c757d;
+    font-family: Arial, sans-serif;
+    padding: 10px 0;
+    background: white;
+  }
+}
 
       /* ===== RESPONSIVE STYLES ===== */
       @media (max-width: 992px) {
@@ -485,6 +549,63 @@
       // =========================================================================
 
       // === UTILITY FUNCTIONS ===
+
+      // Add print headers to each card before printing - matching exportPDF approach
+      function addPrintHeaders() {
+        const dateRangeText = document.getElementById('dateRange').textContent;
+        const cards = document.querySelectorAll('.card');
+        
+        cards.forEach((card, index) => {
+          // Check if print header already exists
+          let existingHeader = card.querySelector('.print-header');
+          if (existingHeader) {
+            existingHeader.remove();
+          }
+          
+          // Get the card title from the card-header
+          const cardHeader = card.querySelector('.card-header');
+          const cardTitle = cardHeader ? cardHeader.innerText : 'Report Section';
+          
+          // Create the print header element
+          const printHeader = document.createElement('div');
+          printHeader.className = 'print-header';
+          printHeader.style.cssText = `
+            display: none;
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #4472c4;
+          `;
+          printHeader.innerHTML = `
+            <h1 style="color: #2c3e50; margin-bottom: 10px; font-size: 24px;">Sorcom Summary Report</h1>
+            <p style="color: #6c757d; font-size: 13px; margin: 5px 0;">
+              <strong>Period:</strong> ${dateRangeText}
+            </p>
+            <p style="color: #4472c4; font-size: 14px; margin: 10px 0 0 0; font-weight: bold;">
+              ${cardTitle}
+            </p>
+          `;
+          
+          // Insert at the beginning of the card
+          card.insertBefore(printHeader, card.firstChild);
+        });
+      }
+
+      // Override the beforeprint event to add headers
+      window.matchMedia('print').addEventListener('beforeprint', () => {
+        addPrintHeaders();
+      });
+
+      // Also handle manual print button click
+      const originalPrintFunction = window.print;
+      window.print = function() {
+        addPrintHeaders();
+        originalPrintFunction();
+        // Remove headers after printing (optional - they'll stay for next print)
+        setTimeout(() => {
+          document.querySelectorAll('.print-header').forEach(header => header.remove());
+        }, 100);
+      };
       
       // Determines the correct base path for API calls based on current URL location
       const getBasePath = () => {

@@ -545,58 +545,117 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
                     if (originalCanvas && cloneCanvas) {
                         const canvasId = originalCanvas.id;
                         if (charts[canvasId]) {
-                            const chartImage = charts[canvasId].canvas.toDataURL('image/png');
-                            const img = document.createElement('img');
+                            charts[canvasId].resize();
+                            await new Promise(r => setTimeout(r, 100));
+
+                            const chartImage = charts[canvasId].toBase64Image('image/png', 1.0);
+                            const img = new Image();
                             img.src = chartImage;
-                            img.style.width = '100%';
-                            img.style.height = '300px';
-                            img.style.objectFit = 'contain';
-                            cloneCanvas.parentNode.replaceChild(img, cloneCanvas);
+                            img.style.cssText = `
+                                width: 100%;
+                                height: 300px;
+                                object-fit: contain;
+                                color: black;
+                                border: 1.5px solid #3b82f6;
+                                border-radius: 8px;
+                                padding: 8px;
+                                box-sizing: border-box;
+                                display: block;
+                                margin: 0;
+                            `;
+
+                            await new Promise(r => { img.onload = r; img.onerror = r; });
+
+                            const chartContainer = cloneCanvas.closest('.chart-container');
+                            console.log('chartContainer found:', chartContainer);
+                            if (chartContainer) {
+                                chartContainer.replaceWith(img);
+                                img.style.marginBottom = '0';
+                            } else {
+                                cloneCanvas.parentNode.replaceChild(img, cloneCanvas);
+                            }
                         }
                     }
 
-                    cardClone.style.marginBottom = '30px';
-                    cardClone.style.pageBreakInside = 'avoid';
-                    wrapper.appendChild(cardClone);
+                    const cardWrapper = document.createElement('div');
+                    cardWrapper.style.cssText = `
+                        border: 2px solid #000000;
+                        border-radius: 10px;
+                        overflow: hidden;
+                        margin-bottom: 25px;
+                        page-break-inside: avoid;
+                    `;
+
+                    const cloneCardBody = cardClone.querySelector('.card-body');
+                    if (cloneCardBody) {
+                        cloneCardBody.style.padding = '0';
+                        cloneCardBody.style.marginBottom = '0';
+                    }
+                    const cloneChartContainer = cardClone.querySelector('.chart-container');
+                    if (cloneChartContainer) {
+                        cloneChartContainer.style.marginBottom = '0';
+                        cloneChartContainer.style.height = '300px';
+                        cloneChartContainer.style.overflow = 'hidden';
+                        cloneChartContainer.style.padding = '0';
+                    }
+
+                    cardWrapper.appendChild(cardClone);
+                    wrapper.appendChild(cardWrapper);
                 }
 
                 document.body.appendChild(wrapper);
                 await new Promise(r => setTimeout(r, 500));
 
-                const canvas = await html2canvas(wrapper, {
+                // ✅ ONLY THIS SECTION CHANGED - render each card separately so charts are never split
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const pageWidth = 190;
+                const pageHeight = 277;
+                let currentY = 10;
+
+                // Render header
+                const headerCanvas = await html2canvas(header, {
                     scale: 2.5,
                     backgroundColor: '#ffffff',
                     logging: false,
                     useCORS: true,
-                    allowTaint: false
+                    allowTaint: false,
+                    willReadFrequently: true
                 });
+                const headerImg = headerCanvas.toDataURL('image/jpeg', 0.95);
+                const headerH = (headerCanvas.height * pageWidth) / headerCanvas.width;
+                pdf.addImage(headerImg, 'JPEG', 10, currentY, pageWidth, headerH);
+                currentY += headerH + 5;
+
+                // Render each card separately
+                const cardWrappers = wrapper.querySelectorAll('div[style*="border: 2px solid"]');
+                for (const cw of cardWrappers) {
+                    const cardCanvas = await html2canvas(cw, {
+                        scale: 2.5,
+                        backgroundColor: '#ffffff',
+                        logging: false,
+                        useCORS: true,
+                        allowTaint: false,
+                        willReadFrequently: true
+                    });
+
+                    const cardImg = cardCanvas.toDataURL('image/jpeg', 0.95);
+                    const cardH = (cardCanvas.height * pageWidth) / cardCanvas.width;
+
+                    // ✅ If card doesn't fit, push entirely to next page
+                    if (currentY + cardH > pageHeight) {
+                        pdf.addPage();
+                        currentY = 10;
+                    }
+
+                    pdf.addImage(cardImg, 'JPEG', 10, currentY, pageWidth, cardH);
+                    currentY += cardH + 8;
+                }
+                // ✅ END OF CHANGED SECTION
 
                 document.body.removeChild(wrapper);
 
-                const { jsPDF } = window.jspdf;
-                const pdf = new jsPDF('p', 'mm', 'a4');
-
-                const imgData = canvas.toDataURL('image/jpeg', 0.95);
-                const imgWidth = 190;
-                const pageHeight = 277;
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-                let heightLeft = imgHeight;
-                let position = 10;
-
-                pdf.addImage(imgData, 'JPEG', 10, position, imgWidth, imgHeight);
-                heightLeft -= pageHeight;
-
-                let pageCount = 1;
-                while (heightLeft > 0) {
-                    position = heightLeft - imgHeight;
-                    pdf.addPage();
-                    pdf.addImage(imgData, 'JPEG', 10, position, imgWidth, imgHeight);
-                    heightLeft -= pageHeight;
-                    pageCount++;
-                }
-
-                console.log(`PDF generated with ${pageCount} page(s)`);
+                console.log(`PDF generated with ${pdf.internal.getNumberOfPages()} page(s)`);
                 pdf.save(`sorcom_report_${startDate}_to_${endDate}.pdf`);
 
             } catch (error) {
