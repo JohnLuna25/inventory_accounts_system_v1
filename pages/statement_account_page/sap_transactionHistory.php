@@ -76,8 +76,8 @@ $doneOrders = getDoneOrders($conn);
     <link rel="stylesheet" href="sap_transactionHistory.css">
 
     <!-- PDF Libraries -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://unpkg.com/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 </head>
 
 <body style="background: #bfc3aa !important;">
@@ -176,7 +176,7 @@ $doneOrders = getDoneOrders($conn);
 
             const input = document.getElementById("searchInput");
 
-            // 🔥 REAL-TIME SEARCH while typing
+            // Real-time search while typing
             input.addEventListener("input", function () {
                 filterOrders();
             });
@@ -217,118 +217,119 @@ $doneOrders = getDoneOrders($conn);
 
         });
 
-        // PDF Export Function - WITH UTF-8 FIX (FIXED event parameter)
-        async function exportPDF(event) {
-            if (typeof html2canvas === 'undefined') {
-                alert('PDF library not loaded. Please refresh the page.');
-                return;
-            }
-            if (typeof window.jspdf === 'undefined') {
-                alert('PDF library not loaded. Please refresh the page.');
-                return;
-            }
-
-            const btn = event ? event.currentTarget : document.querySelector('.btn-pdf');
-            let originalBtnHTML = '';
-            if (btn) {
-                originalBtnHTML = btn.innerHTML;
-                btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
-                btn.disabled = true;
-            }
+        // ✅ FULL exportPDF using jsPDF autoTable (multi-page support)
+        async function exportPDF() {
+            const btn = document.querySelector('.btn-pdf');
+            const originalBtnHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating PDF...';
+            btn.disabled = true;
 
             try {
-                const table = document.getElementById('ordersTable');
-                const title = document.querySelector('.page-title-bar h2').innerText;
-
-                const wrapper = document.createElement('div');
-                wrapper.style.cssText = `
-            position: absolute;
-            top: -9999px;
-            left: 0;
-            width: 210mm;
-            background: white;
-            padding: 12px 15px;
-            font-family: Arial, sans-serif;
-            `;
-
-                // FORCE UTF-8 ENCODING FOR SPECIAL CHARACTERS (ñ, é, etc.)
-                const meta = document.createElement('meta');
-                meta.setAttribute('charset', 'UTF-8');
-                wrapper.appendChild(meta);
-
-                const header = document.createElement('div');
-                header.style.cssText = `
-            text-align: center;
-            margin-bottom: 12px;
-            padding-bottom: 6px;
-            border-bottom: 2px solid #2e3590;
-            `;
-                header.innerHTML = `
-            <h1 style="color: #2c3e50; margin: 0 0 3px 0; font-size: 16px;">SORCOM READY-MIX CONCRETE</h1>
-            <h2 style="color: #2e3590; margin: 0; font-size: 14px;">${title}</h2>
-            <p style="color: #666; margin: 5px 0 0 0; font-size: 9px;">Generated: ${new Date().toLocaleString()}</p>
-            `;
-                wrapper.appendChild(header);
-
-                const tableClone = table.cloneNode(true);
-                tableClone.style.width = '100%';
-                tableClone.style.borderCollapse = 'collapse';
-                tableClone.style.fontSize = '8px';
-                tableClone.style.tableLayout = 'auto';
-
-                // Style all cells
-                const cells = tableClone.querySelectorAll('th, td');
-                cells.forEach(cell => {
-                    cell.style.border = '1px solid #000';
-                    cell.style.padding = '4px 5px';
-                    cell.style.textAlign = 'left';
-                });
-
-                // Style headers
-                const headers = tableClone.querySelectorAll('th');
-                headers.forEach(th => {
-                    th.style.backgroundColor = '#2e3590';
-                    th.style.color = 'white';
-                    th.style.fontWeight = 'bold';
-                    th.style.textAlign = 'center';
-                    th.style.fontSize = '9px';
-                });
-
-                // Style month separators
-                const separators = tableClone.querySelectorAll('.month-separator td');
-                separators.forEach(td => {
-                    td.style.backgroundColor = '#2e3590';
-                    td.style.color = 'white';
-                    td.style.fontWeight = 'bold';
-                    td.style.textAlign = 'center';
-                    td.style.fontSize = '9px';
-                });
-
-                wrapper.appendChild(tableClone);
-                document.body.appendChild(wrapper);
-                await new Promise(r => setTimeout(r, 200));
-
-                const canvas = await html2canvas(wrapper, {
-                    scale: 2.5,
-                    backgroundColor: '#ffffff',
-                    logging: false
-                });
-
-                document.body.removeChild(wrapper);
-
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF('p', 'mm', 'a4');
 
-                const imgData = canvas.toDataURL('image/jpeg', 0.95);
-                const imgWidth = 180;
-                const pageHeight = 277;
-                const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                // ✅ Header - Company name
+                pdf.setFont("helvetica", "bold");
+                pdf.setFontSize(14);
+                pdf.setTextColor(44, 62, 80);
+                pdf.text("SORCOM READY-MIX CONCRETE", 105, 15, { align: "center" });
 
-                // Center the image with equal margins
-                const marginLeft = (210 - imgWidth) / 2;
-                let position = 15;
+                // ✅ Header - Document title
+                pdf.setFont("helvetica", "bold");
+                pdf.setFontSize(12);
+                pdf.setTextColor(46, 53, 144);
+                pdf.text("Transaction Record", 105, 22, { align: "center" });
 
-                pdf.addImage(imgData, 'JPEG', marginLeft, position, imgWidth, imgHeight);
+                // ✅ Header - Generated date
+                pdf.setFont("helvetica", "normal");
+                pdf.setFontSize(8);
+                pdf.setTextColor(100, 100, 100);
+                pdf.text(`Generated: ${new Date().toLocaleString()}`, 105, 28, { align: "center" });
+
+                // ✅ Divider line
+                pdf.setDrawColor(46, 53, 144);
+                pdf.setLineWidth(0.5);
+                pdf.line(15, 31, 195, 31);
+
+                // ✅ Extract table headers
+                const table = document.getElementById('ordersTable');
+                const headers = [...table.querySelectorAll('thead th')].map(th => th.innerText.trim());
+
+                // ✅ Extract table rows (handle month separators)
+                const body = [];
+                const rows = table.querySelectorAll('tbody tr');
+
+                rows.forEach(row => {
+                    if (row.classList.contains('month-separator')) {
+                        const label = row.querySelector('td').innerText.trim();
+                        body.push([{
+                            content: label,
+                            colSpan: headers.length,
+                            styles: {
+                                halign: 'center',
+                                fillColor: [46, 53, 144],
+                                textColor: [255, 255, 255],
+                                fontStyle: 'bold',
+                                fontSize: 8
+                            }
+                        }]);
+                    } else {
+                        const cells = [...row.querySelectorAll('td')].map(td => td.innerText.trim());
+                        if (cells.length > 0) body.push(cells);
+                    }
+                });
+
+                // ✅ autoTable - flows across pages automatically
+                pdf.autoTable({
+                    head: [headers],
+                    body: body,
+                    startY: 35,
+                    margin: { left: 7, right: 0 },
+                    tableWidth: 'auto',
+                    styles: {
+                        fontSize: 7,
+                        cellPadding: 2.5,
+                        overflow: 'linebreak',
+                        lineWidth: 0.3,
+                        lineColor: [180, 180, 180],
+                    },
+                    headStyles: {
+                        fillColor: [46, 53, 144],
+                        textColor: 255,
+                        fontStyle: 'bold',
+                        halign: 'center',
+                        fontSize: 7,
+                        lineWidth: 0.3,
+                        lineColor: [255, 255, 255],
+                    },
+                    columnStyles: {
+                        0: { cellWidth: 22 },  // Order ID
+                        1: { cellWidth: 20 },  // Order Date
+                        2: { cellWidth: 25 },  // Customer
+                        3: { cellWidth: 45 },  // Address
+                        4: { cellWidth: 15 },  // PSI
+                        5: { cellWidth: 12 },  // Days
+                        6: { cellWidth: 18 },  // Type
+                        7: { cellWidth: 10 },  // m³
+                        8: { cellWidth: 20 },  // Delivery
+                        9: { cellWidth: 14 },  // Status
+                    },
+                    alternateRowStyles: {
+                        fillColor: [245, 245, 255]
+                    },
+                    didDrawPage: function (data) {
+                        const pageCount = pdf.internal.getNumberOfPages();
+                        const currentPage = pdf.internal.getCurrentPageInfo().pageNumber;
+                        pdf.setFontSize(8);
+                        pdf.setTextColor(100);
+                        pdf.text(
+                            `Page ${currentPage} of ${pageCount}`,
+                            105,
+                            pdf.internal.pageSize.height - 8,
+                            { align: 'center' }
+                        );
+                    }
+                });
 
                 pdf.save(`transaction_history_${new Date().toISOString().slice(0, 10)}.pdf`);
 
@@ -336,10 +337,8 @@ $doneOrders = getDoneOrders($conn);
                 console.error('PDF Error:', error);
                 alert('Failed to generate PDF: ' + error.message);
             } finally {
-                if (btn) {
-                    btn.innerHTML = originalBtnHTML;
-                    btn.disabled = false;
-                }
+                btn.innerHTML = originalBtnHTML;
+                btn.disabled = false;
             }
         }
     </script>

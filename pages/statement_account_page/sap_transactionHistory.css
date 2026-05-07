@@ -125,13 +125,11 @@
 }
 
 @media print {
-  /* ✅ FIX 1 & 2: @page moved to TOP — sets white bg + top margin for page 2+ gap */
   @page {
     size: portrait;
     margin: 16mm 12mm 12mm 12mm;
     background: #ffffff;
 
-    /* ✅ Blank out browser-injected header and footer */
     @top-center {
       content: "";
     }
@@ -141,20 +139,21 @@
     @top-right {
       content: "";
     }
+
     @bottom-center {
-      content: "";
+      content: "Page " counter(page) " of " counter(pages);
+      font-size: 9pt;
+      color: #555;
+      font-family: Arial, sans-serif;
     }
     @bottom-left {
       content: "";
     }
     @bottom-right {
-      content: "Page " counter(page) " of " counter(pages);
-      font-size: 9pt;
-      color: #555;
+      content: "";
     }
   }
 
-  /* ✅ FIX 1: Cover *::before and *::after which can bleed gray on page 2 */
   *,
   *::before,
   *::after {
@@ -193,7 +192,6 @@
     -webkit-box-shadow: none !important;
   }
 
-  /* Hide ALL buttons and controls */
   .button-container,
   .search-container,
   .action-buttons,
@@ -208,7 +206,6 @@
     display: none !important;
   }
 
-  /* ✅ FIX 3: Hide header nav — removes the misaligned "Transaction History" header text */
   .main-header,
   .burger-menu,
   #burgerMenuBtn,
@@ -233,7 +230,6 @@
     margin: 0 !important;
   }
 
-  /* Title bar — borderline only, no box */
   .page-title-bar {
     margin-top: -80 !important;
     padding: 0 0 10px 0 !important;
@@ -243,12 +239,35 @@
     border-radius: 0 !important;
   }
 
-  /* ✅ FIX 3: Force the page title to be truly centered */
+  /* ✅ Inject "SORCOM READY-MIX CONCRETE" above */
+  .page-title-bar h2::before {
+    display: block;
+    content: "SORCOM READY-MIX CONCRETE";
+    font-size: 16px;
+    font-weight: bold;
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+
+  /* ✅ Hide original "Transaction History" text */
   .page-title-bar h2 {
+    font-size: 0 !important;
     text-align: center !important;
     width: 100% !important;
     display: block !important;
     margin: 0 auto 8px auto !important;
+    color: transparent !important;
+  }
+
+  /* ✅ Inject "Transaction Record" in place of original text */
+  .page-title-bar h2::after {
+    content: "Transaction Record";
+    font-size: 13px;
+    color: #2e3590;
+    display: block;
+    text-align: center;
+    font-weight: 600;
   }
 
   .table-container {
