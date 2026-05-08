@@ -118,7 +118,9 @@ if (!$customized_result) {
                         $total_value = preg_replace('/[^0-9.]/', '', $vb_row['vb_total'] ?? '0');
                         echo "<td>" . number_format((float) $total_value, 1, '.', ',') . "</td>";
 
-                        echo "<td>" . ($vb_row['vb_concrete_price'] ?? '') . "</td>";
+                        $price = isset($vb_row['concrete_price']) && $vb_row['concrete_price'] != '' ? '₱ ' . number_format((float) $vb_row['concrete_price'], 2) : '';
+                        echo "<td>" . $price . "</td>";
+
                         echo "<td>";
                         echo "<a href='#' class='btn-view' onclick='toggleDropbar($row_index); return false;'>View</a>";
 
@@ -251,7 +253,10 @@ if (!$customized_result) {
                         echo "<td>" . htmlspecialchars($customized_row['cdl_experiment_notes'] ?? '') . "</td>";
                         echo "<td>" . ($customized_row['cdl_is_active'] == 1 ? 'Active' : 'Inactive') . "</td>";
                         echo "<td>" . date('M j, Y', strtotime($customized_row['created_at'] ?? '')) . "</td>";
-                        echo "<td>" . htmlspecialchars($customized_row['cdl_concrete_price'] ?? '') . "</td>";
+
+                        $custom_price = isset($customized_row['cdl_concrete_price']) && $customized_row['cdl_concrete_price'] != '' ? '₱ ' . number_format((float) $customized_row['cdl_concrete_price'], 2) : '';
+                        echo "<td>" . htmlspecialchars($custom_price) . "</td>";
+
                         echo "<td>";
                         echo "<a href='#' class='btn-view' onclick='toggleCustomizedDropbar($customized_row_index); return false;'>View</a>";
 
