@@ -22,11 +22,38 @@
 
     input[type="text"],
     input[type="password"] {
-        width: 91%;
+        width: 100%;
         padding: 10px;
         margin-bottom: 15px;
         border-radius: 5px;
         border: 1px solid #ccc;
+        box-sizing: border-box;
+    }
+
+    .password-wrapper {
+        position: relative;
+        display: block;
+        width: 100%;
+    }
+
+    .password-wrapper input {
+        width: 100%;
+        padding: 10px;
+        padding-right: 35px;
+        border-radius: 5px;
+        border: 1px solid #ccc;
+        box-sizing: border-box;
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 12px;
+        top: 37%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #808080;
+        font-size: 18px;
+        z-index: 10;
     }
 
     input[type="submit"] {
@@ -42,7 +69,7 @@
 
     input[type="submit"]:hover {
         background-color: #0000ff;
-        color: #ffffff;
+        color: #ffff00;
     }
 
     .message {
@@ -74,6 +101,14 @@
         font-weight: bold;
         margin-left: 2px;
     }
+
+
+    .form-container label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
 
     /* ========== RESPONSIVE STYLES ========== */
 

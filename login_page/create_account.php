@@ -70,6 +70,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
     <meta charset="UTF-8">
     <title>Create Employee Account - SORCOM</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <?php include 'ca_style.php'; ?>
 
     <?php if ($createSuccess): ?>
@@ -112,10 +113,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 autocomplete="new-email" required>
 
             <label for="password">Password <span class="required-field">*</span></label>
-            <input type="password" id="password" name="password" autocomplete="new-password" required>
+            <div class="password-wrapper">
+                <input type="password" id="password" name="password" autocomplete="new-password" required>
+                <i class="toggle-password fa-regular fa-eye-slash" id="togglePassword"></i>
+            </div>
 
             <label for="confirm_password">Confirm Password <span class="required-field">*</span></label>
-            <input type="password" id="confirm_password" name="confirm_password" autocomplete="new-password" required>
+            <div class="password-wrapper">
+                <input type="password" id="confirm_password" name="confirm_password" autocomplete="new-password" required>
+                <i class="toggle-password fa-regular fa-eye-slash" id="toggleConfirmPassword"></i>
+            </div>
 
             <input type="submit" value="Create Account">
         </form>
@@ -153,6 +160,52 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (fullname && fullname.value === 'John Villaluna') {
                 fullname.value = '';
             }
+        });
+    </script>
+
+    <script>
+        // Password field toggle
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+
+        togglePassword.addEventListener('mousedown', function () {
+            passwordInput.setAttribute('type', 'text');
+            this.classList.remove('fa-eye-slash');
+            this.classList.add('fa-eye');
+        });
+
+        togglePassword.addEventListener('mouseup', function () {
+            passwordInput.setAttribute('type', 'password');
+            this.classList.remove('fa-eye');
+            this.classList.add('fa-eye-slash');
+        });
+
+        togglePassword.addEventListener('mouseleave', function () {
+            passwordInput.setAttribute('type', 'password');
+            this.classList.remove('fa-eye');
+            this.classList.add('fa-eye-slash');
+        });
+
+        // Confirm Password field toggle
+        const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
+        const confirmPasswordInput = document.getElementById('confirm_password');
+
+        toggleConfirmPassword.addEventListener('mousedown', function () {
+            confirmPasswordInput.setAttribute('type', 'text');
+            this.classList.remove('fa-eye-slash');
+            this.classList.add('fa-eye');
+        });
+
+        toggleConfirmPassword.addEventListener('mouseup', function () {
+            confirmPasswordInput.setAttribute('type', 'password');
+            this.classList.remove('fa-eye');
+            this.classList.add('fa-eye-slash');
+        });
+
+        toggleConfirmPassword.addEventListener('mouseleave', function () {
+            confirmPasswordInput.setAttribute('type', 'password');
+            this.classList.remove('fa-eye');
+            this.classList.add('fa-eye-slash');
         });
     </script>
 

@@ -143,6 +143,27 @@ input[type="button"] {
     box-sizing: border-box;
 }
 
+.password-wrapper {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+    
+    .password-wrapper input {
+        width: 100%;
+        padding-right: 40px;
+    }
+    
+    .toggle-password {
+        position: absolute;
+        right: 10px;
+        top: 27%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #808080;
+        font-size: 18px;
+    }
+
 .forgot-password-btn:hover {
     background-color: #0000cc;
     color: white;

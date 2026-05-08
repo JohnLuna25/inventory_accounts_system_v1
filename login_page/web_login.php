@@ -29,6 +29,7 @@ if (isset($_SESSION['override_employee_id'])) {
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lexend+Giga:wght@400;500;600;700&display=swap"
         rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <?php include 'wl_style.php'; ?>
 </head>
 
@@ -53,7 +54,10 @@ if (isset($_SESSION['override_employee_id'])) {
                 <input type="text" id="username" name="username" required autocomplete="off"><br>
 
                 <label for="password">Password:</label><br>
-                <input type="password" name="password" autocomplete="current-password" required><br>
+                <div class="password-wrapper">
+                    <input type="password" id="password" name="password" autocomplete="current-password" required>
+                    <i class="toggle-password fa-regular fa-eye-slash" id="togglePassword"></i>
+                </div>
 
                 <div class="form-buttons">
                     <input type="submit" value="Log In">
@@ -117,6 +121,40 @@ if (isset($_SESSION['override_employee_id'])) {
             realClockTime();
             setInterval(realClockTime, 1000);
         };
+    </script>
+
+    <script>
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('password');
+
+        // Default: password hidden (type="password")
+        // Eye icon shows closed eye (fa-eye-slash)
+
+        // Mouse down - show password
+        togglePassword.addEventListener('mousedown', function () {
+            passwordInput.setAttribute('type', 'text');
+            this.classList.remove('fa-eye-slash');
+            this.classList.add('fa-eye');
+        });
+
+        // Mouse up - hide password
+        togglePassword.addEventListener('mouseup', function () {
+            passwordInput.setAttribute('type', 'password');
+            this.classList.remove('fa-eye');
+            this.classList.add('fa-eye-slash');
+        });
+
+        // Mouse leave - hide password (in case user holds and moves mouse away)
+        togglePassword.addEventListener('mouseleave', function () {
+            passwordInput.setAttribute('type', 'password');
+            this.classList.remove('fa-eye');
+            this.classList.add('fa-eye-slash');
+        });
+
+        // Prevent default browser behavior
+        togglePassword.addEventListener('dragstart', function (e) {
+            e.preventDefault();
+        });
     </script>
 
     <script src="/Inventory-Accounts-System-v1/assets/bootstrap/js/bootstrap.bundle.min.js"></script>
