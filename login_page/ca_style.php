@@ -60,7 +60,7 @@
         width: 100%;
         padding: 10px;
         background-color: blue;
-        color: yellow;
+        color: white;
         border: none;
         border-radius: 5px;
         cursor: pointer;
@@ -107,6 +107,44 @@
         display: block;
         margin-bottom: 5px;
         font-weight: bold;
+    }
+
+    .role-selection {
+        margin-bottom: 15px;
+        align-items: center;
+    }
+
+    .role-label {
+        display: block;
+        font-weight: bold;
+        margin-bottom: 8px;
+        color: #000000;
+        margin-top: 10px;
+
+    }
+
+    .radio-group {
+        display: flex;
+        gap: 30px;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .radio-option {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        font-weight: normal;
+        font-size: 14px;
+    }
+
+    .radio-option input[type="radio"] {
+        accent-color: blue;
+        width: auto;
+        margin: 0;
+        padding: 0;
+        cursor: pointer;
     }
 
 
