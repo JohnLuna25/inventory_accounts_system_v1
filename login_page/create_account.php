@@ -113,7 +113,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .toggle-password {
             position: absolute;
             right: 12px;
-            top: 50%;
+            top: 30%;
             transform: translateY(-50%);
             cursor: pointer;
             color: #808080;
