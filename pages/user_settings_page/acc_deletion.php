@@ -1,3 +1,8 @@
+<?php
+include __DIR__ . '/../../FunctionAndDB/db_connect.php';
+include __DIR__ . '/../../FunctionAndDB/Web_Functions.php';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -17,3 +22,7 @@
 
 
 </head>
+
+<body>
+    <?php showHeader() ?>
+</body>
