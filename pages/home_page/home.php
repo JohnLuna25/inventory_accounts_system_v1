@@ -21,6 +21,10 @@ $user_type = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : 'regular';
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+
+
+
 </head>
 
 <body>
@@ -64,10 +68,9 @@ $user_type = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : 'regular';
         <ul class="menu-list">
             <!-- Welcome Message inside menu -->
             <li class="welcome-message">
-                <p>Welcome,
-                    <?php echo $employee_name; ?>!
-                </p>
+                <p>Welcome, <?php echo $employee_name; ?>!</p>
             </li>
+
             <li><a href="/Inventory-Accounts-System-v1/pages/concrete_design_page/concrete_design_list.php">
                     <i class="fas fa-list me-2"></i> Concrete Design List
                 </a></li>
@@ -89,6 +92,11 @@ $user_type = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : 'regular';
                         <i class="fas fa-chart-line me-2"></i> Reports
                     </a></li>
             <?php endif; ?>
+
+            <!-- User Settings: Visible to ALL users -->
+            <li><a href="/Inventory-Accounts-System-v1/pages/user_settings_page/user_settings.php">
+                    <i class="fas fa-cog me-2"></i> User Settings
+                </a></li>
 
             <li class="logout-item"><a href="/Inventory-Accounts-System-v1/login_page/web_login.php"
                     onclick="return confirmLogout()">
@@ -193,6 +201,83 @@ $user_type = isset($_SESSION['user_type']) ? $_SESSION['user_type'] : 'regular';
         window.addEventListener('load', setMenuPosition);
         window.addEventListener('resize', setMenuPosition);
     </script>
+
+    <script>
+        // Toggle slide menu when 'D' key is pressed
+        document.addEventListener('keydown', function (event) {
+            // Check if the pressed key is 'd' or 'D'
+            if (event.key === 'd' || event.key === 'D') {
+                // Prevent default browser behavior
+                if (document.activeElement.tagName !== 'INPUT' &&
+                    document.activeElement.tagName !== 'TEXTAREA' &&
+                    document.activeElement.tagName !== 'SELECT') {
+
+                    const slideMenu = document.getElementById('slideMenuNav');
+                    const overlay = document.getElementById('menuOverlayDiv');
+                    const burger = document.getElementById('burgerMenuBtn');
+                    const isMenuOpen = slideMenu ? slideMenu.classList.contains('active') : false;
+
+                    if (slideMenu && overlay && burger) {
+                        if (isMenuOpen) {
+                            // Close menu
+                            burger.classList.remove('active');
+                            slideMenu.classList.remove('active');
+                            overlay.classList.remove('active');
+                            document.body.classList.remove('menu-open');
+                        } else {
+                            // Open menu
+                            burger.classList.add('active');
+                            slideMenu.classList.add('active');
+                            overlay.classList.add('active');
+                            document.body.classList.add('menu-open');
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+    <script>
+        // Keyboard shortcuts for dashboard modules (only works when menu is OPEN)
+        document.addEventListener('keydown', function (event) {
+            // Get the slide menu
+            const slideMenu = document.getElementById('slideMenuNav');
+            const isMenuOpen = slideMenu ? slideMenu.classList.contains('active') : false;
+
+            // ONLY process shortcuts if menu is OPEN
+            if (isMenuOpen) {
+                // Prevent default browser behavior
+                if (document.activeElement.tagName !== 'INPUT' &&
+                    document.activeElement.tagName !== 'TEXTAREA' &&
+                    document.activeElement.tagName !== 'SELECT') {
+
+                    const key = event.key.toLowerCase();
+
+                    // c or C = Concrete Design List
+                    if (key === 'c') {
+                        window.location.href = "/Inventory-Accounts-System-v1/pages/concrete_design_page/concrete_design_list.php";
+                    }
+                    // i or I = Inventory (Plant Manager only - will check on that page)
+                    else if (key === 'i') {
+                        window.location.href = "/Inventory-Accounts-System-v1/pages/inventory_page/inventory_management.php";
+                    }
+                    // t or T = Transactions
+                    else if (key === 't') {
+                        window.location.href = "/Inventory-Accounts-System-v1/pages/statement_account_page/sap_accountsManagement.php";
+                    }
+                    // r or R = Reports (Plant Manager only - will check on that page)
+                    else if (key === 'r') {
+                        window.location.href = "/Inventory-Accounts-System-v1/pages/reports_page/reports_management.php";
+                    }
+                    // u or U = User Settings
+                    else if (key === 'u') {
+                        window.location.href = "/Inventory-Accounts-System-v1/pages/user_settings_page/user_settings.php";
+                    }
+                }
+            }
+        });
+    </script>
+
 
     <!-- Bootstrap JS -->
     <script src="/Inventory-Accounts-System-v1/assets/bootstrap/js/bootstrap.bundle.min.js"></script>
