@@ -2,7 +2,7 @@
 session_start();
 require_once '../FunctionAndDB/db_connect.php';
 
-$VERIFICATION_CODE = "@SoRcOm2024";
+$VERIFICATION_CODE = "@SorcomReady-MixConcrete2024";
 
 if (!isset($_SESSION['pending_manager'])) {
     header("Location: create_account.php");

@@ -18,28 +18,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($password !== $confirm_password) {
         $createError = "Passwords do not match.";
     } else {
-        if ($role === 'Accountant') {
-            // Accountant: Create directly
-            $hashed_password = password_hash($password, PASSWORD_BCRYPT);
-            $stmt = $conn->prepare("INSERT INTO sorcom_users (employee_number, employee_name, employee_email, password, role) VALUES (?, ?, ?, ?, ?)");
-            $stmt->bind_param("sssss", $employee_number, $fullname, $employee_email, $hashed_password, $role);
+        // Check if employee number already exists
+        $stmt = $conn->prepare("SELECT employee_number FROM sorcom_users WHERE employee_number = ?");
+        $stmt->bind_param("s", $employee_number);
+        $stmt->execute();
+        $result = $stmt->get_result();
 
-            if ($stmt->execute()) {
-                $createSuccess = true;
-            } else {
-                $createError = "Failed to create account.";
-            }
-            $stmt->close();
+        if ($result->num_rows > 0) {
+            $createError = "ID Number already exists!";
         } else {
-            // Plant Manager: Store in session and redirect to verification
-            $_SESSION['pending_manager'] = [
-                'master_id' => $employee_number,
-                'master_name' => $fullname,
-                'master_email' => $employee_email,
-                'hashed_password' => password_hash($password, PASSWORD_BCRYPT)
-            ];
-            header("Location: manager_verification.php");
-            exit();
+            // Check if email already exists
+            $stmt = $conn->prepare("SELECT employee_email FROM sorcom_users WHERE employee_email = ?");
+            $stmt->bind_param("s", $employee_email);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($result->num_rows > 0) {
+                $createError = "Email already registered!";
+            } else {
+                if ($role === 'Accountant') {
+                    // Accountant: Create directly
+                    $hashed_password = password_hash($password, PASSWORD_BCRYPT);
+                    $stmt = $conn->prepare("INSERT INTO sorcom_users (employee_number, employee_name, employee_email, password, role) VALUES (?, ?, ?, ?, ?)");
+                    $stmt->bind_param("sssss", $employee_number, $fullname, $employee_email, $hashed_password, $role);
+
+                    if ($stmt->execute()) {
+                        $createSuccess = true;
+                    } else {
+                        $createError = "Failed to create account.";
+                    }
+                    $stmt->close();
+                } else {
+                    // Plant Manager: Store in session and redirect to verification
+                    $_SESSION['pending_manager'] = [
+                        'master_id' => $employee_number,
+                        'master_name' => $fullname,
+                        'master_email' => $employee_email,
+                        'hashed_password' => password_hash($password, PASSWORD_BCRYPT)
+                    ];
+                    header("Location: manager_verification.php");
+                    exit();
+                }
+            }
         }
     }
 }
@@ -113,7 +133,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         .toggle-password {
             position: absolute;
             right: 12px;
-            top: 30%;
+            top: 35%;
             transform: translateY(-50%);
             cursor: pointer;
             color: #808080;
@@ -137,36 +157,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="success-box">
             Account created successfully!<br>Redirecting to login...
         </div>
-
-    <?php elseif ($showVerification): ?>
-        <!-- VERIFICATION FORM FOR PLANT MANAGER -->
-        <form class="form-container" action="" method="post">
-            <h2 style="color:blue; text-align:center;">Manager Verification Required</h2>
-            <p style="text-align:center; margin-bottom:20px;">An existing Plant Manager must verify this new account.</p>
-
-            <div class="info-box">
-                <p><strong>New Manager Details:</strong></p>
-                <p>ID: <?php echo htmlspecialchars($_SESSION['temp_employee_number']); ?></p>
-                <p>Name: <?php echo htmlspecialchars($_SESSION['temp_fullname']); ?></p>
-                <p>Email: <?php echo htmlspecialchars($_SESSION['temp_email']); ?></p>
-            </div>
-
-            <?php if ($verificationError): ?>
-                <div class="error"><?php echo htmlspecialchars($verificationError); ?></div>
-            <?php endif; ?>
-
-            <label for="verification_password">Enter Existing Manager Password:</label>
-            <div class="password-wrapper">
-                <input type="password" id="verification_password" name="verification_password" required autocomplete="off">
-                <i class="toggle-password fa-regular fa-eye-slash" id="toggleVerificationPassword"></i>
-            </div>
-
-            <button type="submit" name="verify_manager"
-                style="width:100%; padding:12px; background:blue; color:white; border:none; border-radius:5px; margin-top:15px; cursor:pointer;">Verify
-                & Create Account</button>
-            <a href="create_account.php"
-                style="display:block; text-align:center; margin-top:15px; color:blue; text-decoration:none;">← Cancel</a>
-        </form>
 
     <?php else: ?>
         <!-- ORIGINAL CREATE ACCOUNT FORM -->
@@ -276,27 +266,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             });
             toggleConfirmPassword.addEventListener('mouseleave', function () {
                 confirmPasswordInput.setAttribute('type', 'password');
-                this.classList.remove('fa-eye');
-                this.classList.add('fa-eye-slash');
-            });
-        }
-
-        // Verification password toggle
-        const toggleVerificationPassword = document.getElementById('toggleVerificationPassword');
-        const verificationPasswordInput = document.getElementById('verification_password');
-        if (toggleVerificationPassword && verificationPasswordInput) {
-            toggleVerificationPassword.addEventListener('mousedown', function () {
-                verificationPasswordInput.setAttribute('type', 'text');
-                this.classList.remove('fa-eye-slash');
-                this.classList.add('fa-eye');
-            });
-            toggleVerificationPassword.addEventListener('mouseup', function () {
-                verificationPasswordInput.setAttribute('type', 'password');
-                this.classList.remove('fa-eye');
-                this.classList.add('fa-eye-slash');
-            });
-            toggleVerificationPassword.addEventListener('mouseleave', function () {
-                verificationPasswordInput.setAttribute('type', 'password');
                 this.classList.remove('fa-eye');
                 this.classList.add('fa-eye-slash');
             });
