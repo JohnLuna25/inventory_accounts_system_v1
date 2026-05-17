@@ -56,7 +56,7 @@ if (!$result)
     <!-- Page Specific CSS -->
     <link rel="stylesheet" href="ip_table.css">
 
-    <?php showHeader(); ?>
+    
 </head>
 
 <body>

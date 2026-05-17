@@ -64,10 +64,11 @@ $conn->close();
     <link rel="stylesheet" href="inventory_management.css">
 
     <?php include '../../assets/resources.php'; ?>
-    <?php showHeader(); ?>
+
 </head>
 
 <body>
+    <?php showHeader(); ?>
     <div class="main-content">
         <div class="page-title-bar">
             <h2 class="text-center mb-3" style="font-family: 'Poppins', sans-serif; font-size: 32px; margin-top: auto;">
@@ -80,7 +81,7 @@ $conn->close();
         </div>
 
         <?php if ($error_message): ?>
-            <p class="error"><?php echo htmlspecialchars($error_message); ?></p>
+                <p class="error"><?php echo htmlspecialchars($error_message); ?></p>
         <?php endif; ?>
 
         <?php include __DIR__ . '/ip_tableDisplay.php'; ?>
