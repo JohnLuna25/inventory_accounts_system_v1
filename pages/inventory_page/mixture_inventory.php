@@ -5,7 +5,18 @@ $conn = new mysqli('localhost', 'root', '', 'sorcom_db');
 if ($conn->connect_error)
     die("Connection failed: " . $conn->connect_error);
 
-$result = $conn->query("SELECT * FROM sorcom_mixture_inventory ORDER BY id DESC");
+// Handle Recycle action (move to recycle bin instead of delete)
+if (isset($_GET['recycle'])) {
+    $id = intval($_GET['recycle']);
+    $stmt = $conn->prepare("UPDATE sorcom_mixture_inventory SET recycled_data = 1, recycled_at = NOW() WHERE id = ?");
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    header("Location: mixture_inventory.php?msg=recycled");
+    exit();
+}
+
+// Only show records that are NOT in recycle bin
+$result = $conn->query("SELECT * FROM sorcom_mixture_inventory WHERE recycled_data = 0 OR recycled_data IS NULL ORDER BY id DESC");
 
 $designs_result = $conn->query("SELECT * FROM scd_vb_list");
 $all_designs = [];
@@ -42,8 +53,11 @@ while ($d = $designs_result->fetch_assoc()) {
                 Inventory</h2>
 
             <div class="button-container">
-                <a href="mixture_form.php" class="btn-add">+ Add Mixture</a>
                 <a href="../inventory_page/inventory_management.php" class="btn-back">← Back</a>
+                <a href="mixture_form.php" class="btn-add">+ Add Mixture</a>
+                <a href="recycle_mixInventory.php" class="btn-back"
+                    style="background: #6c757d; color: white; margin-left: auto;">🗑️ Recycle Bin</a>
+
             </div>
         </div>
 
@@ -91,7 +105,7 @@ while ($d = $designs_result->fetch_assoc()) {
                                 <button class="btn btn-edit"
                                     onclick="window.location.href='mixture_form.php?id=<?= $row['id'] ?>'">Edit</button>
                                 <button class="btn btn-del"
-                                    onclick="if(confirm('Delete this record?')) window.location.href='mixture_form.php?delete=<?= $row['id'] ?>'">Delete</button>
+                                    onclick="if(confirm('Move this record to Recycle Bin?')) window.location.href='mixture_inventory.php?recycle=<?= $row['id'] ?>'">Recycle</button>
                             </td>
                         </tr>
 

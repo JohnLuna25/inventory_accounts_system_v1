@@ -58,6 +58,19 @@ body {
   padding-bottom: 60px !important;
 }
 
+.page-title-bar h2 {
+  font-family: "Lexend Giga", sans-serif;
+  font-weight: 600;
+}
+
+th {
+  font-family: "Inter", sans-serif !important;
+}
+
+td {
+  font-family: "Nunito", sans-serif;
+}
+
 .main-content {
   padding-top: 70px !important;
 }
@@ -68,6 +81,13 @@ body {
   padding: 20px !important;
   border-radius: 15px !important;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+}
+
+td .btn-view,
+td .btn-edit,
+td .btn-del {
+  display: inline-block;
+  margin: 2px;
 }
 
 .button-container {
