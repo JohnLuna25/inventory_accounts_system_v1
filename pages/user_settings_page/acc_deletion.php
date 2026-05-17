@@ -42,6 +42,14 @@ $stmt = $conn->prepare("SELECT $name_column, $email_column FROM $table WHERE $id
 $stmt->bind_param("s", $session_id);
 $stmt->execute();
 $result = $stmt->get_result();
+
+// Check if account exists (if not, user was already deleted)
+if ($result->num_rows === 0) {
+    session_destroy();
+    header("Location: /Inventory-Accounts-System-v1/login_page/web_login.php");
+    exit();
+}
+
 $user_data = $result->fetch_assoc();
 $user_email = $user_data[$email_column];
 $user_fullname = $user_data[$name_column];
@@ -106,7 +114,10 @@ function sendVerificationEmail($to_email, $code)
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['verify_code'])) {
     $entered_code = trim($_POST['verification_code']);
 
-    if ($entered_code == $_SESSION['delete_verification_code'] && time() < $_SESSION['delete_code_expiry']) {
+    if (
+        isset($_SESSION['delete_verification_code']) && isset($_SESSION['delete_code_expiry']) &&
+        $entered_code == $_SESSION['delete_verification_code'] && time() < $_SESSION['delete_code_expiry']
+    ) {
         $showRetypeForm = true;
         $showVerification = false;
     } else {
@@ -137,13 +148,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_retype'])) {
     }
 }
 
-// Handle final deletion
+// Handle final deletion - HARD DELETE from database
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['confirm_delete'])) {
-    // Soft delete - set account as deleted
-    $stmt = $conn->prepare("UPDATE $table SET is_deleted = 1, deleted_at = NOW() WHERE $id_column = ?");
+    // HARD DELETE - permanently remove from database
+    $stmt = $conn->prepare("DELETE FROM $table WHERE $id_column = ?");
     $stmt->bind_param("s", $session_id);
 
-    if ($stmt->execute()) {
+    if ($stmt->execute() && $stmt->affected_rows > 0) {
         session_destroy();
         $showSuccessModal = true;
     } else {
@@ -485,8 +496,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_code'])) {
             <div class="modal-card">
                 <i class="fas fa-exclamation-triangle" style="color: #dc3545;"></i>
                 <h3>⚠️ Warning</h3>
-                <p>Your personal data will be lost. However, inventory and transaction records you created will remain in
-                    the system for audit purposes.</p>
+                <p>Your account will be permanently deleted. This action cannot be undone.</p>
                 <button class="btn-no" onclick="goBack()">No</button>
                 <button class="btn-yes" onclick="showSecondConfirmation()">Yes</button>
             </div>
@@ -502,7 +512,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_code'])) {
             <div class="modal-card">
                 <i class="fas fa-trash-alt" style="color: #dc3545;"></i>
                 <h3>⚠️ Final Confirmation</h3>
-                <p>Are you absolutely sure you want to delete your account? This action cannot be undone.</p>
+                <p>Are you absolutely sure you want to permanently delete your account? This action cannot be undone.</p>
                 <button class="btn-no" onclick="goBack()">No</button>
                 <button class="btn-yes" onclick="deleteAccount()">Yes, Delete My Account</button>
             </div>
@@ -534,7 +544,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_code'])) {
         <div class="success-card">
             <i class="fas fa-check-circle"></i>
             <h3>Account Deleted</h3>
-            <p>Your account has been successfully deleted.</p>
+            <p>Your account has been permanently deleted from the system.</p>
             <button class="btn-done" onclick="redirectToLogin()">Done</button>
         </div>
     </div>
@@ -557,7 +567,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_code'])) {
         </h2>
 
         <div class="warning-msg">
-            <i class="fas fa-exclamation-triangle"></i> This action is permanent. Please confirm your identity.
+            <i class="fas fa-exclamation-triangle"></i> This action is permanent and cannot be undone.
         </div>
 
         <?php if ($error): ?>
@@ -575,7 +585,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['send_code'])) {
             </div>
 
             <button type="submit" name="confirm_retype" class="btn-submit">
-                <i class="fas fa-trash-alt"></i> Confirm Deletion
+                <i class="fas fa-trash-alt"></i> Permanently Delete Account
             </button>
         </form>
 

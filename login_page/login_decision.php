@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user_data = null;
     $user_table = null;
 
-    // --- STEP 1: Check sorcom_users (Accountants) ---
+    // For sorcom_users
     $stmt = $conn->prepare("SELECT * FROM sorcom_users WHERE employee_number = ?");
     $stmt->bind_param("s", $username);
     $stmt->execute();
@@ -56,6 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // --- STEP 2: Check sorcom_master_user (Plant Managers) ---
     if (!$user_found) {
+        // For sorcom_master_user
         $stmt = $conn->prepare("SELECT * FROM sorcom_master_user WHERE master_id = ?");
         $stmt->bind_param("s", $username);
         $stmt->execute();
