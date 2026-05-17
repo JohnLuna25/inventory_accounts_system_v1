@@ -23,7 +23,11 @@
 body {
   min-height: 100vh !important;
   font-family: "Inter", sans-serif !important;
-  background: #bfc3aa !important;
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url("/Inventory-Accounts-System-v1/assets/images/SBP.png") no-repeat center
+      center fixed !important;
+  background-size: cover !important;
   margin: 0 !important;
   padding: 0 !important;
   padding-bottom: 60px !important;

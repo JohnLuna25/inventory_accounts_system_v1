@@ -65,6 +65,16 @@ $conn->close();
 
     <?php include '../../assets/resources.php'; ?>
 
+    <style>
+        body {
+            font-family: "Inter", sans-serif !important;
+            background:
+                linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                url("/Inventory-Accounts-System-v1/assets/images/SBP.png") no-repeat center center fixed !important;
+            background-size: cover !important;
+        }
+    </style>
+
 </head>
 
 <body>

@@ -73,9 +73,11 @@ $result = $conn->query($query);
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
         body {
-            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-                url("/Inventory-Accounts-System-v1/assets/images/SBP.png") no-repeat center center fixed;
-            background-size: cover;
+            font-family: "Inter", sans-serif !important;
+            background:
+                linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                url("/Inventory-Accounts-System-v1/assets/images/SBP.png") no-repeat center center fixed !important;
+            background-size: cover !important;
             font-family: 'Poppins', sans-serif;
         }
 

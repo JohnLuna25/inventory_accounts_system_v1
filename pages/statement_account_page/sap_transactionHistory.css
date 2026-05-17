@@ -174,7 +174,6 @@
   }
 
   html,
-  body,
   .main-content,
   .table-container,
   .page-title-bar,
@@ -219,7 +218,12 @@
 
   body {
     overflow: visible !important;
-    background: white !important;
+    font-family: "Inter", sans-serif !important;
+    background:
+      linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+      url("/Inventory-Accounts-System-v1/assets/images/SBP.png") no-repeat
+        center center fixed !important;
+    background-size: cover !important;
     margin: 0 !important;
     padding: 0 !important;
   }
@@ -260,7 +264,7 @@
     color: transparent !important;
   }
 
-  /* ✅ Inject "Transaction Record" in place of original text */
+  /* ✅ Inject "Transaction Record" in place  */
   .page-title-bar h2::after {
     content: "Transaction Record";
     font-size: 13px;

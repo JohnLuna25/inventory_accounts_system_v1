@@ -172,8 +172,12 @@ $conn->close();
         }
 
         body {
-            font-family: 'Inter' sans-serif;
-            background: #BFC3AA;
+            background:
+                linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                url("/Inventory-Accounts-System-v1/assets/images/SBP.png") no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Poppins', 'Nunito', Arial, sans-serif;
+            margin: 0;
             margin-top: 40px;
             padding-bottom: 60px;
             font-family: 'Inter' sans-serif;
@@ -190,6 +194,7 @@ $conn->close();
 
         /* HEADER TITLE (UNCHANGED) */
         .form-grid h2 {
+            margin-top: 10px !important;
             grid-column: 1 / -1;
             text-align: center;
             margin-bottom: 10px;
@@ -203,7 +208,7 @@ $conn->close();
         /* MOVE CARDS SLIGHTLY DOWN */
         .form-grid {
             align-items: start;
-            margin-top: 25px;
+
             /* reduced from 100px */
             margin-left: 30px;
             margin-right: 30px;
@@ -316,7 +321,7 @@ $conn->close();
 
     <form id="addForm" method="POST">
 
-        <div class="form-grid">
+        <div class="form-grid" style="margin-top: 40px;">
             <h2>
                 <?php echo $title_text; ?>
             </h2>

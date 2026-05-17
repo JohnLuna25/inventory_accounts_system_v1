@@ -80,7 +80,9 @@ $doneOrders = getDoneOrders($conn);
     <script src="https://unpkg.com/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 </head>
 
-<body style="background: #bfc3aa !important;">
+<body style="  font-family: " Inter", sans-serif !important; background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0,
+    0, 0.5)), url("/Inventory-Accounts-System-v1/assets/images/SBP.png") no-repeat center center fixed !important;
+    background-size: cover !important;;">
 
     <?php showHeader(); ?>
     <div class="main-content">

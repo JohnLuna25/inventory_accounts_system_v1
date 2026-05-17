@@ -148,8 +148,11 @@ $conn->close();
 
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background: #BFC3AA;
+            background:
+                linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+                url("/Inventory-Accounts-System-v1/assets/images/SBP.png") no-repeat center center fixed;
+            background-size: cover;
+            font-family: 'Poppins', 'Nunito', Arial, sans-serif;
             margin: 0;
             padding: 0;
             padding-bottom: 60px;
@@ -279,7 +282,7 @@ $conn->close();
 <body>
 
     <div class="main-content" style="padding-top: 140px;">
-        <div class="form-container">
+        <div class="form-container" style="margin-top: 40px;">
             <h2>Edit Concrete Design</h2>
 
             <form method="POST">
