@@ -72,16 +72,18 @@ $conn->close();
     <div class="main-content">
         <div class="page-title-bar">
             <h2 class="text-center mb-3" style="font-family: 'Poppins', sans-serif; font-size: 32px; margin-top: auto;">
-                Ready-Mix
-                Inventory</h2>
+                Ready-Mix Inventory
+            </h2>
             <div class="search-container">
                 <a href="ip_form.php" class="btn">+ Add Inventory</a>
                 <a href="mixture_inventory.php" class="btn">Open Mixture Inventory</a>
+                <a href="recycle_inventory.php" class="btn"
+                    style="background: #6c757d; color: white; margin-left: auto;">🗑️
+                    Recycle Bin</a>
             </div>
         </div>
-
         <?php if ($error_message): ?>
-                <p class="error"><?php echo htmlspecialchars($error_message); ?></p>
+            <p class="error"><?php echo htmlspecialchars($error_message); ?></p>
         <?php endif; ?>
 
         <?php include __DIR__ . '/ip_tableDisplay.php'; ?>

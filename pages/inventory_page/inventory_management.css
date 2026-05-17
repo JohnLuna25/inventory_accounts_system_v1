@@ -83,7 +83,7 @@ body {
 
 .search-container {
   display: flex !important;
-  justify-content: space-between !important;
+  justify-content: flex-start !important;
   align-items: center !important;
   gap: 10px !important;
   flex-wrap: wrap !important;

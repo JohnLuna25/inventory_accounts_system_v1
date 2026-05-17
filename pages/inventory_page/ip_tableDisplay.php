@@ -6,16 +6,16 @@ $conn = new mysqli('localhost', 'root', '', 'sorcom_db');
 if ($conn->connect_error)
     die("Connection failed: " . $conn->connect_error);
 
-// Handle Delete action
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'delete') {
+// Handle Move to Recycle Bin action (instead of delete)
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'recycle') {
     $id = intval($_POST['id']);
-    $stmt = $conn->prepare("DELETE FROM sorcom_readymix_inventory WHERE id = ?");
+    $stmt = $conn->prepare("UPDATE sorcom_readymix_inventory SET recycled_data = 1, recycled_at = NOW() WHERE id = ?");
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $stmt->close();
 }
 
-// Fetch inventory
+// Fetch inventory - ONLY show active records (recycled_data = 0 or NULL)
 $sql = "SELECT 
             id,
             date_added,
@@ -28,6 +28,7 @@ $sql = "SELECT
             curation_days,
             current_stock_batch
         FROM sorcom_readymix_inventory
+        WHERE recycled_data = 0 OR recycled_data IS NULL
         ORDER BY date_added DESC, id DESC";
 
 $result = $conn->query($sql);
@@ -56,7 +57,7 @@ if (!$result)
     <!-- Page Specific CSS -->
     <link rel="stylesheet" href="ip_table.css">
 
-    
+
 </head>
 
 <body>
@@ -91,10 +92,11 @@ if (!$result)
                             <td><?= htmlspecialchars($row['remarks'] ?? '') ?></td>
                             <td>
                                 <a href="ip_form.php?id=<?= $row['id'] ?>" class="edit-btn">Edit</a>
-                                <form method="POST" style="display:inline;" onsubmit="return confirm('Are you sure?')">
+                                <form method="POST" style="display:inline;"
+                                    onsubmit="return confirm('Move this record to Recycle Bin?')">
                                     <input type="hidden" name="id" value="<?= $row['id'] ?>">
-                                    <input type="hidden" name="action" value="delete">
-                                    <button type="submit" class="delete-btn">Delete</button>
+                                    <input type="hidden" name="action" value="recycle">
+                                    <button type="submit" class="delete-btn">Recycle</button>
                                 </form>
                             </td>
                         </tr>
