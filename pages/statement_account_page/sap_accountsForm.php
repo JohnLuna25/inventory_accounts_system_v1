@@ -212,6 +212,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $concrete_psi = $_POST['concrete_psi'] ?? '';
     $curation_days = $_POST['curation_days'] ?? '';
     $concrete_type = $_POST['concrete_type'] ?? '';
+
+// Add this validation
+if (empty($concrete_type) || $concrete_type === '0') {
+    $error_message = "Please select a valid Concrete Type";
+}
     $sap_units = intval($_POST['sap_units'] ?? 0);  // CHANGED: floatval to intval
     $sap_concrete_price = floatval($_POST['sap_concrete_price'] ?? 0);
     $order_status = $_POST['order_status'] ?? 'pending';
@@ -654,16 +659,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             }
                         }
 
-                        // FALLBACK: If type="0" or invalid, select first valid option
-                        if (!typeSet || targetType === '0') {
-                            for (let opt of typeSelect.options) {
-                                if (opt.value && opt.value !== '') {
-                                    opt.selected = true;
-                                    console.log('🔧 FALLBACK: Selected first valid type:', opt.value);
-                                    break;
-                                }
-                            }
-                        }
+// FALLBACK: If type is empty or invalid, select first valid option
+if (!typeSet || targetType === '0' || targetType === '' || targetType === null) {
+    for (let opt of typeSelect.options) {
+        if (opt.value && opt.value !== '' && opt.value !== '0') {
+            opt.selected = true;
+            console.log('🔧 FALLBACK: Selected first valid type:', opt.value);
+            break;
+        }
+    }
+}
 
                         checkInventory();
                     }, 1200);

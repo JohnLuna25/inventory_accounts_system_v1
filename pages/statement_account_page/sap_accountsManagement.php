@@ -7,38 +7,37 @@ showHeader();
 
 function checkRemainingInventory($conn, $psi, $days, $type)
 {
+    // Get total stock from inventory
     $stmt = $conn->prepare("
-        SELECT stocks_in FROM sorcom_readymix_inventory 
+        SELECT SUM(stocks_in) - SUM(stocks_out) as total_stock 
+        FROM sorcom_readymix_inventory 
         WHERE design_mix_id = ? AND curation_days = ? AND concrete_type = ?
-        ORDER BY date_added DESC LIMIT 1
     ");
-    if (!$stmt)
-        return 0;
-
     $stmt->bind_param("sss", $psi, $days, $type);
     $stmt->execute();
     $result = $stmt->get_result();
-    $inventory = $result->fetch_assoc();
+    $row = $result->fetch_assoc();
     $stmt->close();
-
-    return $inventory ? intval($inventory['stocks_in']) : 0;
-}
-
-// Delete function
-function deleteOrder($conn, $sap_id)
-{
-    $stmt = $conn->prepare("DELETE FROM statement_of_account WHERE sap_id = ?");
-    $stmt->bind_param("s", $sap_id);
-    return $stmt->execute();
-}
-
-// Handle delete
-if (isset($_GET['delete'])) {
-    $sap_id = $_GET['delete'];
-    if (deleteOrder($conn, $sap_id)) {
-        header("Location: sap_accountsManagement.php?deleted=1");
-        exit;
-    }
+    
+    $total_stock = $row ? floatval($row['total_stock']) : 0;
+    
+    // Get total ordered units from ALL orders (not just current)
+    $stmt2 = $conn->prepare("
+        SELECT SUM(sap_units) as total_ordered 
+        FROM statement_of_account 
+        WHERE concrete_psi = ? AND curation_days = ? AND concrete_type = ?
+        AND order_status != 'Done'
+    ");
+    $stmt2->bind_param("sss", $psi, $days, $type);
+    $stmt2->execute();
+    $result2 = $stmt2->get_result();
+    $row2 = $result2->fetch_assoc();
+    $stmt2->close();
+    
+    $total_ordered = $row2 ? floatval($row2['total_ordered']) : 0;
+    
+    $remaining = $total_stock - $total_ordered;
+    return $remaining > 0 ? $remaining : 0;
 }
 
 // ✅ SAFE SORTING (uses EXISTING columns only)
@@ -172,12 +171,14 @@ $result = $conn->query($sql);
                                             <td class="dropbar-detail">
                                                 <?= htmlspecialchars($row['sap_units']) ?> units<br>
                                                 <small style="color:#666;">
-                                                    <?php
-                                                    // 🆕 Show remaining inventory
-                                                    $inv_check = checkRemainingInventory($conn, $row['concrete_psi'], $row['curation_days'], $row['concrete_type']);
-                                                    echo $inv_check > 0 ? "📦 {$inv_check} left" : "⚠️ Out of stock";
-                                                    ?>
-                                                </small>
+    <?php
+    $inv_check = checkRemainingInventory($conn, $row['concrete_psi'], $row['curation_days'], $row['concrete_type']);
+    if ($inv_check > 0) {
+        echo "📦 {$inv_check} left";
+    }
+    // Removed the "Out of stock" message completely
+    ?>
+</small>
                                             </td>
                                         </tr>
                                     </table>
