@@ -145,7 +145,7 @@ while ($row = $never_result->fetch_assoc()) {
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
-        /* All existing CSS (unchanged) */
+        /* ========== RESET & BASE ========== */
         * {
             margin: 0;
             padding: 0;
@@ -192,41 +192,101 @@ while ($row = $never_result->fetch_assoc()) {
             margin-top: 10px;
         }
 
-        .filter-bar {
-            background: #f5f5f5;
-            padding: 15px 20px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
+        /* ========== FILTER BAR CARD (same as Concrete Orders) ========== */
+        .page-title-bar {
+            background: white !important;
+            margin: 15px 10px !important;
+            padding: 20px !important;
+            border-radius: 15px !important;
+            box-shadow: 0 2px 4px !important;
         }
 
-        .filter-form {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            flex-wrap: wrap;
+        .page-title-bar h2 {
+            text-align: center !important;
+            margin-top: 0 !important;
+            margin-bottom: 15px !important;
+            color: #333 !important;
+            font-weight: 300 !important;
         }
 
-        .filter-form label {
-            font-weight: 600;
-            color: #333;
+        /* Unify all button sizes */
+        .btn,
+        .btn-primary,
+        .btn-print-section,
+        .btn-pdf-section,
+        .button-container .btn {
+            padding: 8px 20px !important;
+            font-size: 14px !important;
+            line-height: 1.2 !important;
+            min-width: 100px !important;
+            /* optional: makes them equal width */
+            text-align: center !important;
         }
 
-        .filter-form input,
-        .filter-form select {
+        /* ========== BUTTON CONTAINER – two rows stacked ========== */
+
+
+        .btn-sm {
+            padding: 8px 12px !important;
+            font-size: 13px !important;
+        }
+
+        /* Make Back button gray */
+        .btn-secondary {
+            background-color: #6c757d !important;
+            border-color: #6c757d !important;
+            color: white !important;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268 !important;
+            border-color: #545b62 !important;
+        }
+
+        /* Print button - Green */
+        #sr-print {
+            background-color: #28a745 !important;
+            border-color: #28a745 !important;
+            color: white !important;
+        }
+
+        #sr-print:hover {
+            background-color: #218838 !important;
+            border-color: #1e7e34 !important;
+        }
+
+        /* PDF button - Red */
+        #sr-export {
+            background-color: #dc3545 !important;
+            border-color: #dc3545 !important;
+            color: white !important;
+        }
+
+        #sr-export:hover {
+            background-color: #c82333 !important;
+            border-color: #bd2130 !important;
+        }
+
+        /* Filter button stays blue (already btn-primary) */
+        /* Clear Filter button stays gray (btn-secondary) */
+        /* Back button stays gray (btn-secondary) */
+
+        /* ========== FORM ELEMENTS & BUTTONS ========== */
+        label,
+        select,
+        input,
+        button {
+            font-family: inherit;
+        }
+
+        input,
+        select {
             padding: 8px 12px;
             border: 1px solid #ccc;
             border-radius: 5px;
         }
 
-        .btn-filter,
-        .btn-clear,
-        .btn-print,
-        .btn-pdf {
+        .btn {
             padding: 8px 20px;
             border: none;
             border-radius: 5px;
@@ -234,61 +294,31 @@ while ($row = $never_result->fetch_assoc()) {
             font-weight: 600;
             text-decoration: none;
             display: inline-block;
-        }
-
-        .btn-filter {
-            background: #2e3590;
+            background-color: #2e3590;
             color: white;
         }
 
-        .btn-clear {
-            background: #6c757d;
-            color: white;
+        .btn-primary {
+            background-color: #2e3590 !important;
+            color: white !important;
         }
 
-        .btn-print {
-            background: #28a745;
-            color: white;
+        .btn-primary:hover {
+            background-color: #0a4a8f !important;
         }
 
-        .btn-pdf {
-            background: #dc3545;
-            color: white;
-            margin-left: 10px;
-        }
-
-        .btn-filter:hover,
-        .btn-clear:hover,
-        .btn-print:hover,
-        .btn-pdf:hover {
-            opacity: 0.85;
-        }
-
+        /* Specific buttons (if needed) */
         .btn-print-section,
         .btn-pdf-section {
             background: #2e3590;
             color: white;
             padding: 8px 20px;
-            border: none;
             border-radius: 5px;
             cursor: pointer;
             font-size: 12px;
-            transition: background 0.2s;
         }
 
-        .btn-print-section {
-            background: #28a745;
-        }
-
-        .btn-pdf-section {
-            background: #dc3545;
-        }
-
-        .btn-print-section:hover,
-        .btn-pdf-section:hover {
-            opacity: 0.85;
-        }
-
+        /* ========== SECTION TITLES & TABLES (unchanged) ========== */
         .section-title {
             background: #2e3590;
             color: white;
@@ -316,11 +346,6 @@ while ($row = $never_result->fetch_assoc()) {
             color: white;
             cursor: pointer;
             font-size: 12px;
-            transition: background 0.2s;
-        }
-
-        .section-buttons button:hover {
-            background: rgba(255, 255, 255, 0.4);
         }
 
         .analytics-table {
@@ -359,31 +384,33 @@ while ($row = $never_result->fetch_assoc()) {
             padding-top: 10px;
         }
 
+        /* ========== PRINT STYLES ========== */
         @media print {
 
-            /* Hide filter bar */
-            .filter-bar {
+            .filter-bar,
+            .button-container,
+            .btn,
+            .btn-primary,
+            .right-buttons {
                 display: none !important;
             }
 
-            /* Each section starts on a new page */
             .section-title {
                 page-break-before: always;
                 break-before: page;
-            }
-
-            /* First section should not have extra page break */
-            .section-title:first-of-type {
-                page-break-before: avoid;
-                break-before: auto;
-            }
-
-            /* Keep section title background & white text */
-            .section-title {
                 background: #2e3590 !important;
                 color: white !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
+            }
+
+            .section-title:first-of-type {
+                page-break-before: avoid;
+            }
+
+            .analytics-table th {
+                background: #2e3590 !important;
+                color: white !important;
             }
         }
     </style>
@@ -394,34 +421,76 @@ while ($row = $never_result->fetch_assoc()) {
     <div class="report-container">
         <div class="report-header">
             <h1>SORCOM READY-MIX CONCRETE</h1>
-            <h2>Sales Analytics Report</h2>
+            <h2>Transaction Summary Report</h2>
             <div class="report-date">
-                Period: <?php echo date('F d, Y', strtotime($start_date)); ?> -
+                Period:
+                <?php echo date('F d, Y', strtotime($start_date)); ?> -
                 <?php echo date('F d, Y', strtotime($end_date)); ?>
-                <br>Generated: <?php echo date('F d, Y h:i A'); ?>
+                <br>Generated:
+                <?php echo date('F d, Y h:i A'); ?>
             </div>
         </div>
 
-        <div class="filter-bar no-print" style="display: flex; justify-content: space-between; align-items: center;">
-            <form method="GET" class="filter-form"
-                style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
-                <label>From:</label>
-                <input type="date" name="start_date" value="<?php echo $start_date; ?>">
-                <label>To:</label>
-                <input type="date" name="end_date" value="<?php echo $end_date; ?>">
-                <label>Trend view:</label>
-                <select name="trend_view">
-                    <option value="monthly" <?php echo $trend_view == 'monthly' ? 'selected' : ''; ?>>Monthly</option>
-                    <option value="annual" <?php echo $trend_view == 'annual' ? 'selected' : ''; ?>>Annual</option>
-                </select>
-                <button type="submit" class="btn-filter">Filter</button>
-                <a href="?clear=1" class="btn-clear">Clear Filter</a>
-            </form>
-            <div style="margin-left: auto;">
-                <button id="sr-print" onclick="window.print()" class="btn-print-section"><i class="fas fa-print"></i>
-                    Print</button>
-                <button id="sr-export" onclick="exportPDF()" class="btn-pdf-section"><i class="fas fa-file-pdf"></i>
-                    PDF</button>
+        <div class="page-title-bar">
+            <!-- ROW 1 -->
+            <div class="row align-items-center g-3 mb-3">
+                <div class="col-md-3">
+                    <a href="sap_accountsManagement.php" class="btn btn-secondary btn-sm w-100 fw-bold">
+                        <i class="fas fa-arrow-left me-1"></i> Back
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <div class="d-flex align-items-center">
+                        <label class="form-label small fw-bold mb-0 me-2 text-primary"
+                            style="min-width: 85px;">From:</label>
+                        <input type="date" name="start_date" id="start_date" class="form-control form-control-sm"
+                            value="<?php echo $start_date; ?>">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <button id="filterBtn" class="btn btn-primary btn-sm w-100 fw-bold" onclick="filterData()">
+                        <i class="fas fa-filter me-1"></i> Filter
+                    </button>
+                </div>
+                <div class="col-md-3">
+                    <button id="sr-print" onclick="window.print()" class="btn btn-primary btn-sm w-100 fw-bold">
+                        <i class="fas fa-print me-1"></i> Print
+                    </button>
+                </div>
+            </div>
+
+            <!-- ROW 2 -->
+            <div class="row align-items-center g-3">
+                <div class="col-md-3">
+                    <div class="d-flex align-items-center">
+                        <label class="form-label small fw-bold mb-0 me-2 text-primary" style="min-width: 85px;">Trend
+                            view:</label>
+                        <select name="trend_view" id="trend_view" class="form-select form-select-sm">
+                            <option value="monthly" <?php echo $trend_view == 'monthly' ? 'selected' : ''; ?>>Monthly
+                            </option>
+                            <option value="annual" <?php echo $trend_view == 'annual' ? 'selected' : ''; ?>>Annual
+                            </option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="d-flex align-items-center">
+                        <label class="form-label small fw-bold mb-0 me-2 text-primary"
+                            style="min-width: 85px;">To:</label>
+                        <input type="date" name="end_date" id="end_date" class="form-control form-control-sm"
+                            value="<?php echo $end_date; ?>">
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <a href="?clear=1" class="btn btn-secondary btn-sm w-100 fw-bold">
+                        <i class="fas fa-eraser me-1"></i> Clear Filter
+                    </a>
+                </div>
+                <div class="col-md-3">
+                    <button id="sr-export" onclick="exportPDF()" class="btn btn-danger btn-sm w-100 fw-bold">
+                        <i class="fas fa-file-pdf me-1"></i> Export PDF
+                    </button>
+                </div>
             </div>
         </div>
 
@@ -476,10 +545,16 @@ while ($row = $never_result->fetch_assoc()) {
                     <?php $rank = 1;
                     foreach ($top_customers as $t): ?>
                         <tr>
-                            <td><?= $rank++ ?></td>
-                            <td><?= htmlspecialchars($t['customer_name']) ?></td>
-                            <td><?= number_format($t['total_weight'], 2) ?></td>
-                            <td><?= $t['order_count'] ?></td>
+                            <td><?= $rank++ ?>
+                            </td>
+                            <td>
+                                <?= htmlspecialchars($t['customer_name']) ?>
+                            </td>
+                            <td>
+                                <?= number_format($t['total_weight'], 2) ?>
+                            </td>
+                            <td><?= $t['order_count'] ?>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
@@ -495,7 +570,9 @@ while ($row = $never_result->fetch_assoc()) {
 
         <!-- Table 3: Sales Trend Over Time -->
         <div class="section-title">
-            <span><i class="fas fa-chart-line"></i> Sales Trend Over Time (<?= ucfirst($trend_view) ?>)</span>
+            <span><i class="fas fa-chart-line"></i> Sales Trend Over Time (
+                <?= ucfirst($trend_view) ?>)
+            </span>
         </div>
         <table class="analytics-table">
             <thead>
@@ -510,10 +587,18 @@ while ($row = $never_result->fetch_assoc()) {
                 <?php if (count($trend_data) > 0): ?>
                     <?php foreach ($trend_data as $t): ?>
                         <tr>
-                            <td><?= htmlspecialchars($t['period']) ?></td>
-                            <td><?= htmlspecialchars($t['customer_name']) ?></td>
-                            <td><?= number_format($t['total_weight'], 2) ?></td>
-                            <td><?= $t['order_count'] ?></td>
+                            <td>
+                                <?= htmlspecialchars($t['period']) ?>
+                            </td>
+                            <td>
+                                <?= htmlspecialchars($t['customer_name']) ?>
+                            </td>
+                            <td>
+                                <?= number_format($t['total_weight'], 2) ?>
+                            </td>
+                            <td>
+                                <?= $t['order_count'] ?>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
@@ -543,9 +628,12 @@ while ($row = $never_result->fetch_assoc()) {
                 <?php if (count($never_designs) > 0): ?>
                     <?php foreach ($never_designs as $d): ?>
                         <tr>
-                            <td><?= htmlspecialchars($d['design_mix']) ?></td>
+                            <td><?= htmlspecialchars($d['design_mix']) ?>
+                            </td>
                             <td><?= htmlspecialchars($d['curation_days']) ?></td>
-                            <td><?= htmlspecialchars($d['concrete_type']) ?></td>
+                            <td>
+                                <?= htmlspecialchars($d['concrete_type']) ?>
+                            </td>
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
@@ -565,6 +653,29 @@ while ($row = $never_result->fetch_assoc()) {
 
     <?php include 'sa_PrintExport.php'; ?>
     <?php $conn->close(); ?>
+
+    <script>
+        function filterData() {
+            const btn = document.getElementById('filterBtn');
+            const originalHTML = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+            btn.disabled = true;
+
+            const start_date = document.querySelector('input[name="start_date"]').value;
+            const end_date = document.querySelector('input[name="end_date"]').value;
+            const trend_view = document.querySelector('select[name="trend_view"]').value;
+
+            // Wait 500ms, then show "Done!"
+            setTimeout(() => {
+                btn.innerHTML = '<i class="fas fa-check"></i> Done!';
+                // Wait another 500ms, then redirect
+                setTimeout(() => {
+                    window.location.href = `?start_date=${start_date}&end_date=${end_date}&trend_view=${trend_view}`;
+                }, 500);
+            }, 500);
+        }
+    </script>
+
 </body>
 
 </html>

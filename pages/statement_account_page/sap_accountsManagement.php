@@ -80,7 +80,8 @@ $result = $conn->query($sql);
                 <!-- LEFT SIDE -->
                 <div class="left-buttons">
                     <a href="sap_accountsForm.php" class="btn btn-primary">+ Add Order</a>
-                    <a href="sap_transactionHistory.php" class="btn btn-primary">Show Finished Orders</a>
+                    <a href="sap_transactionHistory.php" class="btn btn-primary">Transaction History</a>
+                    <a href="sales_analytics.php" class="btn btn-primary">Transaction Summary</a>
                 </div>
 
                 <!-- RIGHT SIDE -->
@@ -145,7 +146,6 @@ $result = $conn->query($sql);
                                         onclick="toggleDropbar(<?= $row_index ?>); return false;">View</a>
                                     <a href="sap_accountsForm.php?id=<?= urlencode($row['sap_id']) ?>"
                                         class="btn btn-edit">Edit</a>
-
                                 </td>
                             </tr>
 
@@ -263,6 +263,20 @@ $result = $conn->query($sql);
             document.querySelectorAll('.dropbar-row.show').forEach(row => row.classList.remove('show'));
             if (!isVisible) dropbar.classList.add('show');
         }
+
+        function filterData() {
+            const btn = document.getElementById('filterBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
+            btn.disabled = true;
+
+            const start_date = document.querySelector('input[name="start_date"]').value;
+            const end_date = document.querySelector('input[name="end_date"]').value;
+            const trend_view = document.querySelector('select[name="trend_view"]').value;
+
+            window.location.href = `?start_date=${start_date}&end_date=${end_date}&trend_view=${trend_view}`;
+        }
+
     </script>
 
 </body>
