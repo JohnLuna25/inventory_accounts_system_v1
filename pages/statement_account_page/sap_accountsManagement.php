@@ -18,9 +18,9 @@ function checkRemainingInventory($conn, $psi, $days, $type)
     $result = $stmt->get_result();
     $row = $result->fetch_assoc();
     $stmt->close();
-    
+
     $total_stock = $row ? floatval($row['total_stock']) : 0;
-    
+
     // Get total ordered units from ALL orders (not just current)
     $stmt2 = $conn->prepare("
         SELECT SUM(sap_units) as total_ordered 
@@ -33,9 +33,9 @@ function checkRemainingInventory($conn, $psi, $days, $type)
     $result2 = $stmt2->get_result();
     $row2 = $result2->fetch_assoc();
     $stmt2->close();
-    
+
     $total_ordered = $row2 ? floatval($row2['total_ordered']) : 0;
-    
+
     $remaining = $total_stock - $total_ordered;
     return $remaining > 0 ? $remaining : 0;
 }
@@ -145,8 +145,7 @@ $result = $conn->query($sql);
                                         onclick="toggleDropbar(<?= $row_index ?>); return false;">View</a>
                                     <a href="sap_accountsForm.php?id=<?= urlencode($row['sap_id']) ?>"
                                         class="btn btn-edit">Edit</a>
-                                    <a href="sap_accountsManagement.php?delete=<?= urlencode($row['sap_id']) ?>"
-                                        class="btn btn-delete" onclick="return confirm('Delete this order?')">Delete</a>
+
                                 </td>
                             </tr>
 
@@ -171,14 +170,14 @@ $result = $conn->query($sql);
                                             <td class="dropbar-detail">
                                                 <?= htmlspecialchars($row['sap_units']) ?> units<br>
                                                 <small style="color:#666;">
-    <?php
-    $inv_check = checkRemainingInventory($conn, $row['concrete_psi'], $row['curation_days'], $row['concrete_type']);
-    if ($inv_check > 0) {
-        echo "📦 {$inv_check} left";
-    }
-    // Removed the "Out of stock" message completely
-    ?>
-</small>
+                                                    <?php
+                                                    $inv_check = checkRemainingInventory($conn, $row['concrete_psi'], $row['curation_days'], $row['concrete_type']);
+                                                    if ($inv_check > 0) {
+                                                        echo "📦 {$inv_check} left";
+                                                    }
+                                                    // Removed the "Out of stock" message completely
+                                                    ?>
+                                                </small>
                                             </td>
                                         </tr>
                                     </table>
