@@ -12,46 +12,45 @@ if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
 }
 
-// 🔥 FIX UTF-8 ENCODING FOR SPECIAL CHARACTERS (ñ, é, etc.)
+// Fix UTF-8 encoding
 $conn->set_charset("utf8mb4");
 
-// Helper function to format address correctly
+// Helper function to format address
 function formatAddress($full_address)
 {
     if (empty($full_address)) {
         return 'No address';
     }
-
-    // Replace ' || ' with ', '
     $formatted = str_replace(' || ', ', ', $full_address);
-
-    // Remove leading comma or space if any
-    $formatted = ltrim($formatted, ', ');
-
-    return $formatted;
+    return ltrim($formatted, ', ');
 }
 
-// Fetch done orders (newest to oldest)
+// Fetch done orders with calculated total weight (kgs)
 function getDoneOrders($conn)
 {
     $sql = "SELECT 
-                sap_id, 
-                order_date, 
-                delivery_date, 
-                customer_name, 
-                full_address, 
-                concrete_psi, 
-                curation_days, 
-                concrete_type, 
-                sap_units, 
-                sap_concrete_price, 
-                order_status 
-            FROM statement_of_account 
-            WHERE order_status = 'Done' 
-            ORDER BY order_date DESC, sap_id DESC";
+                s.sap_id, 
+                s.order_date, 
+                s.delivery_date, 
+                s.customer_name, 
+                s.full_address, 
+                s.concrete_psi, 
+                s.curation_days, 
+                s.concrete_type, 
+                s.sap_units, 
+                s.sap_concrete_price, 
+                s.order_status,
+                COALESCE(v.vb_total, 0) AS batch_weight,
+                (s.sap_units * COALESCE(v.vb_total, 0)) AS total_weight
+            FROM statement_of_account s
+            LEFT JOIN scd_vb_list v 
+                ON s.concrete_psi = v.vb_concrete_psi 
+                AND s.curation_days = v.vb_curation_days 
+                AND s.concrete_type = v.vb_concrete_type
+            WHERE s.order_status = 'Done' 
+            ORDER BY s.order_date DESC, s.sap_id DESC";
 
     $result = $conn->query($sql);
-
     $orders = [];
     if ($result && $result->num_rows > 0) {
         while ($row = $result->fetch_assoc()) {
@@ -80,9 +79,8 @@ $doneOrders = getDoneOrders($conn);
     <script src="https://unpkg.com/jspdf-autotable@3.8.2/dist/jspdf.plugin.autotable.min.js"></script>
 </head>
 
-<body style="  font-family: " Inter", sans-serif !important; background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0,
-    0, 0.5)), url("/Inventory-Accounts-System-v1/assets/images/SBP.png") no-repeat center center fixed !important;
-    background-size: cover !important;;">
+<body
+    style="font-family: 'Inter', sans-serif !important; background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('/Inventory-Accounts-System-v1/assets/images/SBP.png') no-repeat center center fixed !important; background-size: cover !important;">
 
     <?php showHeader(); ?>
     <div class="main-content">
@@ -109,32 +107,26 @@ $doneOrders = getDoneOrders($conn);
                         <th>PSI</th>
                         <th>Days</th>
                         <th>Type</th>
-                        <th>m³</th>
+                        <th>Total Weight (kgs)</th> <!-- Changed from "m³" -->
                         <th>Delivery</th>
                         <th>Status</th>
                     </tr>
                 </thead>
-
                 <tbody>
                     <?php if (!empty($doneOrders)): ?>
-
                         <?php
                         $currentMonth = "";
-
                         foreach ($doneOrders as $order):
-
                             $orderDate = $order['order_date'] ?? '';
                             $monthLabel = date("F Y", strtotime($orderDate));
                             $formatted_address = formatAddress($order['full_address'] ?? '');
                             ?>
-
                             <?php if ($monthLabel !== $currentMonth): ?>
                                 <?php $currentMonth = $monthLabel; ?>
                                 <tr class="month-separator">
                                     <td colspan="10"><?= strtoupper($monthLabel) ?></td>
                                 </tr>
                             <?php endif; ?>
-
                             <tr>
                                 <td><?= htmlspecialchars($order['sap_id'] ?? 'N/A', ENT_QUOTES, 'UTF-8') ?></td>
                                 <td><?= htmlspecialchars($order['order_date'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
@@ -144,24 +136,21 @@ $doneOrders = getDoneOrders($conn);
                                 <td><?= htmlspecialchars($order['curation_days'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
                                 <td><?= htmlspecialchars(substr($order['concrete_type'] ?? '', 0, 12), ENT_QUOTES, 'UTF-8') ?><?= strlen($order['concrete_type'] ?? '') > 12 ? '...' : '' ?>
                                 </td>
-                                <td><?= htmlspecialchars($order['sap_units'] ?? '0', ENT_QUOTES, 'UTF-8') ?></td>
+                                <td><?= number_format($order['total_weight'], 2) ?> <!-- Display calculated weight -->
                                 <td><?= htmlspecialchars($order['delivery_date'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
                                 <td><?= htmlspecialchars($order['order_status'] ?? '', ENT_QUOTES, 'UTF-8') ?></td>
                             </tr>
-
                         <?php endforeach; ?>
-
                     <?php else: ?>
                         <tr>
                             <td colspan="10" class="no-orders">No finished orders found.</td>
                         </tr>
                     <?php endif; ?>
                 </tbody>
-
             </table>
         </div>
 
-        <!-- Action Buttons: PDF Export & Print -->
+        <!-- Action Buttons -->
         <div class="action-buttons">
             <button onclick="exportPDF()" class="btn-pdf">
                 <i class="fas fa-file-pdf"></i> Export PDF
@@ -175,15 +164,11 @@ $doneOrders = getDoneOrders($conn);
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-
             const input = document.getElementById("searchInput");
 
-            // Real-time search while typing
             input.addEventListener("input", function () {
                 filterOrders();
             });
-
-            // Enter key also works
             input.addEventListener("keyup", function (event) {
                 if (event.key === "Enter") {
                     filterOrders();
@@ -196,15 +181,12 @@ $doneOrders = getDoneOrders($conn);
                 let tr = table.getElementsByTagName("tr");
 
                 for (let i = 1; i < tr.length; i++) {
-
                     if (tr[i].classList.contains("month-separator")) {
                         tr[i].style.display = "";
                         continue;
                     }
-
                     let tds = tr[i].getElementsByTagName("td");
                     let found = false;
-
                     for (let j = 0; j < tds.length; j++) {
                         let txtValue = tds[j].textContent || tds[j].innerText;
                         if (txtValue.toLowerCase().includes(filter)) {
@@ -212,14 +194,12 @@ $doneOrders = getDoneOrders($conn);
                             break;
                         }
                     }
-
                     tr[i].style.display = found ? "" : "none";
                 }
             };
-
         });
 
-        // ✅ FULL exportPDF using jsPDF autoTable (multi-page support)
+        // PDF Export with autoTable (uses updated table content)
         async function exportPDF() {
             const btn = document.querySelector('.btn-pdf');
             const originalBtnHTML = btn.innerHTML;
@@ -230,34 +210,27 @@ $doneOrders = getDoneOrders($conn);
                 const { jsPDF } = window.jspdf;
                 const pdf = new jsPDF('p', 'mm', 'a4');
 
-                // ✅ Header - Company name
                 pdf.setFont("helvetica", "bold");
                 pdf.setFontSize(14);
                 pdf.setTextColor(44, 62, 80);
                 pdf.text("SORCOM READY-MIX CONCRETE", 105, 15, { align: "center" });
 
-                // ✅ Header - Document title
                 pdf.setFont("helvetica", "bold");
                 pdf.setFontSize(12);
                 pdf.setTextColor(46, 53, 144);
                 pdf.text("Transaction Record", 105, 22, { align: "center" });
 
-                // ✅ Header - Generated date
                 pdf.setFont("helvetica", "normal");
                 pdf.setFontSize(8);
                 pdf.setTextColor(100, 100, 100);
                 pdf.text(`Generated: ${new Date().toLocaleString()}`, 105, 28, { align: "center" });
 
-                // ✅ Divider line
                 pdf.setDrawColor(46, 53, 144);
                 pdf.setLineWidth(0.5);
                 pdf.line(15, 31, 195, 31);
 
-                // ✅ Extract table headers
                 const table = document.getElementById('ordersTable');
                 const headers = [...table.querySelectorAll('thead th')].map(th => th.innerText.trim());
-
-                // ✅ Extract table rows (handle month separators)
                 const body = [];
                 const rows = table.querySelectorAll('tbody tr');
 
@@ -281,7 +254,6 @@ $doneOrders = getDoneOrders($conn);
                     }
                 });
 
-                // ✅ autoTable - flows across pages automatically
                 pdf.autoTable({
                     head: [headers],
                     body: body,
@@ -312,7 +284,7 @@ $doneOrders = getDoneOrders($conn);
                         4: { cellWidth: 15 },  // PSI
                         5: { cellWidth: 12 },  // Days
                         6: { cellWidth: 18 },  // Type
-                        7: { cellWidth: 10 },  // m³
+                        7: { cellWidth: 22 },  // Total Weight (kgs) – widened a bit
                         8: { cellWidth: 20 },  // Delivery
                         9: { cellWidth: 14 },  // Status
                     },
@@ -345,7 +317,6 @@ $doneOrders = getDoneOrders($conn);
         }
     </script>
 
-    <!-- Font Awesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
 </body>
