@@ -37,6 +37,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_id'])) {
     }
 }
 
+// Ready-Mix Inventory
+$readymix_query = "SELECT date_added, design_mix_id, curation_days, concrete_type, batch, stocks_in, stocks_out, current_stock_batch, remarks 
+                   FROM sorcom_readymix_inventory 
+                   WHERE (recycled_data = 0 OR recycled_data IS NULL)
+                   AND date_added BETWEEN ? AND ?
+                   ORDER BY date_added ASC";  // Changed DESC to ASC
+
+// Mixture Inventory  
+$mixture_query = "SELECT date_added, cement, fly_ash, sand, `3_4`, `3_8`, g1, admix, water, air, others, total 
+                  FROM sorcom_mixture_inventory 
+                  WHERE (recycled_data = 0 OR recycled_data IS NULL)
+                  AND date_added BETWEEN ? AND ?
+                  ORDER BY date_added ASC";  // Changed DESC to ASC
+
 $conn->close();
 ?>
 
@@ -65,16 +79,6 @@ $conn->close();
 
     <?php include '../../assets/resources.php'; ?>
 
-    <style>
-        body {
-            font-family: "Inter", sans-serif !important;
-            background:
-                linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-                url("/Inventory-Accounts-System-v1/assets/images/SBP.png") no-repeat center center fixed !important;
-            background-size: cover !important;
-        }
-    </style>
-
 </head>
 
 <body>
@@ -84,12 +88,18 @@ $conn->close();
             <h2 class="text-center mb-3" style="font-family: 'Poppins', sans-serif; font-size: 32px; margin-top: auto;">
                 Ready-Mix Inventory
             </h2>
-            <div class="search-container">
-                <a href="ip_form.php" class="btn">+ Add Inventory</a>
-                <a href="mixture_inventory.php" class="btn">Open Mixture Inventory</a>
-                <a href="recycle_inventory.php" class="btn"
-                    style="background: #6c757d; color: white; margin-left: auto;">🗑️
-                    Recycle Bin</a>
+            <div class="button-container">
+                <!-- LEFT SIDE -->
+                <div class="left-buttons">
+                    <a href="ip_form.php" class="btn btn-add">+ Add Inventory</a>
+                    <a href="mixture_inventory.php" class="btn btn-add">Mixture Inventory</a>
+                </div>
+
+                <!-- RIGHT SIDE -->
+                <div class="right-buttons">
+                    <a href="inv_reports.php" class="btn btn-primary">Inventory Summary</a>
+                    <a href="recycle_inventory.php" class="btn btn-recycle">Recycle Bin</a>
+                </div>
             </div>
         </div>
         <?php if ($error_message): ?>

@@ -85,6 +85,29 @@ body {
   align-items: center !important;
   gap: 10px !important;
   flex-wrap: wrap !important;
+  margin-top: 15px !important;
+}
+
+/* Fix button container alignment */
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 15px;
+}
+
+.left-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.right-buttons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
 }
 
 .search-container a {
