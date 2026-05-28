@@ -7,9 +7,9 @@ showHeader();
 
 function checkRemainingInventory($conn, $psi, $days, $type)
 {
-    // Get total stock from inventory
+    // Net stock = total_stock_in - total_stock_out
     $stmt = $conn->prepare("
-        SELECT SUM(stocks_in) - SUM(stocks_out) as total_stock 
+        SELECT SUM(stocks_in) - SUM(stocks_out) as net_stock
         FROM sorcom_readymix_inventory 
         WHERE design_mix_id = ? AND curation_days = ? AND concrete_type = ?
     ");
@@ -19,25 +19,9 @@ function checkRemainingInventory($conn, $psi, $days, $type)
     $row = $result->fetch_assoc();
     $stmt->close();
 
-    $total_stock = $row ? floatval($row['total_stock']) : 0;
+    $net_stock = $row ? floatval($row['net_stock']) : 0;
 
-    // Get total ordered units from ALL orders (not just current)
-    $stmt2 = $conn->prepare("
-        SELECT SUM(sap_units) as total_ordered 
-        FROM statement_of_account 
-        WHERE concrete_psi = ? AND curation_days = ? AND concrete_type = ?
-        AND order_status != 'Done'
-    ");
-    $stmt2->bind_param("sss", $psi, $days, $type);
-    $stmt2->execute();
-    $result2 = $stmt2->get_result();
-    $row2 = $result2->fetch_assoc();
-    $stmt2->close();
-
-    $total_ordered = $row2 ? floatval($row2['total_ordered']) : 0;
-
-    $remaining = $total_stock - $total_ordered;
-    return $remaining > 0 ? $remaining : 0;
+    return $net_stock > 0 ? $net_stock : 0;
 }
 
 // ✅ SAFE SORTING (uses EXISTING columns only)
@@ -166,7 +150,16 @@ $result = $conn->query($sql);
                                             </td>
                                             <td class="dropbar-detail"><?= htmlspecialchars($row['curation_days'] ?? 'N/A') ?>
                                             </td>
-                                            <td class="dropbar-detail"><?= htmlspecialchars($row['concrete_type']) ?></td>
+                                            <td class="dropbar-detail">
+                                                <?php
+                                                $type = $row['concrete_type'];
+                                                if ($type == '0' || empty($type)) {
+                                                    echo 'Not specified';
+                                                } else {
+                                                    echo htmlspecialchars($type);
+                                                }
+                                                ?>
+                                            </td>
                                             <td class="dropbar-detail">
                                                 <?= htmlspecialchars($row['sap_units']) ?> units<br>
                                                 <small style="color:#666;">
@@ -263,20 +256,6 @@ $result = $conn->query($sql);
             document.querySelectorAll('.dropbar-row.show').forEach(row => row.classList.remove('show'));
             if (!isVisible) dropbar.classList.add('show');
         }
-
-        function filterData() {
-            const btn = document.getElementById('filterBtn');
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
-            btn.disabled = true;
-
-            const start_date = document.querySelector('input[name="start_date"]').value;
-            const end_date = document.querySelector('input[name="end_date"]').value;
-            const trend_view = document.querySelector('select[name="trend_view"]').value;
-
-            window.location.href = `?start_date=${start_date}&end_date=${end_date}&trend_view=${trend_view}`;
-        }
-
     </script>
 
 </body>
