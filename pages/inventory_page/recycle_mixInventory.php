@@ -221,7 +221,7 @@ $result = $conn->query($query);
                             <td><?php echo number_format($row['g1'], 2); ?></td>
                             <td><?php echo number_format($row['admix'], 2); ?></td>
                             <td><?php echo number_format($row['water'], 2); ?></td>
-                            <td><?php echo number_format($row['air'], 2); ?></td>
+                            <td><?php echo number_format($row['air'], 2); ?></td>   
                             <td><?php echo number_format($row['total'], 2); ?></td>
                             <td>
                                 <a href="?restore=<?php echo $row['id']; ?>" class="btn-restore"

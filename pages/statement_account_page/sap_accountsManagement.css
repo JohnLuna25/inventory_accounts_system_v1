@@ -89,32 +89,6 @@ body {
   background-color: #0a4a8f !important;
 }
 
-/* Print button - Green */
-#sr-print {
-  background-color: #28a745 !important;
-  border-color: #28a745 !important;
-  color: white !important;
-}
-#sr-print:hover {
-  background-color: #218838 !important;
-  border-color: #1e7e34 !important;
-}
-
-/* PDF button - Red */
-#sr-export {
-  background-color: #dc3545 !important;
-  border-color: #dc3545 !important;
-  color: white !important;
-}
-#sr-export:hover {
-  background-color: #c82333 !important;
-  border-color: #bd2130 !important;
-}
-
-/* Filter button stays blue (already btn-primary) */
-/* Clear Filter button stays gray (btn-secondary) */
-/* Back button stays gray (btn-secondary) */
-
 .table-container {
   background: white !important;
   margin: 15px 10px !important;

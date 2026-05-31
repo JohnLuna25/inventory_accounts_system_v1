@@ -128,8 +128,6 @@ $result = $conn->query($sql);
                                 <td>
                                     <a href="#" class="btn btn-view"
                                         onclick="toggleDropbar(<?= $row_index ?>); return false;">View</a>
-                                    <a href="sap_accountsForm.php?id=<?= urlencode($row['sap_id']) ?>"
-                                        class="btn btn-edit">Edit</a>
                                 </td>
                             </tr>
 
@@ -150,21 +148,14 @@ $result = $conn->query($sql);
                                             </td>
                                             <td class="dropbar-detail"><?= htmlspecialchars($row['curation_days'] ?? 'N/A') ?>
                                             </td>
-                                            <td class="dropbar-detail">
-                                                <?php
-                                                $type = $row['concrete_type'];
-                                                if ($type == '0' || empty($type)) {
-                                                    echo 'Not specified';
-                                                } else {
-                                                    echo htmlspecialchars($type);
-                                                }
-                                                ?>
+                                            <td class="dropbar-detail"><?= htmlspecialchars($row['concrete_type'] ?? 'N/A') ?>
                                             </td>
                                             <td class="dropbar-detail">
                                                 <?= htmlspecialchars($row['sap_units']) ?> units<br>
                                                 <small style="color:#666;">
                                                     <?php
-                                                    $inv_check = checkRemainingInventory($conn, $row['concrete_psi'], $row['curation_days'], $row['concrete_type']);
+                                                    $type_for_stock = (empty($row['concrete_type']) || $row['concrete_type'] === '0') ? 'ORDINARY' : $row['concrete_type'];
+                                                    $inv_check = checkRemainingInventory($conn, $row['concrete_psi'], $row['curation_days'], $type_for_stock);
                                                     if ($inv_check > 0) {
                                                         echo "📦 {$inv_check} left";
                                                     }

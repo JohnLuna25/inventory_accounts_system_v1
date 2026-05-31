@@ -204,7 +204,6 @@ if (isset($_SESSION['last_resend_time'])) {
     <meta charset="UTF-8">
     <title>Forgot Password - SORCOM</title>
     <link rel="stylesheet" href="/Inventory-Accounts-System-v1/assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
         body {
@@ -301,33 +300,6 @@ if (isset($_SESSION['last_resend_time'])) {
             background-color: #5a6268;
         }
 
-        .password-wrapper {
-            position: relative;
-            display: block;
-            width: 100%;
-            margin-bottom: 10px;
-        }
-
-        .password-wrapper input {
-            width: 100%;
-            padding: 12px;
-            padding-right: 40px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-            box-sizing: border-box;
-        }
-
-        .toggle-password {
-            position: absolute;
-            right: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: #808080;
-            font-size: 18px;
-            z-index: 10;
-        }
-
         /* Make asterisk in placeholder red */
         input[placeholder*="*"]::-webkit-input-placeholder {
             color: red;
@@ -364,16 +336,10 @@ if (isset($_SESSION['last_resend_time'])) {
             <?php if ($error): ?>
                 <div class="error"><?= htmlspecialchars($error) ?></div><?php endif; ?>
             <form method="POST" autocomplete="off">
-                <div class="password-wrapper">
-                    <input type="password" name="new_password" id="new_password" placeholder="New Password *"
-                        autocomplete="new-password" required>
-                    <i class="toggle-password fa-regular fa-eye-slash" id="toggleNewPassword"></i>
-                </div>
-                <div class="password-wrapper">
-                    <input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm Password *"
-                        autocomplete="new-password" required>
-                    <i class="toggle-password fa-regular fa-eye-slash" id="toggleConfirmPassword"></i>
-                </div>
+                <input type="password" name="new_password" placeholder="New Password *" autocomplete="new-password"
+                    required>
+                <input type="password" name="confirm_password" placeholder="Confirm Password *" autocomplete="new-password"
+                    required>
                 <button type="submit" name="reset_password">Reset Password</button>
             </form>
             <a href="forgot_pass.php" class="back-link">← Cancel</a>
@@ -439,53 +405,6 @@ if (isset($_SESSION['last_resend_time'])) {
             }
         });
     </script>
-
-    <script>
-        // New Password toggle
-        const toggleNewPassword = document.getElementById('toggleNewPassword');
-        const newPasswordInput = document.getElementById('new_password');
-
-        toggleNewPassword.addEventListener('mousedown', function () {
-            newPasswordInput.setAttribute('type', 'text');
-            this.classList.remove('fa-eye-slash');
-            this.classList.add('fa-eye');
-        });
-
-        toggleNewPassword.addEventListener('mouseup', function () {
-            newPasswordInput.setAttribute('type', 'password');
-            this.classList.remove('fa-eye');
-            this.classList.add('fa-eye-slash');
-        });
-
-        toggleNewPassword.addEventListener('mouseleave', function () {
-            newPasswordInput.setAttribute('type', 'password');
-            this.classList.remove('fa-eye');
-            this.classList.add('fa-eye-slash');
-        });
-
-        // Confirm Password toggle
-        const toggleConfirmPassword = document.getElementById('toggleConfirmPassword');
-        const confirmPasswordInput = document.getElementById('confirm_password');
-
-        toggleConfirmPassword.addEventListener('mousedown', function () {
-            confirmPasswordInput.setAttribute('type', 'text');
-            this.classList.remove('fa-eye-slash');
-            this.classList.add('fa-eye');
-        });
-
-        toggleConfirmPassword.addEventListener('mouseup', function () {
-            confirmPasswordInput.setAttribute('type', 'password');
-            this.classList.remove('fa-eye');
-            this.classList.add('fa-eye-slash');
-        });
-
-        toggleConfirmPassword.addEventListener('mouseleave', function () {
-            confirmPasswordInput.setAttribute('type', 'password');
-            this.classList.remove('fa-eye');
-            this.classList.add('fa-eye-slash');
-        });
-    </script>
-
 </body>
 
 </html>

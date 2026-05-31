@@ -35,9 +35,8 @@ $full_address = "";
 $concrete_psi = "";
 $curation_days = "";
 $concrete_type = "";
-$order_status = "";
+$order_status = "Pending";
 $units = 0;
-$sap_id = "";
 $sap_concrete_price = "";
 $error_message = "";
 
@@ -80,61 +79,9 @@ if ($result = $conn->query($sql)) {
 $psiOptions = array_keys($concreteData);
 sort($psiOptions);
 
-// --- Load existing data if editing ---
-if (isset($_GET['id'])) {
-    $id = $_GET['id'];
-    $stmt = $conn->prepare("SELECT sap_id, order_date, delivery_date, customer_name, full_address, 
-                                   concrete_psi, curation_days, concrete_type, sap_units, sap_concrete_price, order_status 
-                            FROM statement_of_account WHERE sap_id=?");
-    $stmt->bind_param("s", $id);
-    $stmt->execute();
-    $stmt->bind_result(
-        $sap_id,
-        $order_date,
-        $delivery_date,
-        $customer_name,
-        $full_address,
-        $concrete_psi,
-        $curation_days,
-        $concrete_type,
-        $sap_units,
-        $sap_concrete_price,
-        $order_status
-    );
-    $stmt->fetch();
-    $stmt->close();
-
-    if ($customer_name) {
-        $name_parts = preg_split('/\s+/', trim($customer_name), 4);
-        $last_name = $name_parts[0] ?? '';
-        $first_name = $name_parts[1] ?? '';
-        $middle_name = $name_parts[2] ?? '';
-        $suffix = $name_parts[3] ?? '';
-    }
-
-    if ($full_address) {
-        $address_parts = preg_split('/\s*\|\|\s*/', trim($full_address));
-
-        if (!empty($address_parts[0])) {
-            $house_street_parts = preg_split('/\s*,\s*/', trim($address_parts[0]), 2);
-            $house_block = trim($house_street_parts[0] ?? '');
-            $street = !empty($house_street_parts[1]) ? trim($house_street_parts[1]) : trim($address_parts[0]);
-        }
-
-        $barangay = trim($address_parts[1] ?? '');
-        $city = trim($address_parts[2] ?? '');
-        $province = trim($address_parts[3] ?? '');
-        $region = trim($address_parts[4] ?? '');
-    }
-} else {
-    $order_date = date('Y-m-d');
-}
-
-// ========== CORRECTED INVENTORY UPDATE FUNCTION ==========
+// ========== INVENTORY UPDATE FUNCTION ==========
 function checkAndUpdateInventory($conn, $concrete_psi, $curation_days, $concrete_type, $units)
 {
-    // $units can be positive (deduct) or negative (add back)
-
     $stmt = $conn->prepare("
         SELECT id, stocks_in, stocks_out, batch, current_stock_batch 
         FROM sorcom_readymix_inventory 
@@ -153,7 +100,6 @@ function checkAndUpdateInventory($conn, $concrete_psi, $curation_days, $concrete
 
     $current_stock = intval($inventory['stocks_in']) - intval($inventory['stocks_out']);
 
-    // Only check availability when deducting (positive units)
     if ($units > 0 && $units > $current_stock) {
         return ['success' => false, 'message' => "Only {$current_stock} units available"];
     }
@@ -165,12 +111,12 @@ function checkAndUpdateInventory($conn, $concrete_psi, $curation_days, $concrete
 
     $update_stmt = $conn->prepare("
         UPDATE sorcom_readymix_inventory SET
-            stocks_in = stocks_in - ?,
-            stocks_out = stocks_out + ?,
+            stocks_in           = stocks_in - ?,
+            stocks_out          = stocks_out + ?,
             current_stock_batch = ?
         WHERE id = ?
     ");
-    $update_stmt->bind_param("iids", $units, $units, $new_current_stock, $inventory['id']);
+    $update_stmt->bind_param("iidi", $units, $units, $new_current_stock, $inventory['id']);
     $update_success = $update_stmt->execute();
     $update_stmt->close();
 
@@ -180,7 +126,7 @@ function checkAndUpdateInventory($conn, $concrete_psi, $curation_days, $concrete
     return ['success' => false, 'message' => 'Inventory update failed'];
 }
 
-// ========== POST HANDLER ==========
+// ========== POST HANDLER (NEW ORDER ONLY) ==========
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $order_date = $_POST['order_date'] ?? '';
     $delivery_date = $_POST['delivery_date'] ?? '';
@@ -188,6 +134,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $first_name = $_POST['first_name'] ?? '';
     $middle_name = $_POST['middle_name'] ?? '';
     $suffix = $_POST['suffix'] ?? '';
+
     $customer_name = trim("{$last_name} {$first_name} {$middle_name} {$suffix}");
     $customer_name = preg_replace('/\s+/', ' ', $customer_name);
 
@@ -203,115 +150,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $concrete_psi = $_POST['concrete_psi'] ?? '';
     $curation_days = $_POST['curation_days'] ?? '';
     $concrete_type = $_POST['concrete_type'] ?? '';
-
-    if (empty($concrete_type) || $concrete_type === '0') {
-        $error_message = "Please select a valid Concrete Type";
-    }
-
     $sap_units = intval($_POST['sap_units'] ?? 0);
     $sap_concrete_price = floatval($_POST['sap_concrete_price'] ?? 0);
-    $order_status = $_POST['order_status'] ?? 'pending';
+    $order_status = $_POST['order_status'] ?? 'Pending';
 
-    if ($sap_units > 0 && !empty($concrete_psi) && !empty($curation_days) && !empty($concrete_type)) {
+    // --- Validate concrete type first; stop here if invalid ---
+    if (empty($concrete_type) || $concrete_type === '0') {
+        $error_message = "❌ Please select a valid Concrete Type";
+    } elseif ($sap_units <= 0 || empty($concrete_psi) || empty($curation_days)) {
+        $error_message = "❌ Please select concrete mix and enter units";
+    } else {
+        // --- All inputs valid: check & update inventory ---
+        $inventory_result = checkAndUpdateInventory($conn, $concrete_psi, $curation_days, $concrete_type, $sap_units);
 
-        // Handle EDIT mode differently
-        if (!empty($_POST['edit_id'])) {
-            $edit_id = $_POST['edit_id'];
+        if (!$inventory_result['success']) {
+            $error_message = "❌ INVENTORY ERROR: " . $inventory_result['message'];
+        } else {
+            $sap_id = generateUniqueSapId($conn);
 
-            // Get original units from database
-            $stmt = $conn->prepare("SELECT sap_units FROM statement_of_account WHERE sap_id = ?");
-            $stmt->bind_param("s", $edit_id);
-            $stmt->execute();
-            $result = $stmt->get_result();
-            $original = $result->fetch_assoc();
-            $stmt->close();
-
-            $original_units = $original['sap_units'] ?? 0;
-            $units_difference = $sap_units - $original_units;
-
-            // Only update inventory if units changed
-            if ($units_difference != 0) {
-                $inventory_result = checkAndUpdateInventory($conn, $concrete_psi, $curation_days, $concrete_type, $units_difference);
-                if (!$inventory_result['success']) {
-                    $error_message = "❌ INVENTORY ERROR: " . $inventory_result['message'];
-                }
-            } else {
-                $inventory_result = ['success' => true];
-            }
-
-            // If inventory check passed, update the order
-            if (empty($error_message)) {
-                $stmt = $conn->prepare("UPDATE statement_of_account 
-                    SET order_date=?, delivery_date=?, customer_name=?, full_address=?, 
-                        concrete_psi=?, curation_days=?, concrete_type=?, sap_units=?, 
-                        sap_concrete_price=?, order_status=? 
-                    WHERE sap_id=?");
-                $stmt->bind_param(
-                    "sssssssdsss",
-                    $order_date,
-                    $delivery_date,
-                    $customer_name,
-                    $full_address,
-                    $concrete_psi,
-                    $curation_days,
-                    $concrete_type,
-                    $sap_units,
-                    $sap_concrete_price,
-                    $order_status,
-                    $edit_id
-                );
-
-                if ($stmt->execute()) {
-                    $stmt->close();
-                    header("Location: sap_accountsManagement.php?success=1&msg=Order updated successfully");
-                    exit;
-                } else {
-                    $error_message = "❌ Order update failed: " . $stmt->error;
-                    $stmt->close();
-                }
-            }
-        }
-        // NEW ORDER mode
-        else {
-            $inventory_result = checkAndUpdateInventory($conn, $concrete_psi, $curation_days, $concrete_type, $sap_units);
-
-            if (!$inventory_result['success']) {
-                $error_message = "❌ INVENTORY ERROR: " . $inventory_result['message'];
-            } else {
-                $sap_id = generateUniqueSapId($conn);
-                $stmt = $conn->prepare("INSERT INTO statement_of_account 
+            $stmt = $conn->prepare("
+                INSERT INTO statement_of_account 
                     (sap_id, order_date, delivery_date, customer_name, full_address, 
                      concrete_psi, curation_days, concrete_type, sap_units, sap_concrete_price, order_status) 
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-                $stmt->bind_param(
-                    "sssssssdsss",
-                    $sap_id,
-                    $order_date,
-                    $delivery_date,
-                    $customer_name,
-                    $full_address,
-                    $concrete_psi,
-                    $curation_days,
-                    $concrete_type,
-                    $sap_units,
-                    $sap_concrete_price,
-                    $order_status
-                );
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            ");
 
-                if ($stmt->execute()) {
-                    $stmt->close();
-                    $success_msg = "✅ Order saved! Inventory deducted: " . $inventory_result['deducted_units'] .
-                        " units (" . number_format($inventory_result['deducted_kgs'], 1) . " kgs)";
-                    header("Location: sap_accountsManagement.php?success=1&msg=" . urlencode($success_msg));
-                    exit;
-                } else {
-                    $error_message = "❌ Order failed: " . $stmt->error;
-                    $stmt->close();
-                }
+            // FIX: correct type string
+            // s  s           s              s               s             s             s              s              i          d                   s
+            // id order_date  delivery_date  customer_name   full_address  concrete_psi  curation_days  concrete_type  sap_units  sap_concrete_price  order_status
+            $stmt->bind_param(
+                "ssssssssids",
+                $sap_id,
+                $order_date,
+                $delivery_date,
+                $customer_name,
+                $full_address,
+                $concrete_psi,
+                $curation_days,
+                $concrete_type,
+                $sap_units,
+                $sap_concrete_price,
+                $order_status
+            );
+
+            if ($stmt->execute()) {
+                $stmt->close();
+                $success_msg = "✅ Order saved! Inventory deducted: "
+                    . $inventory_result['deducted_units']
+                    . " units (" . number_format($inventory_result['deducted_kgs'], 1) . " kgs)";
+                header("Location: sap_accountsManagement.php?success=1&msg=" . urlencode($success_msg));
+                exit;
+            } else {
+                $error_message = "❌ Order failed: " . $stmt->error;
+                $stmt->close();
             }
         }
-    } else {
-        $error_message = "❌ Please select concrete mix and enter units";
     }
 }
 ?>
@@ -339,12 +232,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php endif; ?>
 
             <form method="POST" id="concreteForm">
-                <?php if (isset($_GET['id'])): ?>
-                    <div class="form-group readonly-field">
-                        <label>Order ID</label>
-                        <input type="text" value="<?= htmlspecialchars($sap_id ?? '') ?>" readonly>
-                    </div>
-                <?php endif; ?>
 
                 <!-- SECTION 1: DATES -->
                 <div class="form-section">
@@ -419,7 +306,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <label>Region <span style="color: #f44336;">*</span></label>
                             <select name="region" id="region" required class="address-input">
                                 <option value="">-- Select Region --</option>
-                                <option value="I" <?= $region === 'I' ? 'selected' : '' ?>>I - Ilocos Region (CAR)</option>
+                                <option value="I" <?= $region === 'I' ? 'selected' : '' ?>>I - Ilocos Region</option>
                                 <option value="II" <?= $region === 'II' ? 'selected' : '' ?>>II - Cagayan Valley</option>
                                 <option value="III" <?= $region === 'III' ? 'selected' : '' ?>>III - Central Luzon</option>
                                 <option value="IVA" <?= $region === 'IVA' ? 'selected' : '' ?>>IVA - Calabarzon</option>
@@ -482,24 +369,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <div class="form-group">
                             <label>Units <span style="color: #f44336;">*</span></label>
                             <input type="number" id="sap_units" name="sap_units" step="1" min="0" required
-                                placeholder="0" value="<?= intval($sap_units) ?>"
+                                placeholder="0" value="<?= intval($units) ?>"
                                 oninput="this.value = Math.floor(this.value)">
                         </div>
                         <div class="form-group">
                             <label>Concrete Price (₱)</label>
                             <input type="number" id="sap_concrete_price" name="sap_concrete_price" step="0.01"
-                                placeholder="0.00" value="<?= htmlspecialchars($sap_concrete_price ?? '') ?>">
-                        </div>
-                        <div class="form-group">
-                            <label>Order Status <span style="color: #f44336;">*</span></label>
-                            <select id="order_status" name="order_status" required>
-                                <option value="">-- Select Status --</option>
-                                <?php foreach ($statusLabels as $key => $label): ?>
-                                    <option value="<?= $key ?>" <?= $order_status === $key ? 'selected' : '' ?>>
-                                        <?= htmlspecialchars($label) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
+                                placeholder="0.00" value="<?= htmlspecialchars($sap_concrete_price) ?>">
                         </div>
                     </div>
 
@@ -510,14 +386,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
                 </div>
 
-                <?php if (!empty($_GET['id'])): ?>
-                    <input type="hidden" name="edit_id" value="<?= htmlspecialchars($_GET['id']) ?>">
-                <?php endif; ?>
-
                 <div class="form-buttons">
                     <button type="submit" class="btn-submit">Save Order</button>
                     <a href="sap_accountsManagement.php" class="btn-cancel">Cancel</a>
                 </div>
+
             </form>
         </div>
     </div>
@@ -553,7 +426,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                     concreteData[selectedPsi].types.forEach(function (type) {
                         const option = document.createElement('option');
-                        option.value = type;
+                        option.value = type; // "ORDINARY", "PUMPCRETE DESIGN", "TREMIE"
                         option.textContent = type;
                         typeSelect.appendChild(option);
                     });
@@ -579,26 +452,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         .then(data => {
                             if (data.available) {
                                 infoDiv.innerHTML = `
-                                <div style="color:#28a745; font-weight:bold; margin-bottom:6px;">
-                                    ✅ ${data.stocks_in} units available
-                                </div>
-                                <div style="font-size:12px; color:#666; margin-bottom:2px;">
-                                    📏 ${data.total_kgs} total
-                                </div>
-                                <div style="font-size:12px; color:#666;">
-                                    ⚖️ ${data.batch_size.match(/[\d,]+\.?\d*/)[0]} kgs/m³
-                                </div>
-                            `;
+                                    <div style="color:#28a745; font-weight:bold; margin-bottom:6px;">
+                                        ✅ ${data.stocks_in} units available
+                                    </div>
+                                    <div style="font-size:12px; color:#666; margin-bottom:2px;">
+                                        📏 ${data.total_kgs} total
+                                    </div>
+                                    <div style="font-size:12px; color:#666;">
+                                        ⚖️ ${data.batch_size.match(/[\d,]+\.?\d*/)[0]} kgs/m³
+                                    </div>
+                                `;
                                 statusDiv.style.background = '#d4edda';
                                 statusDiv.style.borderLeft = '4px solid #28a745';
                                 unitsInput.max = data.stocks_in;
                                 unitsInput.placeholder = `Max: ${data.stocks_in}`;
                             } else {
                                 infoDiv.innerHTML = `
-                            <div style="color:#dc3545; font-weight:bold;">
-                                ❌ No stock available
-                            </div>
-                        `;
+                                    <div style="color:#dc3545; font-weight:bold;">
+                                        ❌ No stock available
+                                    </div>
+                                `;
                                 statusDiv.style.background = '#f8d7da';
                                 statusDiv.style.borderLeft = '4px solid #dc3545';
                                 unitsInput.max = 0;
@@ -624,7 +497,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             form.addEventListener('submit', function (e) {
                 const units = parseInt(unitsInput.value);
-                const maxUnits = unitsInput.max || 0;
+                const maxUnits = parseInt(unitsInput.max) || 0;
 
                 if (units > maxUnits) {
                     e.preventDefault();
@@ -637,45 +510,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     this.reportValidity();
                 }
             });
-
-            <?php if (!empty($concrete_psi)): ?>
-                setTimeout(() => {
-                    psiSelect.value = '<?= addslashes($concrete_psi) ?>';
-                    psiSelect.dispatchEvent(new Event('change'));
-
-                    setTimeout(() => {
-                        const targetDays = '<?= addslashes($curation_days) ?>';
-                        const targetType = '<?= addslashes($concrete_type) ?>';
-
-                        for (let opt of daysSelect.options) {
-                            if (opt.value === targetDays) {
-                                opt.selected = true;
-                                break;
-                            }
-                        }
-
-                        let typeSet = false;
-                        for (let opt of typeSelect.options) {
-                            if (opt.value === targetType && opt.value !== '0') {
-                                opt.selected = true;
-                                typeSet = true;
-                                break;
-                            }
-                        }
-
-                        if (!typeSet || targetType === '0' || targetType === '' || targetType === null) {
-                            for (let opt of typeSelect.options) {
-                                if (opt.value && opt.value !== '' && opt.value !== '0') {
-                                    opt.selected = true;
-                                    break;
-                                }
-                            }
-                        }
-
-                        checkInventory();
-                    }, 1200);
-                }, 200);
-            <?php endif; ?>
 
             const regionSelect = document.getElementById('region');
             if (regionSelect && '<?= $region ?>' !== '') {

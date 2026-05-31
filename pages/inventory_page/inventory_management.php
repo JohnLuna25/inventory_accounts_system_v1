@@ -37,20 +37,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['update_id'])) {
     }
 }
 
-// Ready-Mix Inventory
-$readymix_query = "SELECT date_added, design_mix_id, curation_days, concrete_type, batch, stocks_in, stocks_out, current_stock_batch, remarks 
-                   FROM sorcom_readymix_inventory 
-                   WHERE (recycled_data = 0 OR recycled_data IS NULL)
-                   AND date_added BETWEEN ? AND ?
-                   ORDER BY date_added ASC";  // Changed DESC to ASC
-
-// Mixture Inventory  
-$mixture_query = "SELECT date_added, cement, fly_ash, sand, `3_4`, `3_8`, g1, admix, water, air, others, total 
-                  FROM sorcom_mixture_inventory 
-                  WHERE (recycled_data = 0 OR recycled_data IS NULL)
-                  AND date_added BETWEEN ? AND ?
-                  ORDER BY date_added ASC";  // Changed DESC to ASC
-
 $conn->close();
 ?>
 

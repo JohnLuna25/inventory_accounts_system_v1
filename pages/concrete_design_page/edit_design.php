@@ -282,7 +282,7 @@ $conn->close();
 <body>
 
     <div class="main-content" style="padding-top: 140px;">
-        <div class="form-container" style="margin-top: 40px;">
+        <div class="form-container">
             <h2>Edit Concrete Design</h2>
 
             <form method="POST">
