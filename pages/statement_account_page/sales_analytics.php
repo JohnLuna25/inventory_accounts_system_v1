@@ -3,23 +3,45 @@ session_start();
 require_once __DIR__ . '/../../FunctionAndDB/db_connect.php';
 require_once __DIR__ . '/../../FunctionAndDB/Web_Functions.php';
 
-// Plant Manager only access
 if (!isset($_SESSION['user_type']) || $_SESSION['user_type'] !== 'master') {
     header("Location: /Inventory-Accounts-System-v1/login_page/web_login.php");
     exit();
 }
 
-// Date filters: default to current month (1st to today)
-$start_date = isset($_GET['start_date']) ? $_GET['start_date'] : date('Y-m-01');
-$end_date = isset($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-d');
-$trend_view = isset($_GET['trend_view']) ? $_GET['trend_view'] : 'monthly';
+$trend_view = isset($_GET['trend_view']) ? $_GET['trend_view'] : 'daily';
 
 // Clear filter
 if (isset($_GET['clear'])) {
     $start_date = date('Y-m-01');
     $end_date = date('Y-m-d');
-    header("Location: sales_analytics.php?start_date=" . $start_date . "&end_date=" . $end_date);
+    header("Location: sales_analytics.php?start_date=$start_date&end_date=$end_date&trend_view=daily");
     exit();
+}
+
+// --------------------------------------------------------------
+// Build $start_date and $end_date based on trend_view
+// --------------------------------------------------------------
+if ($trend_view === 'daily') {
+    $start_date = isset($_GET['start_date']) ? $_GET['start_date'] : date('Y-m-01');
+    $end_date = isset($_GET['end_date']) ? $_GET['end_date'] : date('Y-m-d');
+
+} elseif ($trend_view === 'monthly') {
+    $month = isset($_GET['month_of']) ? (int) $_GET['month_of'] : (int) date('n');
+    $year = isset($_GET['from_year_monthly']) ? (int) $_GET['from_year_monthly'] : (int) date('Y');
+    $start_date = date('Y-m-01', mktime(0, 0, 0, $month, 1, $year));
+    $end_date = date('Y-m-t', mktime(0, 0, 0, $month, 1, $year)); // last day of that month
+
+} elseif ($trend_view === 'annual') {
+    $from_year = isset($_GET['from_year']) ? (int) $_GET['from_year'] : (int) date('Y');
+    $to_year = isset($_GET['to_year']) ? (int) $_GET['to_year'] : (int) date('Y');
+
+    // Safety: never allow to_year < from_year
+    if ($to_year < $from_year) {
+        $to_year = $from_year;
+    }
+
+    $start_date = "$from_year-01-01";
+    $end_date = "$to_year-12-31";
 }
 
 // --------------------------------------------------------------
@@ -57,7 +79,8 @@ $top_sql = "SELECT s.customer_name,
                 ON s.concrete_psi = v.vb_concrete_psi 
                 AND s.curation_days = v.vb_curation_days 
                 AND s.concrete_type = v.vb_concrete_type
-            WHERE s.order_status = 'Done' AND s.order_date BETWEEN ? AND ?
+            WHERE s.order_status = 'Done'
+              AND s.order_date BETWEEN ? AND ?
             GROUP BY s.customer_name
             ORDER BY total_weight DESC
             LIMIT 10";
@@ -71,12 +94,17 @@ while ($row = $top_result->fetch_assoc()) {
 }
 
 // --------------------------------------------------------------
-// 3. Sales trend (monthly or annual)
+// 3. Sales trend (daily, monthly, or annual)
 // --------------------------------------------------------------
-if ($trend_view == 'monthly') {
-    $trend_sql = "SELECT DATE_FORMAT(s.order_date, '%M %Y') as period,
+if ($trend_view === 'daily') {
+    $trend_sql = "SELECT DATE_FORMAT(s.order_date, '%M %d, %Y') as period,
                          s.customer_name,
+                         s.concrete_psi,
+                         s.curation_days,
+                         s.concrete_type,
                          SUM(s.sap_units * COALESCE(v.vb_total, 0)) as total_weight,
+                         SUM(s.sap_units) as total_units,
+                         SUM(s.sap_concrete_price) as total_sales,
                          COUNT(*) as order_count
                   FROM statement_of_account s
                   LEFT JOIN scd_vb_list v 
@@ -85,12 +113,39 @@ if ($trend_view == 'monthly') {
                       AND s.concrete_type = v.vb_concrete_type
                   WHERE s.order_status = 'Done'
                     AND s.order_date BETWEEN ? AND ?
-                  GROUP BY period, s.customer_name
-                  ORDER BY s.order_date DESC, total_weight DESC";
+                  GROUP BY s.order_date, s.customer_name, s.concrete_psi, s.curation_days, s.concrete_type
+                  ORDER BY s.order_date ASC, total_weight DESC";
+
+} elseif ($trend_view === 'monthly') {
+    $trend_sql = "SELECT DATE_FORMAT(s.order_date, '%d, %Y') as period,
+                         s.customer_name,
+                         s.concrete_psi,
+                         s.curation_days,
+                         s.concrete_type,
+                         SUM(s.sap_units * COALESCE(v.vb_total, 0)) as total_weight,
+                         SUM(s.sap_units) as total_units,
+                         SUM(s.sap_concrete_price) as total_sales,
+                         COUNT(*) as order_count
+                  FROM statement_of_account s
+                  LEFT JOIN scd_vb_list v 
+                      ON s.concrete_psi = v.vb_concrete_psi 
+                      AND s.curation_days = v.vb_curation_days 
+                      AND s.concrete_type = v.vb_concrete_type
+                  WHERE s.order_status = 'Done'
+                    AND s.order_date BETWEEN ? AND ?
+                  GROUP BY DATE_FORMAT(s.order_date, '%Y-%m'), s.customer_name, s.concrete_psi, s.curation_days, s.concrete_type
+                  ORDER BY s.order_date ASC, total_weight DESC";
+
 } else {
+    // annual
     $trend_sql = "SELECT DATE_FORMAT(s.order_date, '%Y') as period,
                          s.customer_name,
+                         s.concrete_psi,
+                         s.curation_days,
+                         s.concrete_type,
                          SUM(s.sap_units * COALESCE(v.vb_total, 0)) as total_weight,
+                         SUM(s.sap_units) as total_units,
+                         SUM(s.sap_concrete_price) as total_sales,
                          COUNT(*) as order_count
                   FROM statement_of_account s
                   LEFT JOIN scd_vb_list v 
@@ -99,8 +154,8 @@ if ($trend_view == 'monthly') {
                       AND s.concrete_type = v.vb_concrete_type
                   WHERE s.order_status = 'Done'
                     AND s.order_date BETWEEN ? AND ?
-                  GROUP BY period, s.customer_name
-                  ORDER BY s.order_date DESC, total_weight DESC";
+                  GROUP BY DATE_FORMAT(s.order_date, '%Y'), s.customer_name, s.concrete_psi, s.curation_days, s.concrete_type
+                  ORDER BY s.order_date ASC, total_weight DESC";
 }
 $stmt_trend = $conn->prepare($trend_sql);
 $stmt_trend->bind_param("ss", $start_date, $end_date);
@@ -109,6 +164,38 @@ $trend_result = $stmt_trend->get_result();
 $trend_data = [];
 while ($row = $trend_result->fetch_assoc()) {
     $trend_data[] = $row;
+}
+
+function getConcreteTypeBadge($type)
+{
+    $type_upper = strtoupper(trim($type));
+    if (str_contains($type_upper, 'ORDINARY')) {
+        $color = '#ffffff';
+        $bg = '#ebc400';
+        $border = '#000000';
+    } elseif (str_contains($type_upper, 'PUMPCRETE')) {
+        $color = '#ffffff';
+        $bg = '#00ad59';
+        $border = '#000000';
+    } elseif (str_contains($type_upper, 'TREMIE')) {
+        $color = '#ffffff';
+        $bg = '#c62828';
+        $border = '#8e0000';
+    } else {
+        $color = '#555';
+        $bg = '#f0f0f0';
+        $border = '#000000';
+    }
+    return "<span style='
+        background-color: {$bg};
+        color: {$color};
+        border: 1px solid {$border};
+        padding: 2px 8px;
+        border-radius: 12px;
+        font-size: 13px;
+        font-weight: 500;
+        white-space: nowrap;
+    '>" . htmlspecialchars($type) . "</span>";
 }
 
 // --------------------------------------------------------------
@@ -435,16 +522,39 @@ while ($row = $never_result->fetch_assoc()) {
             <!-- ROW 1 -->
             <div class="row align-items-center g-3 mb-3">
                 <div class="col-md-3">
-                    <a href="sap_accountsManagement.php" class="btn btn-secondary btn-sm w-100 fw-bold">
+                    <a href="#" onclick="history.back()" class="btn btn-secondary btn-sm w-100 fw-bold">
                         <i class="fas fa-arrow-left me-1"></i> Back
                     </a>
                 </div>
                 <div class="col-md-3">
                     <div class="d-flex align-items-center">
-                        <label class="form-label small fw-bold mb-0 me-2 text-primary"
+                        <label class="form-label small fw-bold mb-0 me-2 text-primary" id="label-from"
                             style="min-width: 85px;">From:</label>
+
+                        <!-- Daily -->
                         <input type="date" name="start_date" id="start_date" class="form-control form-control-sm"
                             value="<?php echo $start_date; ?>">
+
+                        <!-- Monthly: Month picker -->
+                        <select name="month_of" id="month_of" class="form-select form-select-sm d-none">
+                            <?php
+                            $selected_month = isset($_GET['month_of']) ? (int) $_GET['month_of'] : (int) date('n');
+                            for ($m = 1; $m <= 12; $m++):
+                                ?>
+                                <option value="<?= $m ?>" <?= $selected_month === $m ? 'selected' : '' ?>>
+                                    <?= date('F', mktime(0, 0, 0, $m, 1)) ?>
+                                </option>
+                            <?php endfor; ?>
+                        </select>
+
+                        <!-- Annual: From Year -->
+                        <select name="from_year" id="from_year" class="form-select form-select-sm d-none">
+                            <?php for ($y = date('Y'); $y >= 2000; $y--): ?>
+                                <option value="<?= $y ?>" <?= (isset($_GET['from_year']) && $_GET['from_year'] == $y) ? 'selected' : ($y == date('Y') ? 'selected' : '') ?>>
+                                    <?= $y ?>
+                                </option>
+                            <?php endfor; ?>
+                        </select>
                     </div>
                 </div>
                 <div class="col-md-3">
@@ -465,7 +575,9 @@ while ($row = $never_result->fetch_assoc()) {
                     <div class="d-flex align-items-center">
                         <label class="form-label small fw-bold mb-0 me-2 text-primary" style="min-width: 85px;">Trend
                             view:</label>
-                        <select name="trend_view" id="trend_view" class="form-select form-select-sm">
+                        <select name="trend_view" id="trend_view" class="form-select form-select-sm"
+                            onchange="updateFields()">
+                            <option value="daily" <?php echo $trend_view == 'daily' ? 'selected' : ''; ?>>Daily</option>
                             <option value="monthly" <?php echo $trend_view == 'monthly' ? 'selected' : ''; ?>>Monthly
                             </option>
                             <option value="annual" <?php echo $trend_view == 'annual' ? 'selected' : ''; ?>>Annual
@@ -475,10 +587,32 @@ while ($row = $never_result->fetch_assoc()) {
                 </div>
                 <div class="col-md-3">
                     <div class="d-flex align-items-center">
-                        <label class="form-label small fw-bold mb-0 me-2 text-primary"
+                        <label class="form-label small fw-bold mb-0 me-2 text-primary" id="label-to"
                             style="min-width: 85px;">To:</label>
+
+                        <!-- Daily -->
                         <input type="date" name="end_date" id="end_date" class="form-control form-control-sm"
                             value="<?php echo $end_date; ?>">
+
+                        <!-- Monthly: From Year -->
+                        <select name="from_year_monthly" id="from_year_monthly"
+                            class="form-select form-select-sm d-none">
+                            <?php for ($y = date('Y'); $y >= 2000; $y--): ?>
+                                <option value="<?= $y ?>" <?= (isset($_GET['from_year_monthly']) && $_GET['from_year_monthly'] == $y) ? 'selected' : ($y == date('Y') ? 'selected' : '') ?>>
+                                    <?= $y ?>
+                                </option>
+                            <?php endfor; ?>
+                        </select>
+
+                        <!-- Annual: To Year -->
+                        <select name="to_year" id="to_year" class="form-select form-select-sm d-none"
+                            onchange="validateYearRange()">
+                            <?php for ($y = date('Y'); $y >= 2000; $y--): ?>
+                                <option value="<?= $y ?>" <?= (isset($_GET['to_year']) && $_GET['to_year'] == $y) ? 'selected' : ($y == date('Y') ? 'selected' : '') ?>>
+                                    <?= $y ?>
+                                </option>
+                            <?php endfor; ?>
+                        </select>
                     </div>
                 </div>
                 <div class="col-md-3">
@@ -502,7 +636,7 @@ while ($row = $never_result->fetch_assoc()) {
         <table class="analytics-table">
             <thead>
                 <tr>
-                    <th>Customer Name</th>
+                    <th>Customer Name (A-Z)</th>
                     <th>Total Weight (kgs/m³)</th>
                     <th>Number of Orders</th>
                 </tr>
@@ -571,39 +705,65 @@ while ($row = $never_result->fetch_assoc()) {
         <!-- Table 3: Sales Trend Over Time -->
         <div class="section-title">
             <span><i class="fas fa-chart-line"></i> Sales Trend Over Time (
-                <?= ucfirst($trend_view) ?>)
+                <?= ucfirst($trend_view) ?> )
             </span>
         </div>
         <table class="analytics-table">
             <thead>
                 <tr>
-                    <th>Period</th>
-                    <th>Customer Name</th>
-                    <th>Total Weight (kgs)</th>
-                    <th>Number of Orders</th>
+                    <th>
+                        Period
+                        <?php if ($trend_view === 'monthly'): ?>
+                            <br><small style="font-weight: 400; font-size: 12px;">(Day, Year)</small>
+                        <?php endif; ?>
+                    </th>
+                    <th>Customer<br>Name</th>
+                    <th>Concrete<br>Design</th>
+                    <th>Curation<br>Days</th>
+                    <th>Concrete Type</th>
+                    <th>
+                        Total<br>Weight
+                        <br><small style="font-weight: 400; font-size: 12px;">(kgs)</small>
+                    </th>
+                    <th>Total<br>Units</th>
+                    <th>Number of<br>Transactions</th>
+                    <th>Sales (₱)</th>
                 </tr>
             </thead>
             <tbody>
                 <?php if (count($trend_data) > 0): ?>
-                    <?php foreach ($trend_data as $t): ?>
+                    <?php
+                    $grand_total_sales = 0;
+                    foreach ($trend_data as $t):
+                        $grand_total_sales += $t['total_sales'];
+                        ?>
                         <tr>
-                            <td>
-                                <?= htmlspecialchars($t['period']) ?>
-                            </td>
-                            <td>
-                                <?= htmlspecialchars($t['customer_name']) ?>
-                            </td>
-                            <td>
-                                <?= number_format($t['total_weight'], 2) ?>
-                            </td>
-                            <td>
-                                <?= $t['order_count'] ?>
-                            </td>
+                            <td><?= htmlspecialchars($t['period']) ?></td>
+                            <td><?= htmlspecialchars($t['customer_name']) ?></td>
+                            <td><?= htmlspecialchars($t['concrete_psi']) ?> </td>
+                            <td><?= htmlspecialchars($t['curation_days']) ?> Days</td>
+                            <td><?= getConcreteTypeBadge($t['concrete_type']) ?></td>
+                            <td><?= number_format($t['total_weight'], 2) ?></td>
+                            <td><?= number_format($t['total_units'], 0) ?></td>
+                            <td><?= $t['order_count'] ?></td>
+                            <td>₱ <?= number_format($t['total_sales'], 2) ?></td>
                         </tr>
                     <?php endforeach; ?>
+
+                    <!-- TOTAL ROW -->
+                    <tr style="background-color: #2e3590; color: white; font-weight: bold;">
+                        <td colspan="2" style="text-align: center;">
+                            <?= date('F d, Y', strtotime($start_date)) ?> — <?= date('F d, Y', strtotime($end_date)) ?>
+                        </td>
+                        <td colspan="4" style="text-align: center;">Total:</td>
+                        <td colspan="3" style="text-align: center;">
+                            ₱ <?= number_format($grand_total_sales, 2) ?>
+                        </td>
+                    </tr>
+
                 <?php else: ?>
                     <tr>
-                        <td colspan="4">No sales data for selected period.</td>
+                        <td colspan="7">No sales data for selected period.</td>
                     </tr>
                 <?php endif; ?>
             </tbody>
@@ -655,25 +815,84 @@ while ($row = $never_result->fetch_assoc()) {
     <?php $conn->close(); ?>
 
     <script>
+        function updateFields() {
+            const trend = document.getElementById('trend_view').value;
+
+            const startDate = document.getElementById('start_date');
+            const endDate = document.getElementById('end_date');
+            const monthOf = document.getElementById('month_of');
+            const fromYear = document.getElementById('from_year');
+            const fromYearMonthly = document.getElementById('from_year_monthly');
+            const toYear = document.getElementById('to_year');
+            const labelFrom = document.getElementById('label-from');
+            const labelTo = document.getElementById('label-to');
+
+            // Hide & disable all dynamic fields
+            [startDate, endDate, monthOf, fromYear, fromYearMonthly, toYear].forEach(el => {
+                el.classList.add('d-none');
+                el.disabled = true;
+            });
+
+            if (trend === 'daily') {
+                labelFrom.textContent = 'From:';
+                labelTo.textContent = 'To:';
+                startDate.classList.remove('d-none'); startDate.disabled = false;
+                endDate.classList.remove('d-none'); endDate.disabled = false;
+
+            } else if (trend === 'monthly') {
+                labelFrom.textContent = 'Month of:';
+                labelTo.textContent = 'From year:';
+                monthOf.classList.remove('d-none'); monthOf.disabled = false;
+                fromYearMonthly.classList.remove('d-none'); fromYearMonthly.disabled = false;
+
+            } else if (trend === 'annual') {
+                labelFrom.textContent = 'From year:';
+                labelTo.textContent = 'To year:';
+                fromYear.classList.remove('d-none'); fromYear.disabled = false;
+                toYear.classList.remove('d-none'); toYear.disabled = false;
+                fromYear.onchange = validateYearRange;
+                toYear.onchange = validateYearRange;
+            }
+        }
+
+        function validateYearRange() {
+            const fromVal = parseInt(document.getElementById('from_year').value);
+            const toEl = document.getElementById('to_year');
+            if (parseInt(toEl.value) < fromVal) {
+                alert('To year cannot be earlier than From year.');
+                toEl.value = fromVal;
+            }
+        }
+
         function filterData() {
             const btn = document.getElementById('filterBtn');
-            const originalHTML = btn.innerHTML;
             btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading...';
             btn.disabled = true;
 
-            const start_date = document.querySelector('input[name="start_date"]').value;
-            const end_date = document.querySelector('input[name="end_date"]').value;
-            const trend_view = document.querySelector('select[name="trend_view"]').value;
+            const trend = document.getElementById('trend_view').value;
+            let params = `trend_view=${trend}`;
 
-            // Wait 500ms, then show "Done!"
+            if (trend === 'daily') {
+                params += `&start_date=${document.getElementById('start_date').value}`;
+                params += `&end_date=${document.getElementById('end_date').value}`;
+            } else if (trend === 'monthly') {
+                params += `&month_of=${document.getElementById('month_of').value}`;
+                params += `&from_year_monthly=${document.getElementById('from_year_monthly').value}`;
+            } else if (trend === 'annual') {
+                params += `&from_year=${document.getElementById('from_year').value}`;
+                params += `&to_year=${document.getElementById('to_year').value}`;
+            }
+
             setTimeout(() => {
                 btn.innerHTML = '<i class="fas fa-check"></i> Done!';
-                // Wait another 500ms, then redirect
                 setTimeout(() => {
-                    window.location.href = `?start_date=${start_date}&end_date=${end_date}&trend_view=${trend_view}`;
+                    window.location.href = `?${params}`;
                 }, 500);
             }, 500);
         }
+
+        // Run on load to match saved PHP trend_view
+        document.addEventListener('DOMContentLoaded', updateFields);
     </script>
 
 </body>

@@ -139,7 +139,24 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
                             <h2 style="color: #000; font-weight: bold; margin: 0;">Sorcom Reports Dashboard</h2>
                         </div>
 
-                        <!-- ROW 1: Date From + Buttons -->
+                        <!-- ROW 1: Inventory Summary + Transaction Summary -->
+                        <div class="row align-items-center g-3 mb-3 summary-row">
+                            <div class="col-md-6">
+                                <a href="/Inventory-Accounts-System-v1/pages/inventory_page/inv_reports.php"
+                                    class="btn btn-primary btn-sm w-100 fw-bold">
+                                    <i class="fas fa-boxes me-1"></i> Inventory Summary
+                                </a>
+                            </div>
+
+                            <div class="col-md-6">
+                                <a href="/Inventory-Accounts-System-v1/pages/statement_account_page/sales_analytics.php"
+                                    class="btn btn-primary btn-sm w-100 fw-bold">
+                                    <i class="fas fa-exchange-alt me-1"></i> Transaction Summary
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- ROW 2: Date From + Buttons -->
                         <div class="row align-items-center g-3 mb-3">
                             <div class="col-md-3">
                                 <div class="d-flex align-items-center">
@@ -172,7 +189,7 @@ if (empty($readymixData['data'] ?? []) || !isset($readymixData['data'])) {
                             </div>
                         </div>
 
-                        <!-- ROW 2: Date To + Buttons -->
+                        <!-- ROW 3: Date To + Buttons -->
                         <div class="row align-items-center g-3">
                             <div class="col-md-3">
                                 <div class="d-flex align-items-center">

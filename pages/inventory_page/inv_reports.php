@@ -313,7 +313,7 @@ $mixture_result = $stmt2->get_result();
                 <div>
                     <button onclick="window.print()" class="btn-print"><i class="fas fa-print"></i> Print</button>
                     <button onclick="exportPDF()" class="btn-pdf"><i class="fas fa-file-pdf"></i> Export PDF</button>
-                    <a href="inventory_management.php" class="btn-back" style="margin-left: 15px;">
+                    <a href="#" onclick="history.back()" class="btn-back" style="margin-left: 15px;">
                         <i class="fas fa-arrow-left"></i> Back
                     </a>
                 </div>
