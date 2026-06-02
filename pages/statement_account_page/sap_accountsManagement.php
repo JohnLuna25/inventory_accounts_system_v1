@@ -63,7 +63,7 @@ $result = $conn->query($sql);
 
                 <!-- LEFT SIDE -->
                 <div class="left-buttons">
-                    <a href="sap_accountsForm.php" class="btn btn-primary">+ Add Order</a>
+                    <a href="add_accountsForm.php" class="btn btn-primary">+ Add Order</a>
                     <a href="sap_transactionHistory.php" class="btn btn-primary">Transaction History</a>
                     <a href="sales_analytics.php" class="btn btn-primary">Transaction Summary</a>
                 </div>
@@ -123,7 +123,10 @@ $result = $conn->query($sql);
                                     $status = strtolower($row['order_status']);
                                     $statusClass = str_replace(' ', '-', $status);
                                     ?>
-                                    <span class="<?= $statusClass ?>"><?= htmlspecialchars($row['order_status']) ?></span>
+                                    <a href="edit_accountsForm.php?sap_id=<?= urlencode($row['sap_id']) ?>"
+                                        class="status-link <?= $statusClass ?>">
+                                        <?= htmlspecialchars($row['order_status']) ?>
+                                    </a>
                                 </td>
                                 <td>
                                     <a href="#" class="btn btn-view"
