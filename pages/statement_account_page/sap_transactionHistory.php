@@ -47,7 +47,7 @@ function getDoneOrders($conn)
                 ON s.concrete_psi = v.vb_concrete_psi 
                 AND s.curation_days = v.vb_curation_days 
                 AND s.concrete_type = v.vb_concrete_type
-            WHERE s.order_status = 'Done' 
+            WHERE s.order_status = 'done' 
             ORDER BY s.order_date DESC, s.sap_id DESC";
 
     $result = $conn->query($sql);

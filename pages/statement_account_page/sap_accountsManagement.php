@@ -24,6 +24,39 @@ function checkRemainingInventory($conn, $psi, $days, $type)
     return $net_stock > 0 ? $net_stock : 0;
 }
 
+function automateOrderStatus($conn, $sap_id, $delivery_date, $current_status)
+{
+    $today = date('Y-m-d');
+
+    // Determine what status SHOULD be
+    if ($today < $delivery_date) {
+        $new_status = 'pending';
+    } elseif ($today === $delivery_date) {
+        $new_status = 'in transit';
+    } else {
+        $new_status = 'done';
+    }
+
+    // Rule: If manually marked 'done' early, respect it UNLESS delivery date has passed
+    if (strtolower($current_status) === 'done' && $today < $delivery_date) {
+        return $current_status; // Respect early manual done
+    }
+
+    // Only update DB if status actually changed
+    if (strtolower($current_status) !== $new_status) {
+        $stmt = $conn->prepare("
+            UPDATE statement_of_account 
+            SET order_status = ? 
+            WHERE sap_id = ?
+        ");
+        $stmt->bind_param("ss", $new_status, $sap_id);
+        $stmt->execute();
+        $stmt->close();
+    }
+
+    return $new_status;
+}
+
 // ✅ SAFE SORTING (uses EXISTING columns only)
 $sql = "
     SELECT * FROM statement_of_account 
@@ -97,7 +130,15 @@ $result = $conn->query($sql);
                         <?php $row_index = 0; ?>
                         <?php while ($row = $result->fetch_assoc()): ?>
                             <?php $row_index++; ?>
-
+                            <?php
+                            // ✅ AUTO-UPDATE STATUS BASED ON DELIVERY DATE
+                            $row['order_status'] = automateOrderStatus(
+                                $conn,
+                                $row['sap_id'],
+                                $row['delivery_date'],
+                                $row['order_status']
+                            );
+                            ?>
                             <?php
                             // ✅ SHOW FULL ADDRESS (NO TRIMMING)
                             $raw_address = $row['full_address'] ?? 'No address';

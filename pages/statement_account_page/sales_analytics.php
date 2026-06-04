@@ -170,8 +170,8 @@ function getConcreteTypeBadge($type)
 {
     $type_upper = strtoupper(trim($type));
     if (str_contains($type_upper, 'ORDINARY')) {
-        $color = '#ffffff';
-        $bg = '#ebc400';
+        $color = '#343434';
+        $bg = '#ffde3b';
         $border = '#000000';
     } elseif (str_contains($type_upper, 'PUMPCRETE')) {
         $color = '#ffffff';
@@ -275,8 +275,12 @@ while ($row = $never_result->fetch_assoc()) {
 
         .report-header .report-date {
             color: #666;
-            font-size: 12px;
+            font-size: 15px;
             margin-top: 10px;
+            border: rgba(51, 51, 51, 0.2) solid;
+            border-radius: 10px;
+            padding: 5px 8px;
+            display: inline-block;
         }
 
         /* ========== FILTER BAR CARD (same as Concrete Orders) ========== */
