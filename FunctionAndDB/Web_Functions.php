@@ -39,8 +39,8 @@ function showHeader()
 
 <nav class="slide-menu" id="slideMenuNav">
     <ul class="menu-list">
-        <!-- Home Page link (hidden) -->
-        <li class="dashboard-title" style="display: none;">
+        <!-- Home Page link -->
+        <li class="dashboard-title">
             <a href="/Inventory-Accounts-System-v1/pages/home_page/home.php" style="text-decoration: none; color: white; display: block; text-align: center;">
                 <i class="fas fa-home"></i> Home Page
             </a>
