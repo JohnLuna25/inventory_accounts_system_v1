@@ -36,40 +36,47 @@ function showHeader()
         </div>
     </div>
 </div>
+
 <nav class="slide-menu" id="slideMenuNav">
     <ul class="menu-list">
-        <!-- Home Page link -->
-<li class="dashboard-title">
-    <a href="/Inventory-Accounts-System-v1/pages/home_page/home.php" style="text-decoration: none; color: white; display: block; text-align: center;">
-        <i class="fas fa-home"></i> Home Page
-    </a>
-</li>
-        <li><a href="/Inventory-Accounts-System-v1/pages/concrete_design_page/concrete_design_list.php">
+        <!-- Home Page link (hidden) -->
+        <li class="dashboard-title" style="display: none;">
+            <a href="/Inventory-Accounts-System-v1/pages/home_page/home.php" style="text-decoration: none; color: white; display: block; text-align: center;">
+                <i class="fas fa-home"></i> Home Page
+            </a>
+        </li>
+        <li><a href="/Inventory-Accounts-System-v1/pages/concrete_design_page/concrete_design_list.php" 
+            class="' . (strpos($_SERVER['REQUEST_URI'], '/concrete_design_page/') !== false ? 'active-page' : '') . '">
             <i class="fas fa-list me-2"></i> Concrete Design List
         </a></li>';
 
-    // Inventory: Visible ONLY to master users (Plant Managers)
     if ($user_type === 'master') {
         echo '
-        <li><a href="/Inventory-Accounts-System-v1/pages/inventory_page/inventory_management.php">
+        <li><a href="/Inventory-Accounts-System-v1/pages/inventory_page/inventory_management.php"
+            class="' . (strpos($_SERVER['REQUEST_URI'], '/inventory_page/') !== false ? 'active-page' : '') . '">
             <i class="fas fa-box me-2"></i> Inventory
         </a></li>';
     }
 
     echo '
-        <li><a href="/Inventory-Accounts-System-v1/pages/statement_account_page/sap_accountsManagement.php">
+        <li><a href="/Inventory-Accounts-System-v1/pages/statement_account_page/sap_accountsManagement.php"
+            class="' . (strpos($_SERVER['REQUEST_URI'], '/statement_account_page/') !== false ? 'active-page' : '') . '">
             <i class="fas fa-dollar-sign me-2"></i> Transaction
         </a></li>';
 
-    // Reports: Visible ONLY to master users (Plant Managers)
     if ($user_type === 'master') {
         echo '
-        <li><a href="/Inventory-Accounts-System-v1/pages/reports_page/reports_management.php">
+        <li><a href="/Inventory-Accounts-System-v1/pages/reports_page/reports_management.php"
+            class="' . (strpos($_SERVER['REQUEST_URI'], '/reports_page/') !== false ? 'active-page' : '') . '">
             <i class="fas fa-chart-line me-2"></i> Reports
         </a></li>';
     }
 
     echo '
+        <li><a href="/Inventory-Accounts-System-v1/pages/user_settings_page/user_settings.php"
+            class="' . (strpos($_SERVER['REQUEST_URI'], '/user_settings_page/') !== false ? 'active-page' : '') . '">
+            <i class="fas fa-cog me-2"></i> User Settings
+        </a></li>
         <li class="logout-item"><a href="/Inventory-Accounts-System-v1/login_page/web_login.php" onclick="return confirmLogout()">
             <i class="fas fa-sign-out-alt me-2"></i> Log out
         </a></li>
@@ -175,6 +182,7 @@ function showHeader()
 }
 
 .menu-list a {
+    text align: left;
     display: block !important;
     color: white !important;
     text-decoration: none !important;
@@ -202,6 +210,20 @@ function showHeader()
     background: rgb(255, 49, 70) !important;
     border-left-color: white !important;
     border-right-color: white !important;
+}
+
+/* ACTIVE PAGE INDICATOR */
+.menu-list a.active-page {
+    background: rgba(0, 180, 0, 0.7) !important; /* green, 50% opacity */
+    color: white !important;
+    border-left-color: #ffffff !important;
+    border-right-color: #ffffff !important;
+    text-align: left !important;
+}
+
+.menu-list a.active-page:hover {
+    background: rgba(40, 245, 40, 0.5) !important; /* slightly brighter on hover */
+    color: white !important;
 }
 
 /* WELCOME MESSAGE - From home.php */

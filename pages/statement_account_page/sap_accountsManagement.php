@@ -74,7 +74,7 @@ $result = $conn->query($sql);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Concrete Orders Management</title>
+    <title>Concrete Transactions Management</title>
     <link rel="stylesheet" href="sap_accountsManagement.css">
     <link href="/Inventory-Accounts-System-v1/assets/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     <link
@@ -91,7 +91,7 @@ $result = $conn->query($sql);
 
         <!-- Banner for Title and Buttons -->
         <div class="page-title-bar">
-            <h2 style="font-family: 'Poppins', sans-serif;">Concrete Orders</h2>
+            <h2 style="font-family: 'Poppins', sans-serif;">Concrete Transactions</h2>
             <div class="button-container">
 
                 <!-- LEFT SIDE -->
